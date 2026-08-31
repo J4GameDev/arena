@@ -53,18 +53,57 @@ Combat is a **pure function**: `(hero, monster, seed) => CombatEvent[]`. The vie
 - **Reskinnable.** The entire look can change without touching game logic.
 
 Corollaries:
+
 - All randomness goes through the seeded RNG in `src/sim/rng.ts`. Never `Math.random()` inside `sim/`.
 - `sim/` must not import from `view/` or `state/`. If it needs to, the design is wrong.
 - Content goes in `data/` as plain objects. If adding a monster requires writing new logic in `sim/`, consider whether the gimmick can be expressed as data instead — but don't contort the design to avoid code.
+
+## Code conventions
+
+The owner reads this code but does not write it. That makes **legibility of intent** the goal — not brevity, not cleverness, not idiomatic-TypeScript points. Someone should be able to open any file and follow what the game is doing.
+
+**Naming**
+
+- Use the vocabulary from the design, not programmer shorthand: `attackTimer`, not `atkT`. `remainingHealth`, not `hp2`. If a name needs a comment to explain it, rename it.
+- Booleans read as assertions: `isStunned`, `hasShield`, `canCrit`.
+- Types and interfaces are `PascalCase`; functions, variables, and properties are `camelCase`; true constants are `SCREAMING_SNAKE`. File names are lowercase, hyphenated when multi-word (`combat-log.ts`).
+
+**Comments**
+
+- Code explains _what_. Comments explain **why** — especially design and balance intent. `// 2.0x, not 2.5x — 2.5 made daggers dominant at every tier` is the most valuable kind of comment in this repo.
+- Don't narrate obvious code. A comment restating the line below it is noise.
+
+**Structure**
+
+- One concept per file. If a file passes ~200 lines, it's probably two files.
+- Functions in `sim/` are pure where possible: take state, return new state or events. Side effects live at the edges, in `view/` and `state/`.
+- No magic numbers in `sim/`. Every tunable number is either a named constant or lives in `data/`.
+
+**Data**
+
+- `data/` files should read like a design spreadsheet. Plain objects, one entry per line group, aligned and scannable. The owner should be able to open `items.ts`, change a `damage: 12` to `damage: 14`, and see the effect without touching logic.
+- Content entries get a short comment naming their _design role_ — what build this exists to enable, or what it's meant to counter.
+
+**Types**
+
+- Model the domain so illegal states can't be represented. Prefer a union of specific shapes over one wide type with optional fields everywhere.
+- Throw on programmer error rather than silently defaulting. A crash during development is cheaper than a wrong number the owner has to reverse-engineer later.
+
+**Formatting** is Prettier's job, never a discussion. Run `npm run format`.
 
 ## Stack
 
 TypeScript + Vite. No game engine — this genre is 80% inventory grids and tooltips, which DOM/CSS handles better than a canvas engine would. Battle scene gets a small canvas layer.
 
+TypeScript runs in `strict` mode with `noUncheckedIndexedAccess`. Do not loosen these to make an error go away — the error is the point.
+
 ```bash
-npm run dev      # dev server
-npm run build    # production build
-npm test         # vitest
+npm run dev        # dev server
+npm run build      # production build
+npm test           # vitest
+npm run typecheck  # tsc, no emit
+npm run format     # prettier --write
+npm run check      # typecheck + format check + tests — run before every commit
 ```
 
 ## v0.1 scope

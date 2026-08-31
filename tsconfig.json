@@ -14,11 +14,17 @@
     "moduleDetection": "force",
     "noEmit": true,
 
-    /* Linting */
+    /* Correctness. These catch real bugs before the game ever runs. */
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "noImplicitOverride": true,
+    "exactOptionalPropertyTypes": true,
+
+    /* Tidiness */
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "erasableSyntaxOnly": true,
     "noFallthroughCasesInSwitch": true
   },
-  "include": ["src"]
+  "include": ["src", "tests"]
 }

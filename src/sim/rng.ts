@@ -32,8 +32,9 @@ export class Rng {
 
   /** Uniform pick from a non-empty array. */
   pick<T>(items: readonly T[]): T {
-    if (items.length === 0) throw new Error('Rng.pick called with an empty array');
-    return items[this.int(0, items.length - 1)];
+    const chosen = items[this.int(0, items.length - 1)];
+    if (chosen === undefined) throw new Error('Rng.pick called with an empty array');
+    return chosen;
   }
 
   /**
