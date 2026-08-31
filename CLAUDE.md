@@ -38,6 +38,8 @@ At threshold a resource spends itself automatically on an empowered attack. This
 
 **Other slots modify the economy, not the numbers.** A ring that slows Rage decay; a cloak that converts overkill damage into Focus. The moment accessories become flat stat sticks, pillar one has quietly failed.
 
+**Leave headroom on the weapon for the items to matter.** A weapon's baseline for anything an accessory can also grant should be low. The Assassin's 10% evasion is deliberate: at 25% the weapon had already spent the entire budget and evasion accessories would have had nothing left to give. A stat the build cannot meaningfully move is not part of the build.
+
 v0.1 ships **two** archetypes, two-handed (Rage) and daggers (Focus), because they are opposites on the timeline. Two is the minimum that demonstrates the pillar; one demonstrates nothing.
 
 ## Tone and art direction
@@ -147,6 +149,8 @@ Good ideas that are not v0.1. Written down so they stop taking up room.
 
 - **Gambit conditions.** Let the player set _when_ a resource spends: "only below 40% health," "only when the enemy is enraged." Turns spending into a second build axis on top of gear.
 - **Resolve and Mana archetypes** — sword-and-shield and staff, once Rage and Focus are proven.
+- **Unavoidable attacks.** A monster property that ignores evasion entirely — "you cannot sidestep a mountain." Turns a boss into a puzzle that disables the thing you were relying on. Good fit for the Sentinel when mid-tier monsters get designed.
+- **An evasion ceiling.** Once accessories can add evasion, stacking runs toward 100% and immortality. Needs either a hard cap or diminishing returns before the first evasion item ships.
 
 ## Notes
 

@@ -35,9 +35,12 @@ export const TWIN_DAGGERS: Weapon = {
   threshold: 100, // five landed hits
   empowerMultiplier: 2.0,
   maxDamageReduction: 0, // stays fragile by design — that is the archetype
-  // Defence by not being there. Swingy where the Berserker's is dependable:
-  // some fights you dance through untouched, some you get flattened early.
-  evasion: 0.25,
+  // Defence by not being there. Swingy where the Berserker's is dependable.
+  //
+  // Deliberately low. This is a *baseline* that evasion accessories build on
+  // top of — at 25% the weapon had already spent the whole budget and those
+  // items would have had nothing left to give.
+  evasion: 0.1,
 };
 
 export const WEAPONS: readonly Weapon[] = [GREATAXE, TWIN_DAGGERS];
