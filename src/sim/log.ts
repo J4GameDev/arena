@@ -36,6 +36,9 @@ function formatEvent(event: CombatEvent): string {
     case 'resource':
       return `${at}      ${event.who} ${event.kind} ${Math.round(event.current)}/${event.threshold}`;
 
+    case 'evade':
+      return `${at}     ${event.defender} evades ${event.attacker}`;
+
     case 'death':
       return `${at}     ${event.who} dies`;
 

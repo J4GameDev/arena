@@ -22,18 +22,22 @@ export const GREATAXE: Weapon = {
   // Toughens as Rage builds, then resets to fragile after the payoff. This is
   // what stops a full meter from being wasted by the greataxe's slow swing.
   maxDamageReduction: 0.4,
+  evasion: 0, // the Berserker stands and takes it
 };
 
 export const TWIN_DAGGERS: Weapon = {
   id: 'twin-daggers',
   name: 'Twin Daggers',
-  archetype: 'Duelist',
+  archetype: 'Assassin',
   // Fast and small. Ramps to a payoff on its own schedule, ignoring the enemy.
   attack: { damage: 6, attacksPerSecond: 2.0, variance: 0.15 },
   resource: FOCUS,
   threshold: 100, // five landed hits
   empowerMultiplier: 2.0,
-  maxDamageReduction: 0, // the Duelist stays fragile by design
+  maxDamageReduction: 0, // stays fragile by design — that is the archetype
+  // Defence by not being there. Swingy where the Berserker's is dependable:
+  // some fights you dance through untouched, some you get flattened early.
+  evasion: 0.25,
 };
 
 export const WEAPONS: readonly Weapon[] = [GREATAXE, TWIN_DAGGERS];

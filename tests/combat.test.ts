@@ -96,6 +96,23 @@ describe('runFight', () => {
     }
   });
 
+  it('lets an evasive hero avoid attacks entirely', () => {
+    const result = runFight(createHero('Hero', TWIN_DAGGERS), createMonster(STONE_SENTINEL), 5);
+
+    const evaded = result.events.some(
+      (event) => event.type === 'evade' && event.defender === 'Hero',
+    );
+
+    expect(evaded).toBe(true);
+  });
+
+  it('never lets a non-evasive hero evade', () => {
+    for (let seed = 0; seed < 20; seed += 1) {
+      const result = runFight(createHero('Hero', GREATAXE), createMonster(STONE_SENTINEL), seed);
+      expect(result.events.some((event) => event.type === 'evade')).toBe(false);
+    }
+  });
+
   it('never reports negative health', () => {
     for (let seed = 0; seed < 20; seed += 1) {
       const result = runFight(createHero('Hero', TWIN_DAGGERS), gnoll(), seed);

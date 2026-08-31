@@ -62,6 +62,13 @@ function resolveAttack(
   rng: Rng,
   events: CombatEvent[],
 ): void {
+  // Short-circuit so a defender with no evasion consumes no randomness — that
+  // keeps non-evasive matchups reproducible as evasion is tuned.
+  if (defender.evasion > 0 && rng.chance(defender.evasion)) {
+    events.push({ type: 'evade', at, attacker: attacker.name, defender: defender.name });
+    return;
+  }
+
   const resource = attacker.resource;
   const empowered = resource !== null && resource.current >= resource.threshold;
 

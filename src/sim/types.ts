@@ -55,6 +55,12 @@ export interface Weapon {
   readonly empowerMultiplier: number;
   /** See ResourceState.maxDamageReduction. 0 for archetypes that don't tank. */
   readonly maxDamageReduction: number;
+  /**
+   * Chance to avoid an attack outright, 0 to 1. Deliberately a *different kind*
+   * of defence from Rage's damage reduction: unreliable but total, where Rage is
+   * reliable but partial. 0 for archetypes that stand and take it.
+   */
+  readonly evasion: number;
 }
 
 export interface MonsterDefinition {
@@ -71,6 +77,8 @@ export interface Combatant {
   readonly maxHealth: number;
   health: number;
   readonly attack: AttackProfile;
+  /** Chance to avoid an incoming attack outright, 0 to 1. */
+  readonly evasion: number;
   /** null for combatants with no resource engine — every monster, for now. */
   resource: ResourceState | null;
   /** Seconds on the fight clock when this combatant next swings. */
@@ -108,6 +116,12 @@ export type CombatEvent =
       readonly kind: ResourceKind;
       readonly current: number;
       readonly threshold: number;
+    }
+  | {
+      readonly type: 'evade';
+      readonly at: number;
+      readonly attacker: string;
+      readonly defender: string;
     }
   | { readonly type: 'death'; readonly at: number; readonly who: string }
   | { readonly type: 'timeout'; readonly at: number };

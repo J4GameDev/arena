@@ -12,6 +12,7 @@ export function createHero(name: string, weapon: Weapon): Combatant {
     maxHealth: HERO_BASE_HEALTH,
     health: HERO_BASE_HEALTH,
     attack: weapon.attack,
+    evasion: weapon.evasion,
     resource: {
       rule: weapon.resource,
       current: 0,
@@ -29,6 +30,7 @@ export function createMonster(definition: MonsterDefinition): Combatant {
     maxHealth: definition.maxHealth,
     health: definition.maxHealth,
     attack: definition.attack,
+    evasion: 0, // monsters stand and take it, for now
     resource: null,
     nextAttackAt: 0,
   };
