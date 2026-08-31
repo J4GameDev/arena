@@ -15,11 +15,15 @@ import type { MonsterDefinition } from '../sim/types.ts';
 export const GNOLL_RAVAGER: MonsterDefinition = {
   id: 'gnoll-ravager',
   name: 'Gnoll Ravager',
-  maxHealth: 70,
-  attack: { damage: 5, attacksPerSecond: 1.2, variance: 0.25 },
+  maxHealth: 110,
+  // The low variance is load-bearing, not cosmetic. Predictable damage is what
+  // guarantees the player's meter fills before the Gnoll dies — at 0.25 it
+  // sometimes rolled low and the Berserker never saw Rage fire at all.
+  attack: { damage: 9, attacksPerSecond: 1.2, variance: 0.1 },
   designRole:
-    'Short, low-damage fight. Dies before Focus finishes ramping and barely feeds Rage, ' +
-    'so both archetypes fight it close to raw. The honest baseline.',
+    'The teacher. Always loses, but hits hard and steadily enough that every build ' +
+    'reaches a full meter and sees its payoff at least once before the fight ends. ' +
+    'Tuned for guaranteed demonstration, not for difficulty.',
 };
 
 export const STONE_SENTINEL: MonsterDefinition = {

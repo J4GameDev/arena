@@ -27,10 +27,12 @@ console.log(
     pad('Monster', 17) +
     pad('Win', 8) +
     pad('Avg time', 10) +
-    pad('Big hits', 10) +
+    pad('Big hits', 11) +
+    pad('Fewest', 8) +
+    pad('Worst HP', 10) +
     'Died with a full meter',
 );
-console.log('-'.repeat(80));
+console.log('-'.repeat(100));
 
 for (const weapon of WEAPONS) {
   for (const monster of MONSTERS) {
@@ -42,6 +44,10 @@ interface Sample {
   readonly wins: number;
   readonly totalSeconds: number;
   readonly totalEmpowered: number;
+  /** Fewest big hits seen in any single fight. 0 means the mechanic can hide. */
+  readonly fewestEmpowered: number;
+  /** Lowest the hero's health ever fell. The worst-case scare. */
+  readonly lowestHealth: number;
   readonly deathsAtFullMeter: number;
 }
 
@@ -49,6 +55,8 @@ function sample(weapon: Weapon, monster: MonsterDefinition): Sample {
   let wins = 0;
   let totalSeconds = 0;
   let totalEmpowered = 0;
+  let fewestEmpowered = Number.POSITIVE_INFINITY;
+  let lowestHealth = Number.POSITIVE_INFINITY;
   let deathsAtFullMeter = 0;
 
   for (let seed = 0; seed < RUNS; seed += 1) {
@@ -58,18 +66,31 @@ function sample(weapon: Weapon, monster: MonsterDefinition): Sample {
     if (result.winner === hero.name) wins += 1;
     totalSeconds += result.durationSeconds;
 
+    let empoweredThisFight = 0;
     for (const event of result.events) {
-      if (event.type === 'attack' && event.empowered && event.attacker === hero.name) {
-        totalEmpowered += 1;
+      if (event.type !== 'attack') continue;
+      if (event.empowered && event.attacker === hero.name) empoweredThisFight += 1;
+      if (event.defender === hero.name) {
+        lowestHealth = Math.min(lowestHealth, event.defenderHealth);
       }
     }
+
+    totalEmpowered += empoweredThisFight;
+    fewestEmpowered = Math.min(fewestEmpowered, empoweredThisFight);
 
     if (result.winner !== hero.name && endedWithFullMeter(result.events, hero.name)) {
       deathsAtFullMeter += 1;
     }
   }
 
-  return { wins, totalSeconds, totalEmpowered, deathsAtFullMeter };
+  return {
+    wins,
+    totalSeconds,
+    totalEmpowered,
+    fewestEmpowered,
+    lowestHealth,
+    deathsAtFullMeter,
+  };
 }
 
 /** A loss with a loaded meter is wasted potential — the thing we're hunting. */
@@ -91,7 +112,9 @@ function report(weapon: Weapon, monster: MonsterDefinition, s: Sample): void {
       pad(monster.name, 17) +
       pad(`${((s.wins / RUNS) * 100).toFixed(1)}%`, 8) +
       pad(`${(s.totalSeconds / RUNS).toFixed(2)}s`, 10) +
-      pad((s.totalEmpowered / RUNS).toFixed(2), 10) +
+      pad((s.totalEmpowered / RUNS).toFixed(2), 11) +
+      pad(String(s.fewestEmpowered), 8) +
+      pad(String(s.lowestHealth), 10) +
       wastedShare,
   );
 }
