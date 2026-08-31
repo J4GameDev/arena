@@ -12,7 +12,8 @@
     "typecheck": "tsc --noEmit",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "check": "npm run typecheck && npm run format:check && npm test"
+    "check": "npm run typecheck && npm run format:check && npm test",
+    "prepare": "git config core.hooksPath .githooks"
   },
   "devDependencies": {
     "prettier": "^3.9.6",

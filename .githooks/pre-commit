@@ -1,0 +1,18 @@
+#!/bin/sh
+#
+# Refuses a commit that does not typecheck, is not formatted, or fails tests.
+# The point: every commit in history is a working game you can safely roll back to.
+#
+# To bypass deliberately (rare, e.g. saving genuinely broken WIP):
+#   git commit --no-verify
+
+echo "Running pre-commit checks..."
+
+if ! npm run --silent check; then
+  echo ""
+  echo "Commit blocked: checks failed."
+  echo "Fix the errors above, or run 'npm run format' if it was only formatting."
+  exit 1
+fi
+
+echo "Checks passed."
