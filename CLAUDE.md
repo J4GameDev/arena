@@ -1,6 +1,8 @@
 # Arena — Project North Star
 
 > `arena` is a working title. Renaming is a change to `package.json`, `index.html`, and this file. Do it whenever the real name shows up.
+>
+> **Live:** https://arena-mu-coral.vercel.app — Vercel redeploys this automatically on every push to `main`.
 
 ## What this is
 
