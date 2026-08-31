@@ -26,6 +26,15 @@ export interface ResourceState {
   readonly threshold: number;
   /** Damage multiplier on the attack that spends a full resource. */
   readonly empowerMultiplier: number;
+  /**
+   * Damage reduction at a full meter, scaling linearly from empty. 0.4 means a
+   * full meter absorbs 40% of incoming damage.
+   *
+   * Note the deliberate feedback loop: Rage fills from damage taken, so
+   * reducing that damage also slows the fill. The Berserker gets tough right
+   * before the payoff, then resets to fragile. 0 for archetypes without it.
+   */
+  readonly maxDamageReduction: number;
 }
 
 export interface AttackProfile {
@@ -44,6 +53,8 @@ export interface Weapon {
   readonly resource: ResourceRule;
   readonly threshold: number;
   readonly empowerMultiplier: number;
+  /** See ResourceState.maxDamageReduction. 0 for archetypes that don't tank. */
+  readonly maxDamageReduction: number;
 }
 
 export interface MonsterDefinition {
@@ -82,7 +93,10 @@ export type CombatEvent =
       readonly at: number;
       readonly attacker: string;
       readonly defender: string;
+      /** Damage actually dealt, after the defender's reduction. */
       readonly damage: number;
+      /** Damage the defender's resource absorbed. 0 when nothing was reduced. */
+      readonly prevented: number;
       readonly empowered: boolean;
       readonly defenderHealth: number;
       readonly defenderMaxHealth: number;

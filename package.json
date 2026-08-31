@@ -14,7 +14,8 @@
     "format:check": "prettier --check .",
     "check": "npm run typecheck && npm run format:check && npm test",
     "prepare": "git config core.hooksPath .githooks || true",
-    "fight": "node scripts/fight.ts"
+    "fight": "node scripts/fight.ts",
+    "balance": "node scripts/balance.ts"
   },
   "devDependencies": {
     "@types/node": "^26.4.0",

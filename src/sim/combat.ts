@@ -65,11 +65,15 @@ function resolveAttack(
   const resource = attacker.resource;
   const empowered = resource !== null && resource.current >= resource.threshold;
 
-  let damage = rollDamage(attacker, rng);
+  let rawDamage = rollDamage(attacker, rng);
   if (empowered && resource !== null) {
-    damage = Math.round(damage * resource.empowerMultiplier);
+    rawDamage = Math.round(rawDamage * resource.empowerMultiplier);
     resource.current = 0;
   }
+
+  // Always at least 1 through, so no combination of items can make you immortal.
+  const damage = Math.max(1, Math.round(rawDamage * (1 - damageReductionOf(defender))));
+  const prevented = rawDamage - damage;
 
   defender.health = Math.max(0, defender.health - damage);
 
@@ -79,6 +83,7 @@ function resolveAttack(
     attacker: attacker.name,
     defender: defender.name,
     damage,
+    prevented,
     empowered,
     defenderHealth: defender.health,
     defenderMaxHealth: defender.maxHealth,
@@ -86,6 +91,9 @@ function resolveAttack(
 
   // The attacker's engine fills from landing the hit; the defender's fills from
   // eating it. One attack can feed both sides' resources — that is the point.
+  //
+  // The defender gains from damage *actually taken*, which is what makes Rage
+  // self-limiting: the tougher it makes you, the slower it fills.
   gainResource(attacker, attacker.resource?.rule.gainPerHitLanded ?? 0, at, events);
   gainResource(defender, (defender.resource?.rule.gainPerDamageTaken ?? 0) * damage, at, events);
 
@@ -115,6 +123,13 @@ function gainResource(
     current: resource.current,
     threshold: resource.threshold,
   });
+}
+
+/** Scales linearly with how full the resource is. Empty meter, no reduction. */
+function damageReductionOf(combatant: Combatant): number {
+  const resource = combatant.resource;
+  if (resource === null || resource.maxDamageReduction === 0) return 0;
+  return (resource.current / resource.threshold) * resource.maxDamageReduction;
 }
 
 function rollDamage(combatant: Combatant, rng: Rng): number {

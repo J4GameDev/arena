@@ -17,6 +17,7 @@ export function createHero(name: string, weapon: Weapon): Combatant {
       current: 0,
       threshold: weapon.threshold,
       empowerMultiplier: weapon.empowerMultiplier,
+      maxDamageReduction: weapon.maxDamageReduction,
     },
     nextAttackAt: 0,
   };

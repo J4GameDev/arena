@@ -66,6 +66,36 @@ describe('runFight', () => {
     }
   });
 
+  it('absorbs damage once Rage has started building', () => {
+    const result = runFight(createHero('Hero', GREATAXE), createMonster(STONE_SENTINEL), 5);
+
+    const absorbedSomething = result.events.some(
+      (event) => event.type === 'attack' && event.defender === 'Hero' && event.prevented > 0,
+    );
+
+    expect(absorbedSomething).toBe(true);
+  });
+
+  it('absorbs nothing for an archetype with no damage reduction', () => {
+    const result = runFight(createHero('Hero', TWIN_DAGGERS), createMonster(STONE_SENTINEL), 5);
+
+    for (const event of result.events) {
+      if (event.type === 'attack' && event.defender === 'Hero') {
+        expect(event.prevented).toBe(0);
+      }
+    }
+  });
+
+  it('always lets at least 1 damage through, however full the meter', () => {
+    const result = runFight(createHero('Hero', GREATAXE), createMonster(STONE_SENTINEL), 11);
+
+    for (const event of result.events) {
+      if (event.type === 'attack') {
+        expect(event.damage).toBeGreaterThanOrEqual(1);
+      }
+    }
+  });
+
   it('never reports negative health', () => {
     for (let seed = 0; seed < 20; seed += 1) {
       const result = runFight(createHero('Hero', TWIN_DAGGERS), gnoll(), seed);

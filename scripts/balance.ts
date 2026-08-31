@@ -1,0 +1,101 @@
+/**
+ * Run every weapon against every monster, many times, and report how it went.
+ *
+ *   npm run balance
+ *   npm run balance -- --runs 5000
+ *
+ * One fight is an anecdote. This is the tool that turns a hunch about a number
+ * into evidence, and it is why the simulation is a pure function.
+ */
+import { MONSTERS } from '../src/data/monsters.ts';
+import { WEAPONS } from '../src/data/weapons.ts';
+import { runFight } from '../src/sim/combat.ts';
+import { createHero, createMonster } from '../src/sim/combatants.ts';
+import type { CombatEvent, MonsterDefinition, Weapon } from '../src/sim/types.ts';
+
+const runsArgIndex = process.argv.indexOf('--runs');
+const RUNS = runsArgIndex === -1 ? 2000 : Number(process.argv[runsArgIndex + 1] ?? '2000');
+
+if (!Number.isFinite(RUNS) || RUNS < 1) {
+  console.error('--runs must be a positive number');
+  process.exit(1);
+}
+
+console.log(`${RUNS} fights per matchup\n`);
+console.log(
+  pad('Weapon', 12) +
+    pad('Monster', 17) +
+    pad('Win', 8) +
+    pad('Avg time', 10) +
+    pad('Big hits', 10) +
+    'Died with a full meter',
+);
+console.log('-'.repeat(80));
+
+for (const weapon of WEAPONS) {
+  for (const monster of MONSTERS) {
+    report(weapon, monster, sample(weapon, monster));
+  }
+}
+
+interface Sample {
+  readonly wins: number;
+  readonly totalSeconds: number;
+  readonly totalEmpowered: number;
+  readonly deathsAtFullMeter: number;
+}
+
+function sample(weapon: Weapon, monster: MonsterDefinition): Sample {
+  let wins = 0;
+  let totalSeconds = 0;
+  let totalEmpowered = 0;
+  let deathsAtFullMeter = 0;
+
+  for (let seed = 0; seed < RUNS; seed += 1) {
+    const hero = createHero(weapon.archetype, weapon);
+    const result = runFight(hero, createMonster(monster), seed);
+
+    if (result.winner === hero.name) wins += 1;
+    totalSeconds += result.durationSeconds;
+
+    for (const event of result.events) {
+      if (event.type === 'attack' && event.empowered && event.attacker === hero.name) {
+        totalEmpowered += 1;
+      }
+    }
+
+    if (result.winner !== hero.name && endedWithFullMeter(result.events, hero.name)) {
+      deathsAtFullMeter += 1;
+    }
+  }
+
+  return { wins, totalSeconds, totalEmpowered, deathsAtFullMeter };
+}
+
+/** A loss with a loaded meter is wasted potential — the thing we're hunting. */
+function endedWithFullMeter(events: readonly CombatEvent[], heroName: string): boolean {
+  for (let i = events.length - 1; i >= 0; i -= 1) {
+    const event = events[i];
+    if (event === undefined || event.type !== 'resource' || event.who !== heroName) continue;
+    return event.current >= event.threshold;
+  }
+  return false;
+}
+
+function report(weapon: Weapon, monster: MonsterDefinition, s: Sample): void {
+  const losses = RUNS - s.wins;
+  const wastedShare = losses === 0 ? '—' : `${s.deathsAtFullMeter} of ${losses} losses`;
+
+  console.log(
+    pad(weapon.archetype, 12) +
+      pad(monster.name, 17) +
+      pad(`${((s.wins / RUNS) * 100).toFixed(1)}%`, 8) +
+      pad(`${(s.totalSeconds / RUNS).toFixed(2)}s`, 10) +
+      pad((s.totalEmpowered / RUNS).toFixed(2), 10) +
+      wastedShare,
+  );
+}
+
+function pad(text: string, width: number): string {
+  return text.padEnd(width);
+}

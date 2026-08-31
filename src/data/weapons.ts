@@ -19,6 +19,9 @@ export const GREATAXE: Weapon = {
   resource: RAGE,
   threshold: 60, // 60 damage suffered before an empowered swing
   empowerMultiplier: 2.5,
+  // Toughens as Rage builds, then resets to fragile after the payoff. This is
+  // what stops a full meter from being wasted by the greataxe's slow swing.
+  maxDamageReduction: 0.4,
 };
 
 export const TWIN_DAGGERS: Weapon = {
@@ -30,6 +33,7 @@ export const TWIN_DAGGERS: Weapon = {
   resource: FOCUS,
   threshold: 100, // five landed hits
   empowerMultiplier: 2.0,
+  maxDamageReduction: 0, // the Duelist stays fragile by design
 };
 
 export const WEAPONS: readonly Weapon[] = [GREATAXE, TWIN_DAGGERS];

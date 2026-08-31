@@ -29,7 +29,8 @@ function formatEvent(event: CombatEvent): string {
     case 'attack': {
       const mark = event.empowered ? '**' : '  ';
       const health = `${event.defenderHealth}/${event.defenderMaxHealth}`;
-      return `${at} ${mark} ${event.attacker} hits ${event.defender} for ${event.damage} -> ${health}`;
+      const absorbed = event.prevented > 0 ? ` (${event.prevented} absorbed)` : '';
+      return `${at} ${mark} ${event.attacker} hits ${event.defender} for ${event.damage}${absorbed} -> ${health}`;
     }
 
     case 'resource':
