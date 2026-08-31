@@ -19,6 +19,27 @@ These are the tiebreakers. When a decision is ambiguous, the option that serves 
 3. **Decisions every 30–90 seconds.** Waiting is not gameplay. If a stretch of play has no choice in it, that stretch is a bug.
 4. **Legible numbers.** The player should be able to reason about why they won or lost. Prefer a readable system over a deep one.
 
+## Combat model (locked)
+
+**Attack-speed timeline.** Each combatant has a timer set by their attack speed; whoever's fills first swings. This is the axis that makes a greataxe build genuinely different from a dagger build rather than just slower.
+
+**The weapon is the class.** There is no class picker. A two-handed weapon makes you a berserker; daggers make you a duelist. The weapon sets your archetype and your resource. Finding a new weapon type is therefore a build pivot, not a stat upgrade.
+
+**Resources are generation rules, not bars.** What makes an archetype feel different is _how its resource fills_, and each rule relates to the timeline differently:
+
+| Weapon           | Resource | Builds from              | Wants                       |
+| ---------------- | -------- | ------------------------ | --------------------------- |
+| Two-handed       | Rage     | Taking damage            | The enemy swinging fast     |
+| Daggers          | Focus    | Hits landed              | Its own timer fast          |
+| Sword and shield | Resolve  | Being attacked, blocking | Long fights (not in v0.1)   |
+| Staff            | Mana     | Passive tick             | Neither timer (not in v0.1) |
+
+At threshold a resource spends itself automatically on an empowered attack. This is an auto-battler: decisions happen between fights, not during them.
+
+**Other slots modify the economy, not the numbers.** A ring that slows Rage decay; a cloak that converts overkill damage into Focus. The moment accessories become flat stat sticks, pillar one has quietly failed.
+
+v0.1 ships **two** archetypes, two-handed (Rage) and daggers (Focus), because they are opposites on the timeline. Two is the minimum that demonstrates the pillar; one demonstrates nothing.
+
 ## Tone and art direction
 
 High/heroic fantasy. Gleaming plate, cathedral light, dragons, archmages, big readable spell effects. Classic D&D energy played straight — not grim, not comedic.
@@ -117,6 +138,13 @@ Finished and deployed, not a prototype. Done means: someone can open a link, pla
 **Out (defer, do not build):** offline/idle progression · prestige · skill trees · multiple heroes · shops · currencies · meta-progression of any kind.
 
 Scope creep is the primary risk to this project. When a new idea arrives mid-build, write it down and keep going.
+
+## Parking lot
+
+Good ideas that are not v0.1. Written down so they stop taking up room.
+
+- **Gambit conditions.** Let the player set _when_ a resource spends: "only below 40% health," "only when the enemy is enraged." Turns spending into a second build axis on top of gear.
+- **Resolve and Mana archetypes** — sword-and-shield and staff, once Rage and Focus are proven.
 
 ## Notes
 

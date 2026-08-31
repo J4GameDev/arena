@@ -13,9 +13,11 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "check": "npm run typecheck && npm run format:check && npm test",
-    "prepare": "git config core.hooksPath .githooks || true"
+    "prepare": "git config core.hooksPath .githooks || true",
+    "fight": "node scripts/fight.ts"
   },
   "devDependencies": {
+    "@types/node": "^26.4.0",
     "prettier": "^3.9.6",
     "typescript": "~6.0.2",
     "vite": "^8.2.2",
