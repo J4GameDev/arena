@@ -54,6 +54,8 @@ Art is pixel art, generated via the **PixelLab MCP**. Keep prompts consistent: s
 - **Design decisions belong to the owner.** Balance numbers, monster gimmicks, item identities, what's fun — propose options and reasoning, don't just pick. Implementation details and architecture are fair game to decide.
 - When asked for a mechanic, prefer the smallest version that can be played and felt, then iterate from real feedback.
 - If a request would take more than a couple of files to implement, say so and propose a breakdown before starting.
+- **Run everything yourself.** Tests, scripts, balance runs — execute them and report the results here. Never hand back a command for the owner to run. The only exceptions are steps that genuinely cannot be delegated, such as browser sign-ins and OAuth grants; say plainly why.
+- **Explain every number in plain English.** The first time a value appears, say what it measures, what its maximum means, and which file sets it. "Rage 60/60" means nothing on its own. Assume no game-dev or programming vocabulary.
 
 ## Architecture
 
