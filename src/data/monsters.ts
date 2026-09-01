@@ -5,20 +5,25 @@ import type { MonsterDefinition } from '../sim/types.ts';
  * builds comfortable and some builds miserable, and `designRole` has to say
  * which — if you cannot write that line, the monster is not finished.
  *
- * The lever that actually matters here is *fight length*. Focus ramps on the
- * hero's own schedule, so a long fight feeds it repeatedly; Rage fills from
+ * Every creature starts from a real animal and a corruption band, never from a
+ * fantasy monster. See the escalation rule in CLAUDE.md.
+ *
+ * The lever that actually matters for balance is *fight length*. Focus ramps on
+ * the hero's own schedule, so a long fight feeds it repeatedly; Rage fills from
  * incoming damage, so a hard-hitting enemy feeds it in bursts.
  *
- * TUNING: first-pass guesses. Expect to move these a lot.
+ * TUNING: these numbers are tuned and verified over thousands of fights. The
+ * names and fiction changed after the world was settled; the numbers did not.
  */
 
-export const GNOLL_RAVAGER: MonsterDefinition = {
-  id: 'gnoll-ravager',
-  name: 'Gnoll Ravager',
+export const TURNED_BOAR: MonsterDefinition = {
+  id: 'turned-boar',
+  name: 'Turned Boar',
   maxHealth: 110,
-  // The low variance is load-bearing, not cosmetic. Predictable damage is what
-  // guarantees the player's meter fills before the Gnoll dies — at 0.25 it
-  // sometimes rolled low and the Berserker never saw Rage fire at all.
+  // The low variance is load-bearing twice over. Mechanically, predictable
+  // damage guarantees the player's meter fills before the boar dies. In the
+  // fiction it *is* the corruption: a real boar fights erratically, and this
+  // one attacks on a fixed interval, like something keeping time.
   attack: { damage: 9, attacksPerSecond: 1.2, variance: 0.1 },
   designRole:
     'The teacher. Always loses, but hits hard and steadily enough that every build ' +
@@ -26,14 +31,18 @@ export const GNOLL_RAVAGER: MonsterDefinition = {
     'Tuned for guaranteed demonstration, not for difficulty.',
 };
 
-export const STONE_SENTINEL: MonsterDefinition = {
-  id: 'stone-sentinel',
-  name: 'Stone Sentinel',
+export const STRAYED_HUNTER: MonsterDefinition = {
+  id: 'strayed-hunter',
+  name: 'Strayed Hunter',
   maxHealth: 200,
+  // Swollen and slow — far enough gone that the body has stopped being a
+  // person's. Rare enormous blows dump Rage in chunks, which is what makes
+  // this fight favour the greataxe.
   attack: { damage: 30, attacksPerSecond: 0.35, variance: 0.1 },
   designRole:
-    'Long fight, rare enormous hits. Each blow dumps Rage in a chunk, so the greataxe ' +
-    'empowers often; daggers must survive the grind to cash in their ramp.',
+    'The wall, and the warning. A hunter who went too far out and came back wrong. ' +
+    'Long fight, rare enormous hits: each blow dumps Rage in a chunk so the greataxe ' +
+    'empowers often, while the Assassin must survive the grind to cash in its ramp.',
 };
 
-export const MONSTERS: readonly MonsterDefinition[] = [GNOLL_RAVAGER, STONE_SENTINEL];
+export const MONSTERS: readonly MonsterDefinition[] = [TURNED_BOAR, STRAYED_HUNTER];
