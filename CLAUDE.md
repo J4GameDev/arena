@@ -60,9 +60,22 @@ v0.1 ships **two** archetypes, two-handed (Rage) and daggers (Focus), because th
 
 ## Tone and art direction
 
-High/heroic fantasy. Gleaming plate, cathedral light, dragons, archmages, big readable spell effects. Classic D&D energy played straight — not grim, not comedic.
+**Grounded, not heroic.** Leather, iron, wood, bone, worn tools. No archmages, no cathedrals, no gleaming plate, no spell effects. A hunter here looks like someone who works outdoors for a living, because that is what they are.
 
-Art is pixel art, generated via the **PixelLab MCP**. Keep prompts consistent: same palette family, same lighting direction, same sprite dimensions per category. Art direction drifts fast when assets are generated one at a time — when adding sprites, look at what already exists first.
+This is a deliberate reversal of an earlier call. The world is wildlife, frontier, and an unwinnable holding action, and grandeur fights all three. It also serves the horror: **corruption should be the only thing in a frame that looks wrong, which means everything else has to look right.** Stylised or fantastical baseline art gives the corruption nothing to be wrong against.
+
+**The escalation rule — this generates every creature in the game.** Corruption changes in kind with distance from the source, not just in degree:
+
+- **Near the bastion** — corruption is a _detail_. A recognisable animal with one thing off: too many joints, mismatched eyes, fur the wrong colour. The horror is that you can still tell what it used to be.
+- **Mid range** — the original species gets harder to read. Proportions wrong, growth where it should not be, movement that does not match the body.
+- **Deep** — barely biological. The creature is a scaffold for something else.
+- **At the source** — not biological at all. Not in v0.1; nobody has seen it.
+
+When designing any creature, first decide its band, then work outward from a real animal. Never start from a fantasy monster.
+
+**Palette.** Muted and natural near the bastion. As distance grows, colour goes wrong before shape does — a hue that does not occur in nature, arriving before the anatomy breaks.
+
+**Practical.** Art is pixel art via the **PixelLab MCP**. Keep the same palette family, lighting direction, and sprite dimensions within a category. Direction drifts fast when assets are generated one at a time, so look at what already exists before adding to it. Generations are a finite monthly budget — settle a look on cheap single sprites before committing to anything animated.
 
 ## Working agreement
 
