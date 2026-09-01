@@ -3,6 +3,8 @@
 > `arena` is a working title. Renaming is a change to `package.json`, `index.html`, and this file. Do it whenever the real name shows up.
 >
 > **Live:** https://arena-mu-coral.vercel.app — Vercel redeploys this automatically on every push to `main`.
+>
+> **Project hub:** https://app.notion.com/p/3cebb4f99a0781978c30c4bcfe3a80f0 — Notion page holding the world summary, current state, and the content-idea backlog.
 
 ## What this is
 
