@@ -38,7 +38,7 @@ These are the tiebreakers. When a decision is ambiguous, the option that serves 
 
 At threshold a resource spends itself automatically on an empowered attack. This is an auto-battler: decisions happen between fights, not during them.
 
-**Other slots modify the economy, not the numbers.** A ring that slows Rage decay; a cloak that converts overkill damage into Focus. The moment accessories become flat stat sticks, pillar one has quietly failed.
+**Other slots modify the economy, not the numbers.** A ring that makes the meter fill faster; a charm that keeps part of it instead of emptying on the payoff. The moment accessories become flat stat sticks, pillar one has quietly failed.
 
 **Leave headroom on the weapon for the items to matter.** A weapon's baseline for anything an accessory can also grant should be low. The Assassin's 10% evasion is deliberate: at 25% the weapon had already spent the entire budget and evasion accessories would have had nothing left to give. A stat the build cannot meaningfully move is not part of the build.
 
@@ -55,6 +55,8 @@ v0.1 ships **two** archetypes, two-handed (Rage) and daggers (Focus), because th
 **It cannot be beaten, only held back.** There is no win condition and everyone in the fiction knows it. This is what lets the game run forever without lying to the player.
 
 **The player is a hunter**, working out of one of the last bastions where clean wildlife survives. They hunt for two reasons that pull against each other: scarce materials, and holding the line. Clean creatures yield dependable materials and are the last of their kind — you are the one depleting them. Corrupted ones are dangerous and strange, and killing them is the only thing slowing the spread.
+
+**You choose a weapon once, at the very start, and every one after that has to be found.** That opening pick is the only identity the game hands out. Weapons come off people — a boar was never carrying a greataxe — so monsters record whether they were an animal or a person, and only people leave a weapon behind. Oswald leaves nothing: he yields rather than dies, and you do not loot your teacher.
 
 **The hero is anonymous by design.** No name, no class, no backstory — they are the weapon in their hand. That was a mechanical decision, and it happens to be exactly what a persistent shared world needs later. Do not write anything that makes the hero singular.
 
@@ -103,6 +105,7 @@ Sprite paths are passed _into_ the view, never stored on a Combatant. The simula
 - If a request would take more than a couple of files to implement, say so and propose a breakdown before starting.
 - **Run everything yourself.** Tests, scripts, balance runs — execute them and report the results here. Never hand back a command for the owner to run. The only exceptions are steps that genuinely cannot be delegated, such as browser sign-ins and OAuth grants; say plainly why.
 - **Explain every number in plain English.** The first time a value appears, say what it measures, what its maximum means, and which file sets it. "Rage 60/60" means nothing on its own. Assume no game-dev or programming vocabulary.
+- **Wrapping up means auditing this file line by line, not grepping it.** When asked to update everything, read CLAUDE.md top to bottom and check every claim against the code. Grep only finds words you already thought of — which is how a canvas battle scene that does not exist, an `assets/` folder that does not exist, and a handoff section insisting there was no game all survived a "sweep". Check specifically: the summary paragraph, every table, every named entity, every quoted number and test count, the architecture block, the parking lot (has anything shipped?), and the handoff. A north star that has rotted is worse than none, because it is believed.
 
 ## Architecture
 
@@ -112,10 +115,11 @@ Sprite paths are passed _into_ the view, never stored on a Combatant. The simula
 src/
   sim/     Pure game logic. Zero DOM, zero rendering, zero I/O. Deterministic.
   data/    Content as data — items, monsters, affixes. Adding content = editing here.
-  view/    Presentation. DOM/CSS for UI, canvas for the battle scene.
+  view/    Presentation. All DOM and CSS, including the battle scene.
   state/   Run state, persistence, save/load.
 tests/     Vitest. Primarily targets sim/.
-assets/    Source art (sprites, icons).
+scripts/   Balance harness, outlier hunter, single-fight runner.
+public/    Static assets served as-is. Sprites live in public/sprites/.
 ```
 
 Combat is a **pure function**: `(hero, monster, seed) => CombatEvent[]`. The view is a dumb playback layer that animates that event list. Consequences this buys, all of which matter:
@@ -137,6 +141,8 @@ Corollaries:
 - **Armour** (head, torso, legs, feet, hands) — defensive only. It keeps you standing. A leather vest has no business making you drain blood.
 - **Weapons** — offensive. The weapon's archetype and resource rule are what the weapon _is_ and are never affixes; offensive affixes roll on top.
 - **Trinkets** (two rings, necklace) — offensive, and the **only** source of direct resource affixes. They are made of corruption, which is why they get to break the rules armour obeys.
+
+**Two exceptions, both deliberate.** Hands may carry attack speed and damage despite being armour, because they are the only armour touching the weapon. Initiative is feet-only — one affix that comes from exactly one slot, which gives boots a reason to exist beyond weighting.
 
 **Direct versus indirect is the whole distinction.** Trinkets alone may carry affixes that _say_ "resource." Anything that affects a resource as a downstream consequence is normal and expected everywhere — attack speed accelerates Focus because Focus builds from hits landed, and that is one mechanic touching another, not a resource affix leaking onto gloves. The rule governs what an affix says, not what it ends up influencing.
 
@@ -197,7 +203,7 @@ The owner reads this code but does not write it. That makes **legibility of inte
 
 ## Stack
 
-TypeScript + Vite. No game engine — this genre is 80% inventory grids and tooltips, which DOM/CSS handles better than a canvas engine would. Battle scene gets a small canvas layer.
+TypeScript + Vite. No game engine — this genre is 80% inventory grids and tooltips, which DOM/CSS handles better than a canvas engine would. The battle scene is DOM too: bars, sprites and floating numbers did not need a canvas, and adding one should wait until something genuinely needs pixels.
 
 TypeScript runs in `strict` mode with `noUncheckedIndexedAccess`. Do not loosen these to make an error go away — the error is the point.
 
@@ -227,13 +233,16 @@ Good ideas that are not v0.1. Written down so they stop taking up room.
 - **Gambit conditions.** Let the player set _when_ a resource spends: "only below 40% health," "only when the enemy is enraged." Turns spending into a second build axis on top of gear.
 - **Resolve and Mana archetypes** — sword-and-shield and staff, once Rage and Focus are proven.
 - **Unavoidable attacks.** A monster property that ignores evasion entirely — "you cannot sidestep a mountain." Turns a boss into a puzzle that disables the thing you were relying on. Good fit for the Strayed Hunter when mid-tier monsters get designed.
-- **An evasion ceiling.** Once accessories can add evasion, stacking runs toward 100% and immortality. Needs either a hard cap or diminishing returns before the first evasion item ships.
+- **Conditional affixes.** Effects with a trigger — gain resource on evade, bonus damage while the meter is full, the first hit of a fight empowered. Agreed as a later pass after the flat affixes were proven; these are what players build _around_ rather than merely accumulate.
+- **Levels and class abilities.** Both will move every balance number, which is why gear is tuned to roughly-right rather than precisely. Levels need a job that gear does not already do, and abilities need to come from the weapon rather than a skill tree, or pillar one quietly dies.
 
 ## Where we left off
 
-**Built and tested:** the combat simulation (attack-speed timeline, Rage and Focus, crit on both sides, block, evasion, lifesteal, initiative, resource retention), two archetypes, three monsters, eight equipment slots, `equip()` applying 19 affix kinds, the fight log, and the balance harness. 35 tests.
+**It is playable.** Choose a weapon, hunt, watch the fight resolve, take the loot, wear it, go again. Progress saves to the browser.
 
-**Current balance**, measured over thousands of fights per matchup:
+**Built and tested — 52 tests:** the combat simulation (attack-speed timeline, Rage and Focus, crit on both sides, block, evasion, lifesteal, initiative, resource retention), two archetypes both reachable in game, three monsters, eight equipment slots, 19 affix kinds, weighted affix pools and the item roller, run state and saving, the fight view, and five sprites. Three harnesses: `npm run fight`, `npm run balance`, `npm run outliers`.
+
+**Balance, with a caveat that matters.** The table below comes from `npm run balance`, which equips the six _hand-authored_ items in `src/data/items.ts`. The game itself hands out **rolled** items, which are stronger — so these numbers describe a loadout no player will ever wear.
 
 |                   | Oswald | Turned Boar | Strayed Hunter |
 | ----------------- | ------ | ----------- | -------------- |
@@ -242,16 +251,20 @@ Good ideas that are not v0.1. Written down so they stop taking up room.
 | Assassin, bare    | 100%   | 99.6%       | 2.3%           |
 | Assassin, geared  | 100%   | 100%        | 78.5%          |
 
-**The open decision** is the affix weight table — which affixes are common, uncommon and rare per slot. A draft exists in the session transcript and legs is the weakest row in it. Nothing gets built from it until the owner has been through it.
+Against **rolled** loadouts (`npm run outliers`), the Berserker's median sits at 92% and the Assassin's at 71%, both above the 80% target, with an enormous spread — Berserker 33% to 100%, Assassin 16% to 100%.
 
-**Then, in order:** the roller that generates items from weights; magnitude ranges derived empirically rather than guessed, targeting a full set worth roughly a third more power; and the outlier hunter that samples thousands of random loadouts to find the rolls that break a gate.
+**Next, in order:**
+
+1. **Retune magnitudes against the 90th percentile, not the median.** A player keeps good drops and bins bad ones, so they converge on the top of the distribution rather than the middle. Tuning the median tunes a loadout nobody wears.
+2. **Close the archetype gap.** The Berserker beats the Assassin at every magnitude scale tested. That is a per-affix problem; global scaling cannot fix it.
+3. **Replace `src/data/items.ts`** — six hand-authored items predating the affix framework, still propping up the balance harness.
+4. **Content between the Turned Boar and the Strayed Hunter.** There is currently a tutorial, one animal, and a wall.
 
 **Known and deliberately unfixed:**
 
-- **Wasted Rage meters.** 629 of 830 geared Berserker losses to the boss end holding a full meter. Might be good — a berserker dying mid-fury — or might read as stolen. Judge it once there is a UI showing the bar.
+- **Wasted Rage meters.** 629 of 830 geared Berserker losses to the boss end holding a full meter. Now judgeable, since the UI shows the bar — decide whether it reads as a berserker dying mid-fury or as a payoff being stolen.
 - **The Turned Boar wants a retune.** It inherited Oswald's teaching numbers and no longer needs guarantees.
-- **`src/data/items.ts` is stale.** Six hand-authored items predating the affix framework. They get replaced wholesale when the roller lands.
-- **There is no game yet.** Nothing drops loot, there is no UI, and nothing saves. The deployed link still says "Scaffolding only."
+- **No levels, no abilities, no item icons, no background art.** Items in the pack are still text.
 
 ## Notes
 
