@@ -1,9 +1,14 @@
 import type { Item } from '../sim/types.ts';
 
 /**
- * Every item carries exactly three affixes: the first is the slot's guaranteed
- * identity, the other two are the interesting part. When a generator exists it
- * will roll the last two; these are hand-authored stand-ins with the same shape.
+ * Every item carries exactly three rolled affixes. No slot has a guaranteed
+ * primary — see the gear framework in CLAUDE.md. These six are hand-authored
+ * stand-ins with the shape a generator will produce.
+ *
+ * STALE: these predate the affix framework and still draw from the old nine-kind
+ * pool with slot primaries baked in. They work, and the balance numbers quoted
+ * elsewhere are measured against them, but they get replaced wholesale when the
+ * roller lands.
  *
  * The pool leans toward affixes *every* build can use but values differently.
  * Attack speed is the model case — a Focus build converts it straight into more

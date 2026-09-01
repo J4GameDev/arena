@@ -206,7 +206,7 @@ npm run check      # typecheck + format check + tests — run before every commi
 
 Finished and deployed, not a prototype. Done means: someone can open a link, play it, and lose.
 
-**In:** one hero · ~3 equipment slots · ~6 items · ~5 gimmick monsters · deterministic combat sim · battle view with HP bars and damage numbers · loot → equip → fight loop · localStorage save.
+**In:** one hero · 8 equipment slots · a rolled item pool · ~5 monsters plus a gate boss · deterministic combat sim · battle view with HP bars and damage numbers · loot → equip → fight loop · localStorage save.
 
 **Out (defer, do not build):** offline/idle progression · prestige · skill trees · multiple heroes · shops · currencies · meta-progression of any kind.
 
@@ -218,8 +218,32 @@ Good ideas that are not v0.1. Written down so they stop taking up room.
 
 - **Gambit conditions.** Let the player set _when_ a resource spends: "only below 40% health," "only when the enemy is enraged." Turns spending into a second build axis on top of gear.
 - **Resolve and Mana archetypes** — sword-and-shield and staff, once Rage and Focus are proven.
-- **Unavoidable attacks.** A monster property that ignores evasion entirely — "you cannot sidestep a mountain." Turns a boss into a puzzle that disables the thing you were relying on. Good fit for the Sentinel when mid-tier monsters get designed.
+- **Unavoidable attacks.** A monster property that ignores evasion entirely — "you cannot sidestep a mountain." Turns a boss into a puzzle that disables the thing you were relying on. Good fit for the Strayed Hunter when mid-tier monsters get designed.
 - **An evasion ceiling.** Once accessories can add evasion, stacking runs toward 100% and immortality. Needs either a hard cap or diminishing returns before the first evasion item ships.
+
+## Where we left off
+
+**Built and tested:** the combat simulation (attack-speed timeline, Rage and Focus, crit on both sides, block, evasion, lifesteal, initiative, resource retention), two archetypes, three monsters, eight equipment slots, `equip()` applying 19 affix kinds, the fight log, and the balance harness. 35 tests.
+
+**Current balance**, measured over thousands of fights per matchup:
+
+|                   | Oswald | Turned Boar | Strayed Hunter |
+| ----------------- | ------ | ----------- | -------------- |
+| Berserker, bare   | 100%   | 100%        | 0.5%           |
+| Berserker, geared | 100%   | 100%        | 79.3%          |
+| Assassin, bare    | 100%   | 99.6%       | 2.3%           |
+| Assassin, geared  | 100%   | 100%        | 78.5%          |
+
+**The open decision** is the affix weight table — which affixes are common, uncommon and rare per slot. A draft exists in the session transcript and legs is the weakest row in it. Nothing gets built from it until the owner has been through it.
+
+**Then, in order:** the roller that generates items from weights; magnitude ranges derived empirically rather than guessed, targeting a full set worth roughly a third more power; and the outlier hunter that samples thousands of random loadouts to find the rolls that break a gate.
+
+**Known and deliberately unfixed:**
+
+- **Wasted Rage meters.** 629 of 830 geared Berserker losses to the boss end holding a full meter. Might be good — a berserker dying mid-fury — or might read as stolen. Judge it once there is a UI showing the bar.
+- **The Turned Boar wants a retune.** It inherited Oswald's teaching numbers and no longer needs guarantees.
+- **`src/data/items.ts` is stale.** Six hand-authored items predating the affix framework. They get replaced wholesale when the roller lands.
+- **There is no game yet.** Nothing drops loot, there is no UI, and nothing saves. The deployed link still says "Scaffolding only."
 
 ## Notes
 

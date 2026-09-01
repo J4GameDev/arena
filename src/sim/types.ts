@@ -86,9 +86,10 @@ export interface Item {
   readonly name: string;
   readonly slot: Slot;
   /**
-   * Three affixes: the first is the slot's guaranteed identity, the rest are
-   * rolled. Modelled as a list rather than fixed fields so that a generator can
-   * produce these later without rewriting every item in the game.
+   * Three rolled affixes. No slot has a guaranteed primary — slots are
+   * thematically *weighted*, never forced, so equipment never steers a player
+   * toward a build. Modelled as a list rather than fixed fields so a generator
+   * can produce these without rewriting every item in the game.
    */
   readonly modifiers: readonly Modifier[];
 }
@@ -135,7 +136,7 @@ export interface AttackProfile {
 export interface Weapon {
   readonly id: string;
   readonly name: string;
-  /** Player-facing archetype label: "Berserker", "Duelist". */
+  /** Player-facing archetype label: "Berserker", "Assassin". */
   readonly archetype: string;
   readonly attack: AttackProfile;
   readonly resource: ResourceRule;
