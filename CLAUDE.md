@@ -118,6 +118,22 @@ Corollaries:
 - `sim/` must not import from `view/` or `state/`. If it needs to, the design is wrong.
 - Content goes in `data/` as plain objects. If adding a monster requires writing new logic in `sim/`, consider whether the gimmick can be expressed as data instead — but don't contort the design to avoid code.
 
+## Gear framework
+
+**Three categories, three jobs.**
+
+- **Armour** (head, torso, legs, feet, hands) — defensive only. It keeps you standing. A leather vest has no business making you drain blood.
+- **Weapons** — offensive. The weapon's archetype and resource rule are what the weapon _is_ and are never affixes; offensive affixes roll on top.
+- **Trinkets** (two rings, necklace) — offensive, and the **only** source of direct resource affixes. They are made of corruption, which is why they get to break the rules armour obeys.
+
+**Direct versus indirect is the whole distinction.** Trinkets alone may carry affixes that _say_ "resource." Anything that affects a resource as a downstream consequence is normal and expected everywhere — attack speed accelerates Focus because Focus builds from hits landed, and that is one mechanic touching another, not a resource affix leaking onto gloves. The rule governs what an affix says, not what it ends up influencing.
+
+**No guaranteed primary affix on any slot.** Slots are thematically _weighted_, never forced. A player should never be steered toward a build by their equipment.
+
+**Weighting has real zeros, and they follow from the framework.** Lifesteal cannot appear on boots — not because it is unlikely, but because it is not what boots are. Zeros that come from a principle are ones a player accepts instantly; arbitrary ones just read as bad luck.
+
+**Parked:** corrupted armour and weapons that deliberately break these restraints. Tainted gear that grants what its category should not is a natural late-game hook and fits the clean-versus-tainted material split. Not a v0.1 concern, and the framework above is the baseline it would deviate _from_.
+
 ## Progression and tuning targets
 
 **The loop, repeated per corruption band:** grind the band's regular enemies for gear, then use that gear to beat the band's boss, which opens the next band. The grind has to be long enough to matter and short enough not to bore.
