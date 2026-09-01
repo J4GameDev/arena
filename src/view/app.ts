@@ -23,6 +23,9 @@ import {
 } from '../state/run.ts';
 import { loadRun, saveRun } from '../state/storage.ts';
 import { playFight } from './fight-view.ts';
+
+/** Sprites live in public/sprites and are looked up by id. */
+const spriteFor = (id: string): string => `/sprites/${id}.png`;
 import { formatModifier, isBeneficial } from './format.ts';
 
 /**
@@ -68,7 +71,10 @@ export function start(mount: HTMLElement): void {
     stage.className = 'stage';
     mount.append(stage);
 
-    await playFight(stage, you, foe, result);
+    await playFight(stage, you, foe, result, {
+      hero: spriteFor(run.weaponId),
+      foe: spriteFor(definition.id),
+    });
 
     const won = result.winner === you.name;
     let next = advanceDropSeed(run);
@@ -145,6 +151,7 @@ export function start(mount: HTMLElement): void {
 
       <section class="panel">
         <h2>You</h2>
+        <img class="portrait large" src="${spriteFor(run.weaponId)}" alt="" onerror="this.remove()" />
         <ul class="stats">
           ${stat('Health', String(you.maxHealth))}
           ${stat('Damage', String(Math.round(you.attack.damage)))}

@@ -510,3 +510,25 @@ button.ghost:hover {
 .item.found.weapon {
   border-color: var(--rust);
 }
+
+/* --- Sprites --- */
+
+.portrait {
+  image-rendering: pixelated;
+  width: 96px;
+  height: 96px;
+  justify-self: center;
+  /* Grounds the figure so it does not float against a flat panel. */
+  filter: drop-shadow(0 3px 0 rgba(0, 0, 0, 0.45));
+}
+
+.portrait.large {
+  width: 128px;
+  height: 128px;
+  justify-self: start;
+  margin-bottom: 0.75rem;
+}
+
+.side.foe .portrait {
+  transform: scaleX(-1);
+}

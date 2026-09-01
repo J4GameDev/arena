@@ -25,17 +25,27 @@ interface Side {
   readonly maxHealth: number;
 }
 
+/**
+ * Sprite paths are passed in rather than read off the combatants. The
+ * simulation has no idea art exists and should keep it that way.
+ */
+export interface FightArt {
+  readonly hero: string;
+  readonly foe: string;
+}
+
 export function playFight(
   mount: HTMLElement,
   hero: Combatant,
   monster: Combatant,
   result: FightResult,
+  art: FightArt,
 ): Promise<void> {
   mount.innerHTML = `
     <div class="fight">
       <div class="combatants">
-        ${sideMarkup('hero', hero)}
-        ${sideMarkup('foe', monster)}
+        ${sideMarkup('hero', hero, art.hero)}
+        ${sideMarkup('foe', monster, art.foe)}
       </div>
       <ol class="log" aria-live="polite"></ol>
       <button class="skip" type="button">Skip</button>
@@ -143,7 +153,7 @@ function apply(event: CombatEvent, sides: Map<string, Side>, log: HTMLOListEleme
   }
 }
 
-function sideMarkup(kind: 'hero' | 'foe', combatant: Combatant): string {
+function sideMarkup(kind: 'hero' | 'foe', combatant: Combatant, sprite: string): string {
   const meter =
     combatant.resource === null
       ? ''
@@ -152,6 +162,7 @@ function sideMarkup(kind: 'hero' | 'foe', combatant: Combatant): string {
 
   return `
     <div class="side ${kind}">
+      <img class="portrait" src="${escape(sprite)}" alt="" onerror="this.remove()" />
       <p class="side-name">${escape(combatant.name)}</p>
       <div class="bar health"><span class="fill"></span></div>
       <p class="health-text">${combatant.health}/${combatant.maxHealth}</p>
@@ -189,8 +200,13 @@ function setMeter(side: Side, current: number, threshold: number, kind: string):
   side.root.classList.toggle('charged', share >= 1);
 }
 
-/** Fans successive numbers out so a flurry of hits does not stack into a smudge. */
-const FLOATER_OFFSETS = [0, 1.4, -1.2, 2.6, -2.4, 0.8];
+/**
+ * Fans successive numbers out so a flurry of hits does not stack into a smudge.
+ *
+ * All inward: the offset is added to `right`, so a negative value pushes the
+ * number off the edge of the card, where it gets clipped.
+ */
+const FLOATER_OFFSETS = [0, 1.2, 2.4, 0.6, 1.8, 3];
 let floaterIndex = 0;
 
 /** Long enough for the 900ms animation, short enough to never look stuck. */
