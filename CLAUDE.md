@@ -242,23 +242,26 @@ Good ideas that are not v0.1. Written down so they stop taking up room.
 
 **Built and tested — 52 tests:** the combat simulation (attack-speed timeline, Rage and Focus, crit on both sides, block, evasion, lifesteal, initiative, resource retention), two archetypes both reachable in game, three monsters, eight equipment slots, 19 affix kinds, weighted affix pools and the item roller, run state and saving, the fight view, and five sprites. Three harnesses: `npm run fight`, `npm run balance`, `npm run outliers`.
 
-**Balance, with a caveat that matters.** The table below comes from `npm run balance`, which equips the six _hand-authored_ items in `src/data/items.ts`. The game itself hands out **rolled** items, which are stronger — so these numbers describe a loadout no player will ever wear.
+**Balance, against the gear the game actually drops.** `npm run balance` rolls real loadouts rather than equipping a fixed set, and reports geared results as a distribution. **Read p90, not the median** — a player keeps good drops and bins bad ones, so they converge on the top of the distribution. The median describes a loadout nobody keeps.
 
-|                   | Oswald | Turned Boar | Strayed Hunter |
-| ----------------- | ------ | ----------- | -------------- |
-| Berserker, bare   | 100%   | 100%        | 0.5%           |
-| Berserker, geared | 100%   | 100%        | 79.3%          |
-| Assassin, bare    | 100%   | 99.6%       | 2.3%           |
-| Assassin, geared  | 100%   | 100%        | 78.5%          |
+| Weapon    | Monster        | Bare  | Geared p50 | Geared p90 | Big hits bare (fewest) |
+| --------- | -------------- | ----- | ---------- | ---------- | ---------------------- |
+| Berserker | Oswald         | 100%  | 100%       | 100%       | 1                      |
+| Berserker | Turned Boar    | 100%  | 100%       | 100%       | 1                      |
+| Berserker | Strayed Hunter | 0.7%  | 89.3%      | **99.3%**  | 1                      |
+| Assassin  | Oswald         | 100%  | 100%       | 100%       | 2                      |
+| Assassin  | Turned Boar    | 99.8% | 100%       | 100%       | 2                      |
+| Assassin  | Strayed Hunter | 2.5%  | 62.0%      | **97.3%**  | 2                      |
 
-Against **rolled** loadouts (`npm run outliers`), the Berserker's median sits at 92% and the Assassin's at 71%, both above the 80% target, with an enormous spread — Berserker 33% to 100%, Assassin 16% to 100%.
+The gate target is p90 near 80%. Both archetypes sit at 97-99%, so **gear is roughly twice as strong as it should be**. Bare is correctly hopeless and the teaching guarantee still holds.
+
+**The archetype gap is consistency, not ceiling.** At the median the Berserker is far ahead (89.3% against 62.0%), but at p90 they are within two points. The Assassin is not weaker — it is more gear-dependent, which suits a fragile build needing the right kit. Worth keeping rather than flattening.
 
 **Next, in order:**
 
-1. **Retune magnitudes against the 90th percentile, not the median.** A player keeps good drops and bins bad ones, so they converge on the top of the distribution rather than the middle. Tuning the median tunes a loadout nobody wears.
-2. **Close the archetype gap.** The Berserker beats the Assassin at every magnitude scale tested. That is a per-affix problem; global scaling cannot fix it.
-3. **Replace `src/data/items.ts`** — six hand-authored items predating the affix framework, still propping up the balance harness.
-4. **Content between the Turned Boar and the Strayed Hunter.** There is currently a tutorial, one animal, and a wall.
+1. **Halve the affix magnitudes again**, targeting p90 near 80% against the gate rather than the 97-99% they reach now.
+2. **Content between the Turned Boar and the Strayed Hunter.** There is currently a tutorial, one animal, and a wall.
+3. **Item icons and a fight background.** The pack is still text.
 
 **Known and deliberately unfixed:**
 
