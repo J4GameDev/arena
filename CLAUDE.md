@@ -105,7 +105,14 @@ Sprite paths are passed _into_ the view, never stored on a Combatant. The simula
 - If a request would take more than a couple of files to implement, say so and propose a breakdown before starting.
 - **Run everything yourself.** Tests, scripts, balance runs — execute them and report the results here. Never hand back a command for the owner to run. The only exceptions are steps that genuinely cannot be delegated, such as browser sign-ins and OAuth grants; say plainly why.
 - **Explain every number in plain English.** The first time a value appears, say what it measures, what its maximum means, and which file sets it. "Rage 60/60" means nothing on its own. Assume no game-dev or programming vocabulary.
-- **Wrapping up means auditing this file line by line, not grepping it.** When asked to update everything, read CLAUDE.md top to bottom and check every claim against the code. Grep only finds words you already thought of — which is how a canvas battle scene that does not exist, an `assets/` folder that does not exist, and a handoff section insisting there was no game all survived a "sweep". Check specifically: the summary paragraph, every table, every named entity, every quoted number and test count, the architecture block, the parking lot (has anything shipped?), and the handoff. A north star that has rotted is worse than none, because it is believed.
+- **Wrap up every session without being asked.** This is a standing instruction, not a request the owner repeats. When a session ends, do all of the following:
+
+  1. **Audit this file line by line — read it, do not grep it.** Grep only finds words you already thought of, which is how a canvas battle scene that never existed, an `assets/` folder that never existed, a reference to an `items.ts` that had been deleted, and a handoff section insisting there was no game all survived a "sweep". Check specifically: the summary paragraph, every table, every named entity, every quoted number and test count, the architecture block, the code conventions (they cite real files), the parking lot (has anything on it shipped?), and the handoff section. A north star that has rotted is worse than none, because it is believed.
+  2. **Commit and push everything.** Pushing to `main` is what deploys Vercel, so an unpushed commit means the live build is stale.
+  3. **Verify the live build actually loads** and is the current version. A green deploy is not proof.
+  4. **Update the Notion hub** — current state, decisions made, open questions, what is next.
+  5. **Add this session's content ideas to Notion.** Findings, bugs with a good story, reversals, anything postable. This is a deliverable of every session, not a bonus.
+  6. **Update memory** if the session produced durable feedback or preferences.
 
 ## Architecture
 
@@ -114,7 +121,7 @@ Sprite paths are passed _into_ the view, never stored on a Combatant. The simula
 ```
 src/
   sim/     Pure game logic. Zero DOM, zero rendering, zero I/O. Deterministic.
-  data/    Content as data — items, monsters, affixes. Adding content = editing here.
+  data/    Content as data — monsters, weapons, affix pools and magnitudes.
   view/    Presentation. All DOM and CSS, including the battle scene.
   state/   Run state, persistence, save/load.
 tests/     Vitest. Primarily targets sim/.
@@ -161,10 +168,10 @@ Corollaries:
 **Bosses are gates, and they are tuned as gates.** The target for a band boss:
 
 - **Bare: near 0%.** Not a hard fight, an impossible one. This is what forces the grind.
-- **Fully geared: roughly 80-85%.** You win most attempts and occasionally lose. Never 100%.
-- **Both archetypes within about 5 points of each other.** Different routes, same odds.
+- **Geared at p90: roughly 80%.** Read the 90th percentile, never the median. A player keeps good drops and bins bad ones, so they converge on the top of the distribution — tuning the median tunes a loadout nobody keeps.
+- **Both archetypes within about 5 points of each other at p90.** Different routes, same ceiling. A gap at the _median_ is fine and even characterful: it means one archetype is more gear-dependent than the other.
 
-That spread is wide on purpose. Gear being a modest stat change _and_ the difference between 0% and 85% is not a contradiction: the fight is tuned around having it.
+That spread is wide on purpose. Gear being a modest stat change _and_ the difference between 0% and 80% is not a contradiction: the fight is tuned around having it.
 
 **Slow weapons have breakpoints, fast weapons do not.** The Berserker's win rate against the boss falls from 87% to 29% over twenty points of boss health, because twenty health can mean one more swing, which costs 1.5 seconds and another blow taken. The Assassin barely notices the same change. Keep this — it means greataxe builds care about damage thresholds in a way dagger builds never will. It also means retuning a boss's health is far more dangerous than it looks.
 
@@ -191,7 +198,7 @@ The owner reads this code but does not write it. That makes **legibility of inte
 
 **Data**
 
-- `data/` files should read like a design spreadsheet. Plain objects, one entry per line group, aligned and scannable. The owner should be able to open `items.ts`, change a `damage: 12` to `damage: 14`, and see the effect without touching logic.
+- `data/` files should read like a design spreadsheet. Plain objects, one entry per line group, aligned and scannable. The owner should be able to open `monsters.ts`, change a `damage: 38` to `damage: 34`, and see the effect without touching logic.
 - Content entries get a short comment naming their _design role_ — what build this exists to enable, or what it's meant to counter.
 
 **Types**
