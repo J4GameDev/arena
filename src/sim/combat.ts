@@ -7,6 +7,12 @@ import type { Combatant, CombatEvent, FightResult } from './types.ts';
  */
 const FIGHT_TIMEOUT_SECONDS = 120;
 
+/** How much a blocked hit is reduced by. Blocking is partial but reliable. */
+export const BLOCK_REDUCTION = 0.5;
+
+/** Ceiling on stacked percentage reduction, so no build becomes untouchable. */
+export const MAX_PERCENT_REDUCTION = 0.8;
+
 /**
  * Resolve a whole fight.
  *
@@ -27,8 +33,9 @@ export function runFight(
     { type: 'fight-start', at: 0, hero: hero.name, monster: monster.name },
   ];
 
-  hero.nextAttackAt = secondsPerAttack(hero);
-  monster.nextAttackAt = secondsPerAttack(monster);
+  // Initiative eats into the opening wind-up, so it decides who swings first.
+  hero.nextAttackAt = secondsPerAttack(hero) * (1 - clamp(hero.initiative, 0, 0.9));
+  monster.nextAttackAt = secondsPerAttack(monster) * (1 - clamp(monster.initiative, 0, 0.9));
 
   let clock = 0;
   while (hero.health > 0 && monster.health > 0 && clock < FIGHT_TIMEOUT_SECONDS) {
@@ -62,8 +69,8 @@ function resolveAttack(
   rng: Rng,
   events: CombatEvent[],
 ): void {
-  // Short-circuit so a defender with no evasion consumes no randomness — that
-  // keeps non-evasive matchups reproducible as evasion is tuned.
+  // Short-circuits keep a defender with no evasion from consuming randomness,
+  // so tuning one stat does not reshuffle every unrelated matchup.
   if (defender.evasion > 0 && rng.chance(defender.evasion)) {
     events.push({ type: 'evade', at, attacker: attacker.name, defender: defender.name });
     return;
@@ -73,30 +80,55 @@ function resolveAttack(
   const empowered = resource !== null && resource.current >= resource.threshold;
 
   let rawDamage = rollDamage(attacker, rng);
+
   if (empowered && resource !== null) {
     rawDamage = Math.round(rawDamage * resource.empowerMultiplier);
-    resource.current = 0;
+    resource.current = Math.round(resource.threshold * clamp(resource.retention, 0, 0.95));
   }
 
-  // Flat reduction first, then percentage. That ordering is what makes flat
-  // reduction shine against many small hits and near-worthless against one huge
-  // one — the property that gives armour slots opposite matchup profiles.
-  //
-  // Always at least 1 through, so no combination of items can make you immortal.
-  const afterFlat = Math.max(0, rawDamage - defender.flatDamageReduction);
-  const damage = Math.max(1, Math.round(afterFlat * (1 - damageReductionOf(defender))));
-  const prevented = rawDamage - damage;
+  // Crit stacks on top of an empowered hit. Deliberately explosive — the peak
+  // is the point, and the balance harness exists to catch it going too far.
+  const critChance = attacker.critChance - defender.critResistance;
+  const critical = critChance > 0 && rng.chance(critChance);
+  if (critical) {
+    rawDamage = Math.round(rawDamage * attacker.critMultiplier);
+  }
 
-  defender.health = Math.max(0, defender.health - damage);
+  // Flat first, then percentage. That ordering is what makes flat reduction
+  // shine against many small hits and near-worthless against one huge one.
+  const afterFlat = Math.max(0, rawDamage - defender.flatDamageReduction);
+  const percent = Math.min(
+    MAX_PERCENT_REDUCTION,
+    defender.percentDamageReduction + resourceReductionOf(defender),
+  );
+  let damage = afterFlat * (1 - percent);
+
+  const blocked = defender.blockChance > 0 && rng.chance(defender.blockChance);
+  if (blocked) damage *= 1 - BLOCK_REDUCTION;
+
+  // Always at least 1 through, so no combination of items can make you immortal.
+  const dealt = Math.max(1, Math.round(damage));
+  const prevented = Math.max(0, rawDamage - dealt);
+
+  defender.health = Math.max(0, defender.health - dealt);
+
+  const healed =
+    attacker.lifesteal > 0
+      ? Math.min(Math.round(dealt * attacker.lifesteal), attacker.maxHealth - attacker.health)
+      : 0;
+  attacker.health += healed;
 
   events.push({
     type: 'attack',
     at,
     attacker: attacker.name,
     defender: defender.name,
-    damage,
+    damage: dealt,
     prevented,
     empowered,
+    critical,
+    blocked,
+    healed,
     defenderHealth: defender.health,
     defenderMaxHealth: defender.maxHealth,
   });
@@ -140,7 +172,7 @@ function gainResource(
 }
 
 /** Scales linearly with how full the resource is. Empty meter, no reduction. */
-function damageReductionOf(combatant: Combatant): number {
+function resourceReductionOf(combatant: Combatant): number {
   const resource = combatant.resource;
   if (resource === null || resource.maxDamageReduction === 0) return 0;
   return (resource.current / resource.threshold) * resource.maxDamageReduction;
@@ -154,6 +186,10 @@ function rollDamage(combatant: Combatant, rng: Rng): number {
 
 function secondsPerAttack(combatant: Combatant): number {
   return 1 / combatant.attack.attacksPerSecond;
+}
+
+function clamp(value: number, low: number, high: number): number {
+  return Math.min(high, Math.max(low, value));
 }
 
 /** Deep enough for a Combatant — resource is the only nested mutable part. */

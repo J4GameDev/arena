@@ -24,22 +24,49 @@ export type Slot = 'head' | 'torso' | 'legs' | 'feet' | 'hands' | 'ring' | 'neck
  * are the minority on purpose: they make good chase items and bad common ones.
  */
 export type ModifierKind =
+  // --- Defensive: every armour slot ---
   /** Flat health added to the hero's maximum. */
   | 'maxHealth'
-  /** Flat damage added to every swing. */
-  | 'damage'
-  /** Multiplier on attack rate. 0.1 means 10% faster. */
-  | 'attackSpeed'
+  /** Multiplier on maximum health. 0.1 means 10% more. */
+  | 'healthPercent'
   /** Flat damage removed from every hit taken, applied before any percentage. */
   | 'flatDamageReduction'
+  /** Fraction removed from every hit taken, applied after the flat reduction. */
+  | 'percentDamageReduction'
   /** Added to evasion chance as a fraction. 0.05 means 5 percentage points. */
   | 'evasion'
-  /** Added to damage variance. Negative tightens the spread. */
+  /** Subtracted from an attacker's crit chance. A helmet protects your skull. */
+  | 'critResistance'
+  /** Chance for a hit to be blocked, taking BLOCK_REDUCTION less damage. */
+  | 'blockChance'
+
+  // --- Feet only ---
+  /** Fraction of your first attack timer already elapsed when a fight starts. */
+  | 'initiative'
+
+  // --- Offensive: weapons and trinkets, plus hands by exception ---
+  /** Flat damage added to every swing. */
+  | 'damage'
+  /** Multiplier on damage. 0.1 means 10% more. */
+  | 'damagePercent'
+  /** Multiplier on attack rate. 0.1 means 10% faster. */
+  | 'attackSpeed'
+  /** Added to your own damage variance. Negative tightens your spread. */
   | 'damageVariance'
+  /** Added to the chance a hit is critical. */
+  | 'critChance'
+  /** Added to the critical damage multiplier. */
+  | 'critMultiplier'
+  /** Fraction of damage dealt returned as health. */
+  | 'lifesteal'
+
+  // --- Resource: trinkets only ---
   /** Multiplier on how fast the resource fills. 0.2 means 20% faster. */
   | 'resourceGain'
   /** Multiplier on the resource threshold. Negative means it fills sooner. */
   | 'resourceThreshold'
+  /** Fraction of the meter kept instead of emptied when the payoff is spent. */
+  | 'resourceRetention'
   /** Added to the payoff multiplier on an empowered attack. */
   | 'empowerMultiplier';
 
@@ -79,6 +106,8 @@ export interface ResourceState {
   readonly threshold: number;
   /** Damage multiplier on the attack that spends a full resource. */
   readonly empowerMultiplier: number;
+  /** Fraction of the meter kept when the payoff is spent. 0 empties it. */
+  readonly retention: number;
   /**
    * Damage reduction at a full meter, scaling linearly from empty. 0.4 means a
    * full meter absorbs 40% of incoming damage.
@@ -121,6 +150,11 @@ export interface MonsterDefinition {
   readonly name: string;
   readonly maxHealth: number;
   readonly attack: AttackProfile;
+  /**
+   * Chance this monster lands a critical hit. Monsters must be able to crit or
+   * the critResistance affix protects against nothing.
+   */
+  readonly critChance: number;
   /** One line on what this monster is meant to punish. See pillar two. */
   readonly designRole: string;
 }
@@ -130,10 +164,28 @@ export interface Combatant {
   readonly maxHealth: number;
   health: number;
   readonly attack: AttackProfile;
+  // --- Defence ---
   /** Chance to avoid an incoming attack outright, 0 to 1. */
   readonly evasion: number;
   /** Flat damage removed from every hit taken, before any percentage reduction. */
   readonly flatDamageReduction: number;
+  /** Fraction removed after the flat reduction, stacking with Rage's reduction. */
+  readonly percentDamageReduction: number;
+  /** Chance a hit is blocked, taking BLOCK_REDUCTION less damage. */
+  readonly blockChance: number;
+  /** Subtracted from an attacker's crit chance. */
+  readonly critResistance: number;
+
+  // --- Offence ---
+  /** Chance a hit is critical. Heroes start at zero — crit is entirely gear. */
+  readonly critChance: number;
+  /** Damage multiplier on a critical hit. Stacks with the empower multiplier. */
+  readonly critMultiplier: number;
+  /** Fraction of damage dealt returned to this combatant as health. */
+  readonly lifesteal: number;
+  /** Fraction of the opening attack timer already elapsed. Feet only. */
+  readonly initiative: number;
+
   /** null for combatants with no resource engine — every monster, for now. */
   resource: ResourceState | null;
   /** Seconds on the fight clock when this combatant next swings. */
@@ -158,9 +210,13 @@ export type CombatEvent =
       readonly defender: string;
       /** Damage actually dealt, after the defender's reduction. */
       readonly damage: number;
-      /** Damage the defender's resource absorbed. 0 when nothing was reduced. */
+      /** Damage the defender's armour and resource absorbed. 0 if nothing was. */
       readonly prevented: number;
       readonly empowered: boolean;
+      readonly critical: boolean;
+      readonly blocked: boolean;
+      /** Health the attacker drained back. 0 without lifesteal. */
+      readonly healed: number;
       readonly defenderHealth: number;
       readonly defenderMaxHealth: number;
     }

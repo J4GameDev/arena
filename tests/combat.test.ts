@@ -97,13 +97,15 @@ describe('runFight', () => {
   });
 
   it('lets an evasive hero avoid attacks entirely', () => {
-    const result = runFight(createHero('Hero', TWIN_DAGGERS), createMonster(STRAYED_HUNTER), 5);
-
-    const evaded = result.events.some(
-      (event) => event.type === 'evade' && event.defender === 'Hero',
+    // Scan seeds rather than trusting one: any change to what consumes
+    // randomness shifts the stream, and a magic seed would break for no reason.
+    const evadedSomewhere = Array.from({ length: 30 }, (_unused, seed) =>
+      runFight(createHero('Hero', TWIN_DAGGERS), createMonster(STRAYED_HUNTER), seed),
+    ).some((result) =>
+      result.events.some((event) => event.type === 'evade' && event.defender === 'Hero'),
     );
 
-    expect(evaded).toBe(true);
+    expect(evadedSomewhere).toBe(true);
   });
 
   it('never lets a non-evasive hero evade', () => {

@@ -12,6 +12,10 @@ import type { MonsterDefinition } from '../sim/types.ts';
  * the hero's own schedule, so a long fight feeds it repeatedly; Rage fills from
  * incoming damage, so a hard-hitting enemy feeds it in bursts.
  *
+ * Every monster crits. 5% is the baseline — enough that the critResistance
+ * affix protects against something real, low enough that a lucky roll does not
+ * decide fights on its own.
+ *
  * TUNING: these numbers are tuned and verified over thousands of fights. The
  * names and fiction changed after the world was settled; the numbers did not.
  */
@@ -25,6 +29,7 @@ export const TURNED_BOAR: MonsterDefinition = {
   // fiction it *is* the corruption: a real boar fights erratically, and this
   // one attacks on a fixed interval, like something keeping time.
   attack: { damage: 9, attacksPerSecond: 1.2, variance: 0.1 },
+  critChance: 0.05,
   designRole:
     'The teacher. Always loses, but hits hard and steadily enough that every build ' +
     'reaches a full meter and sees its payoff at least once before the fight ends. ' +
@@ -39,6 +44,7 @@ export const STRAYED_HUNTER: MonsterDefinition = {
   // person's. Rare enormous blows dump Rage in chunks, which is what makes
   // this fight favour the greataxe.
   attack: { damage: 38, attacksPerSecond: 0.35, variance: 0.1 },
+  critChance: 0.05,
   designRole:
     'The wall, and the warning. A hunter who went too far out and came back wrong. ' +
     'Long fight, rare enormous hits: each blow dumps Rage in a chunk so the greataxe ' +

@@ -27,10 +27,18 @@ function formatEvent(event: CombatEvent): string {
       return `${at} FIGHT  ${event.hero} vs ${event.monster}`;
 
     case 'attack': {
-      const mark = event.empowered ? '**' : '  ';
+      const tags = [
+        event.empowered ? 'EMPOWERED' : null,
+        event.critical ? 'CRIT' : null,
+        event.blocked ? 'BLOCKED' : null,
+      ].filter((tag) => tag !== null);
+
+      const banner = tags.length > 0 ? `${tags.join(' ')} ` : '';
       const health = `${event.defenderHealth}/${event.defenderMaxHealth}`;
       const absorbed = event.prevented > 0 ? ` (${event.prevented} absorbed)` : '';
-      return `${at} ${mark} ${event.attacker} hits ${event.defender} for ${event.damage}${absorbed} -> ${health}`;
+      const drained = event.healed > 0 ? ` [+${event.healed} drained]` : '';
+
+      return `${at} ${banner}${event.attacker} hits ${event.defender} for ${event.damage}${absorbed}${drained} -> ${health}`;
     }
 
     case 'resource':
