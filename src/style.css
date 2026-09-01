@@ -438,3 +438,75 @@ button.ghost:hover {
     grid-template-columns: 1fr;
   }
 }
+
+/* --- Opening choice --- */
+
+.choices {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+  gap: 0.9rem;
+}
+
+.choice {
+  display: grid;
+  gap: 0.35rem;
+  text-align: left;
+  padding: 1.1rem 1.2rem 1.25rem;
+  background: #17120f;
+  color: var(--bone);
+  border-color: var(--ink-edge);
+  align-content: start;
+}
+
+.choice:hover:not(:disabled) {
+  background: #1f1813;
+  border-color: var(--gold);
+}
+
+.choice-name {
+  font-size: 1.2rem;
+}
+
+.choice-archetype {
+  font-size: 0.7rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--bone-faint);
+}
+
+.choice-pitch {
+  font-size: 0.9rem;
+  color: var(--bone-dim);
+  line-height: 1.45;
+}
+
+.aside {
+  margin: 1rem 0 0;
+  color: var(--bone-faint);
+  font-style: italic;
+  font-size: 0.9rem;
+}
+
+/* --- Weapons in hand --- */
+
+.pitch {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--bone-dim);
+  line-height: 1.4;
+}
+
+.item.in-hand {
+  border-color: var(--gold);
+}
+
+.in-hand-note {
+  font-size: 0.75rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--gold);
+}
+
+.item.found.weapon {
+  border-color: var(--rust);
+}

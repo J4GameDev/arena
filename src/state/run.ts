@@ -24,7 +24,14 @@ export function slotOf(position: EquipPosition): Slot {
 }
 
 export interface RunState {
+  /** The weapon currently in hand. This is the player's class. */
   readonly weaponId: string;
+  /**
+   * Every weapon the player has. One is chosen at the very start; the rest have
+   * to be found, because picking up a new weapon type is a whole build pivot
+   * and handing those out freely would make the choice meaningless.
+   */
+  readonly ownedWeaponIds: readonly string[];
   /** A position with no entry is empty. */
   readonly equipped: Partial<Record<EquipPosition, Item>>;
   readonly backpack: readonly Item[];
@@ -35,7 +42,27 @@ export interface RunState {
 }
 
 export function newRun(weaponId: string): RunState {
-  return { weaponId, equipped: {}, backpack: [], defeated: [], dropSeed: 1 };
+  return {
+    weaponId,
+    ownedWeaponIds: [weaponId],
+    equipped: {},
+    backpack: [],
+    defeated: [],
+    dropSeed: 1,
+  };
+}
+
+export function acquireWeapon(state: RunState, weaponId: string): RunState {
+  if (state.ownedWeaponIds.includes(weaponId)) return state;
+  return { ...state, ownedWeaponIds: [...state.ownedWeaponIds, weaponId] };
+}
+
+/** Switching weapons switches archetype. Gear stays; everything else changes. */
+export function wieldWeapon(state: RunState, weaponId: string): RunState {
+  if (!state.ownedWeaponIds.includes(weaponId)) {
+    throw new Error(`Cannot wield a weapon you do not have: ${weaponId}`);
+  }
+  return { ...state, weaponId };
 }
 
 /** Everything currently worn, in position order. */

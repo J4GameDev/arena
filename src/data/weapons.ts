@@ -14,6 +14,9 @@ export const GREATAXE: Weapon = {
   id: 'greataxe',
   name: 'Rusted Greataxe',
   archetype: 'Berserker',
+  pitch:
+    'Slow, enormous swings. Rage fills from the blows aimed at you and hardens you as ' +
+    'it climbs, then spends itself on one devastating hit. You stand and take it.',
   // Slow and enormous. Loses the opening exchange, wins the long one.
   attack: { damage: 22, attacksPerSecond: 0.65, variance: 0.2 },
   resource: RAGE,
@@ -29,6 +32,9 @@ export const TWIN_DAGGERS: Weapon = {
   id: 'twin-daggers',
   name: 'Twin Daggers',
   archetype: 'Assassin',
+  pitch:
+    'Fast, light strikes. Focus fills from every hit you land and spends on a finisher. ' +
+    'You slip blows rather than absorb them, and you break easily when you do not.',
   // Fast and small. Ramps to a payoff on its own schedule, ignoring the enemy.
   attack: { damage: 6, attacksPerSecond: 2.0, variance: 0.15 },
   resource: FOCUS,

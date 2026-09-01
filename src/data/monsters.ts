@@ -31,6 +31,7 @@ export const OSWALD: MonsterDefinition = {
   // He is not trying to kill you. A teacher pulls his strikes.
   critChance: 0,
   defeat: 'yields',
+  lineage: 'person',
   designRole:
     'The teacher. An experienced hunter sparring with you, first to yield. He always ' +
     'loses, but hits hard and steadily enough that every build reaches a full meter ' +
@@ -45,6 +46,7 @@ export const TURNED_BOAR: MonsterDefinition = {
   attack: { damage: 9, attacksPerSecond: 1.2, variance: 0.25 },
   critChance: 0.05,
   defeat: 'dies',
+  lineage: 'animal',
   designRole:
     'The first thing you hunt that hunts back. Band one — recognisably a boar, with ' +
     'something wrong about it. Inherited the teaching numbers and no longer needs ' +
@@ -61,6 +63,7 @@ export const STRAYED_HUNTER: MonsterDefinition = {
   attack: { damage: 38, attacksPerSecond: 0.35, variance: 0.1 },
   critChance: 0.05,
   defeat: 'dies',
+  lineage: 'person',
   designRole:
     'The wall, and the warning. A hunter who went too far out and came back wrong — ' +
     'the same figure you sparred with in the opening, at the other end of the road. ' +

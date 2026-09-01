@@ -10,6 +10,12 @@
  */
 export type DefeatStyle = 'dies' | 'yields';
 
+/**
+ * What a creature used to be. Animals yield materials; people were carrying
+ * gear when they turned, so only they can leave a weapon behind.
+ */
+export type Lineage = 'animal' | 'person';
+
 /** Which resource engine a weapon runs on. The weapon is the class. */
 export type ResourceKind = 'rage' | 'focus';
 
@@ -138,6 +144,8 @@ export interface Weapon {
   readonly name: string;
   /** Player-facing archetype label: "Berserker", "Assassin". */
   readonly archetype: string;
+  /** How this weapon plays, in the player's language. Shown when choosing. */
+  readonly pitch: string;
   readonly attack: AttackProfile;
   readonly resource: ResourceRule;
   readonly threshold: number;
@@ -163,6 +171,7 @@ export interface MonsterDefinition {
    */
   readonly critChance: number;
   readonly defeat: DefeatStyle;
+  readonly lineage: Lineage;
   /** One line on what this monster is meant to punish. See pillar two. */
   readonly designRole: string;
 }
