@@ -144,7 +144,7 @@ function resolveAttack(
   gainResource(defender, (defender.resource?.rule.gainPerDamageTaken ?? 0) * rawDamage, at, events);
 
   if (defender.health <= 0) {
-    events.push({ type: 'death', at, who: defender.name });
+    events.push({ type: 'defeat', at, who: defender.name, style: defender.defeat });
   }
 }
 

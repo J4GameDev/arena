@@ -4,6 +4,12 @@
  * Nothing in here knows the DOM exists. See CLAUDE.md for why that matters.
  */
 
+/**
+ * How a combatant's defeat reads. A sparring partner yields; a corrupted thing
+ * dies. The simulation carries this so the view never has to guess.
+ */
+export type DefeatStyle = 'dies' | 'yields';
+
 /** Which resource engine a weapon runs on. The weapon is the class. */
 export type ResourceKind = 'rage' | 'focus';
 
@@ -155,6 +161,7 @@ export interface MonsterDefinition {
    * the critResistance affix protects against nothing.
    */
   readonly critChance: number;
+  readonly defeat: DefeatStyle;
   /** One line on what this monster is meant to punish. See pillar two. */
   readonly designRole: string;
 }
@@ -185,6 +192,8 @@ export interface Combatant {
   readonly lifesteal: number;
   /** Fraction of the opening attack timer already elapsed. Feet only. */
   readonly initiative: number;
+
+  readonly defeat: DefeatStyle;
 
   /** null for combatants with no resource engine — every monster, for now. */
   resource: ResourceState | null;
@@ -234,7 +243,12 @@ export type CombatEvent =
       readonly attacker: string;
       readonly defender: string;
     }
-  | { readonly type: 'death'; readonly at: number; readonly who: string }
+  | {
+      readonly type: 'defeat';
+      readonly at: number;
+      readonly who: string;
+      readonly style: DefeatStyle;
+    }
   | { readonly type: 'timeout'; readonly at: number };
 
 export interface FightResult {

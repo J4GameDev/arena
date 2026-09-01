@@ -12,28 +12,43 @@ import type { MonsterDefinition } from '../sim/types.ts';
  * the hero's own schedule, so a long fight feeds it repeatedly; Rage fills from
  * incoming damage, so a hard-hitting enemy feeds it in bursts.
  *
- * Every monster crits. 5% is the baseline — enough that the critResistance
- * affix protects against something real, low enough that a lucky roll does not
- * decide fights on its own.
+ * Everything corrupted crits at 5% — enough that the critResistance affix
+ * protects against something real, low enough that a lucky roll does not decide
+ * fights on its own.
  *
- * TUNING: these numbers are tuned and verified over thousands of fights. The
- * names and fiction changed after the world was settled; the numbers did not.
+ * TUNING: these numbers are verified over thousands of fights. The fiction has
+ * changed underneath them more than once; the numbers have not.
  */
+
+export const OSWALD: MonsterDefinition = {
+  id: 'oswald',
+  name: 'Oswald',
+  maxHealth: 110,
+  // Both numbers here are motivated by who he is rather than excused. He hits
+  // in a controlled, repeatable rhythm because he is disciplined, and that
+  // predictability is what guarantees your meter fills before the spar ends.
+  attack: { damage: 9, attacksPerSecond: 1.2, variance: 0.1 },
+  // He is not trying to kill you. A teacher pulls his strikes.
+  critChance: 0,
+  defeat: 'yields',
+  designRole:
+    'The teacher. An experienced hunter sparring with you, first to yield. He always ' +
+    'loses, but hits hard and steadily enough that every build reaches a full meter ' +
+    'and sees its payoff at least once. Tuned for guaranteed demonstration, not for ' +
+    'difficulty — and never for lethality.',
+};
 
 export const TURNED_BOAR: MonsterDefinition = {
   id: 'turned-boar',
   name: 'Turned Boar',
   maxHealth: 110,
-  // The low variance is load-bearing twice over. Mechanically, predictable
-  // damage guarantees the player's meter fills before the boar dies. In the
-  // fiction it *is* the corruption: a real boar fights erratically, and this
-  // one attacks on a fixed interval, like something keeping time.
-  attack: { damage: 9, attacksPerSecond: 1.2, variance: 0.1 },
+  attack: { damage: 9, attacksPerSecond: 1.2, variance: 0.25 },
   critChance: 0.05,
+  defeat: 'dies',
   designRole:
-    'The teacher. Always loses, but hits hard and steadily enough that every build ' +
-    'reaches a full meter and sees its payoff at least once before the fight ends. ' +
-    'Tuned for guaranteed demonstration, not for difficulty.',
+    'The first thing you hunt that hunts back. Band one — recognisably a boar, with ' +
+    'something wrong about it. Inherited the teaching numbers and no longer needs ' +
+    'them; wants a retune now that Oswald carries the tutorial.',
 };
 
 export const STRAYED_HUNTER: MonsterDefinition = {
@@ -45,12 +60,13 @@ export const STRAYED_HUNTER: MonsterDefinition = {
   // this fight favour the greataxe.
   attack: { damage: 38, attacksPerSecond: 0.35, variance: 0.1 },
   critChance: 0.05,
+  defeat: 'dies',
   designRole:
-    'The wall, and the warning. A hunter who went too far out and came back wrong. ' +
+    'The wall, and the warning. A hunter who went too far out and came back wrong — ' +
+    'the same figure you sparred with in the opening, at the other end of the road. ' +
     'Long fight, rare enormous hits: each blow dumps Rage in a chunk so the greataxe ' +
     'empowers often, while the Assassin must survive the grind to cash in its ramp. ' +
-    'Tuned as a gate: unwinnable bare, roughly 85% winnable in a full set. You are ' +
-    'meant to grind gear before attempting it.',
+    'Tuned as a gate: unwinnable bare, roughly 80% winnable in a full set.',
 };
 
-export const MONSTERS: readonly MonsterDefinition[] = [TURNED_BOAR, STRAYED_HUNTER];
+export const MONSTERS: readonly MonsterDefinition[] = [OSWALD, TURNED_BOAR, STRAYED_HUNTER];

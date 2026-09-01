@@ -16,7 +16,7 @@ import { formatFight } from '../src/sim/log.ts';
 const args = parseArgs(process.argv.slice(2));
 
 const weaponId = args.get('weapon') ?? 'greataxe';
-const monsterId = args.get('monster') ?? 'gnoll-ravager';
+const monsterId = args.get('monster') ?? 'oswald';
 const seed = Number(args.get('seed') ?? '1');
 
 const weapon = WEAPONS.find((candidate) => candidate.id === weaponId);

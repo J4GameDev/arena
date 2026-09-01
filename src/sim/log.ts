@@ -47,8 +47,8 @@ function formatEvent(event: CombatEvent): string {
     case 'evade':
       return `${at}     ${event.defender} evades ${event.attacker}`;
 
-    case 'death':
-      return `${at}     ${event.who} dies`;
+    case 'defeat':
+      return `${at}     ${event.who} ${event.style === 'yields' ? 'yields' : 'dies'}`;
 
     case 'timeout':
       return `${at} TIMEOUT`;

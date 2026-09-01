@@ -39,7 +39,7 @@ describe('runFight', () => {
     for (let seed = 0; seed < 50; seed += 1) {
       const result = runFight(hero(), boar(), seed);
       const ended = result.events.some(
-        (event) => event.type === 'death' || event.type === 'timeout',
+        (event) => event.type === 'defeat' || event.type === 'timeout',
       );
       expect(ended).toBe(true);
     }

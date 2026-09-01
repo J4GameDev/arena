@@ -33,6 +33,8 @@ export function createHero(name: string, weapon: Weapon, items: readonly Item[] 
     lifesteal: 0,
     initiative: 0,
 
+    defeat: 'dies',
+
     resource: {
       rule: weapon.resource,
       current: 0,
@@ -64,6 +66,8 @@ export function createMonster(definition: MonsterDefinition): Combatant {
     critMultiplier: BASE_CRIT_MULTIPLIER,
     lifesteal: 0,
     initiative: 0,
+
+    defeat: definition.defeat,
 
     resource: null,
     nextAttackAt: 0,
