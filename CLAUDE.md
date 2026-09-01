@@ -118,6 +118,22 @@ Corollaries:
 - `sim/` must not import from `view/` or `state/`. If it needs to, the design is wrong.
 - Content goes in `data/` as plain objects. If adding a monster requires writing new logic in `sim/`, consider whether the gimmick can be expressed as data instead — but don't contort the design to avoid code.
 
+## Progression and tuning targets
+
+**The loop, repeated per corruption band:** grind the band's regular enemies for gear, then use that gear to beat the band's boss, which opens the next band. The grind has to be long enough to matter and short enough not to bore.
+
+**Gear is an edge, not a doubling.** A full set is worth roughly a third more power. Affix magnitudes are deliberately small — eight slots of three affixes add up fast, and an item that looks exciting alone will be broken in a set.
+
+**Bosses are gates, and they are tuned as gates.** The target for a band boss:
+
+- **Bare: near 0%.** Not a hard fight, an impossible one. This is what forces the grind.
+- **Fully geared: roughly 80-85%.** You win most attempts and occasionally lose. Never 100%.
+- **Both archetypes within about 5 points of each other.** Different routes, same odds.
+
+That spread is wide on purpose. Gear being a modest stat change _and_ the difference between 0% and 85% is not a contradiction: the fight is tuned around having it.
+
+**Slow weapons have breakpoints, fast weapons do not.** The Berserker's win rate against the boss falls from 87% to 29% over twenty points of boss health, because twenty health can mean one more swing, which costs 1.5 seconds and another blow taken. The Assassin barely notices the same change. Keep this — it means greataxe builds care about damage thresholds in a way dagger builds never will. It also means retuning a boss's health is far more dangerous than it looks.
+
 ## Code conventions
 
 The owner reads this code but does not write it. That makes **legibility of intent** the goal — not brevity, not cleverness, not idiomatic-TypeScript points. Someone should be able to open any file and follow what the game is doing.

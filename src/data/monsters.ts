@@ -38,11 +38,13 @@ export const STRAYED_HUNTER: MonsterDefinition = {
   // Swollen and slow — far enough gone that the body has stopped being a
   // person's. Rare enormous blows dump Rage in chunks, which is what makes
   // this fight favour the greataxe.
-  attack: { damage: 30, attacksPerSecond: 0.35, variance: 0.1 },
+  attack: { damage: 38, attacksPerSecond: 0.35, variance: 0.1 },
   designRole:
     'The wall, and the warning. A hunter who went too far out and came back wrong. ' +
     'Long fight, rare enormous hits: each blow dumps Rage in a chunk so the greataxe ' +
-    'empowers often, while the Assassin must survive the grind to cash in its ramp.',
+    'empowers often, while the Assassin must survive the grind to cash in its ramp. ' +
+    'Tuned as a gate: unwinnable bare, roughly 85% winnable in a full set. You are ' +
+    'meant to grind gear before attempting it.',
 };
 
 export const MONSTERS: readonly MonsterDefinition[] = [TURNED_BOAR, STRAYED_HUNTER];

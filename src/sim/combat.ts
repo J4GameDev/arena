@@ -104,10 +104,12 @@ function resolveAttack(
   // The attacker's engine fills from landing the hit; the defender's fills from
   // eating it. One attack can feed both sides' resources — that is the point.
   //
-  // The defender gains from damage *actually taken*, which is what makes Rage
-  // self-limiting: the tougher it makes you, the slower it fills.
+  // The defender gains from the damage that was *swung at them*, not from what
+  // got through. This matters: gaining from damage actually taken meant every
+  // defensive item slowed your own engine, and a fully armoured Berserker never
+  // filled Rage at all. Rage answers what is coming at you, not how much it hurt.
   gainResource(attacker, attacker.resource?.rule.gainPerHitLanded ?? 0, at, events);
-  gainResource(defender, (defender.resource?.rule.gainPerDamageTaken ?? 0) * damage, at, events);
+  gainResource(defender, (defender.resource?.rule.gainPerDamageTaken ?? 0) * rawDamage, at, events);
 
   if (defender.health <= 0) {
     events.push({ type: 'death', at, who: defender.name });

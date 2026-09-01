@@ -13,7 +13,10 @@ import type { Item } from '../sim/types.ts';
  * ARMOUR comes from what you hunt. TRINKETS come from the corruption, which is
  * why they are the ones that bend the rules.
  *
- * TUNING: first pass, not yet run through the balance harness. Expect movement.
+ * TUNING: gear is an *edge*, not a doubling. Magnitudes here are deliberately
+ * small — a full set should be worth roughly a third more, and the fights it
+ * gates should be tuned around having it. If an affix here looks unexciting on
+ * its own, that is correct: eight slots of three affixes add up fast.
  */
 
 // --- Armour -----------------------------------------------------------------
@@ -24,8 +27,8 @@ export const BOARHIDE_JERKIN: Item = {
   slot: 'torso',
   modifiers: [
     { kind: 'flatDamageReduction', value: 2 }, // slot identity: the plate absorbs
-    { kind: 'maxHealth', value: 12 },
-    { kind: 'attackSpeed', value: -0.05 }, // it is heavy; armour should cost something
+    { kind: 'maxHealth', value: 6 },
+    { kind: 'attackSpeed', value: -0.03 }, // it is heavy; armour should cost something
   ],
 };
 
@@ -34,9 +37,9 @@ export const TRAIL_BOOTS: Item = {
   name: 'Worn Trail Boots',
   slot: 'feet',
   modifiers: [
-    { kind: 'evasion', value: 0.06 }, // slot identity: footwork
-    { kind: 'attackSpeed', value: 0.08 },
-    { kind: 'maxHealth', value: 5 },
+    { kind: 'evasion', value: 0.03 }, // slot identity: footwork
+    { kind: 'attackSpeed', value: 0.03 },
+    { kind: 'maxHealth', value: 3 },
   ],
 };
 
@@ -45,9 +48,9 @@ export const TANNERS_GLOVES: Item = {
   name: "Tanner's Gloves",
   slot: 'hands',
   modifiers: [
-    { kind: 'attackSpeed', value: 0.12 }, // slot identity: grip and handling
+    { kind: 'attackSpeed', value: 0.05 }, // slot identity: grip and handling
     { kind: 'damage', value: 1 },
-    { kind: 'resourceGain', value: 0.05 },
+    { kind: 'resourceGain', value: 0.03 },
   ],
 };
 
@@ -56,9 +59,9 @@ export const HUNTERS_HOOD: Item = {
   name: "Hunter's Hood",
   slot: 'head',
   modifiers: [
-    { kind: 'damageVariance', value: -0.05 }, // slot identity: you read the attack
-    { kind: 'evasion', value: 0.03 },
-    { kind: 'maxHealth', value: 6 },
+    { kind: 'damageVariance', value: -0.03 }, // slot identity: you read the attack
+    { kind: 'evasion', value: 0.02 },
+    { kind: 'maxHealth', value: 3 },
   ],
 };
 
@@ -69,9 +72,9 @@ export const FUSED_BONE_RING: Item = {
   name: 'Fused Bone Ring',
   slot: 'ring',
   modifiers: [
-    { kind: 'resourceGain', value: 0.2 }, // slot identity: bends the economy
-    { kind: 'maxHealth', value: -8 }, // tainted gear costs you something
-    { kind: 'damage', value: 2 },
+    { kind: 'resourceGain', value: 0.08 }, // slot identity: bends the economy
+    { kind: 'maxHealth', value: -4 }, // tainted gear costs you something
+    { kind: 'damage', value: 1 },
   ],
 };
 
@@ -80,10 +83,10 @@ export const TOOTH_ON_A_CORD: Item = {
   name: 'Tooth on a Cord',
   slot: 'necklace',
   modifiers: [
-    // Slot identity: amplify the archetype. A slower, heavier payoff — worth far
-    // more to a Berserker's single enormous hit than to an Assassin's four.
-    { kind: 'empowerMultiplier', value: 0.6 },
-    { kind: 'resourceThreshold', value: 0.15 },
+    // Slot identity: amplify the archetype. A heavier payoff is worth more to a
+    // Berserker's single enormous hit than to an Assassin's four smaller ones.
+    { kind: 'empowerMultiplier', value: 0.2 },
+    { kind: 'resourceThreshold', value: 0.05 },
     { kind: 'flatDamageReduction', value: 1 },
   ],
 };
