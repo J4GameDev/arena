@@ -8,7 +8,7 @@
 
 ## What this is
 
-A **high fantasy auto-battler** for the web. You assemble a hero's build from gear, magic, and relics; combat resolves automatically; you take the loot and re-equip. The interesting decisions happen between fights, not during them.
+A **grounded fantasy auto-battler** for the web. You hunt out of one of the last clean bastions, assemble a build from what you bring back, and combat resolves automatically. The interesting decisions happen between fights, not during them.
 
 Idle/offline progression is a **planned month-two layer**, not part of v0.1. Do not build toward it yet.
 
@@ -25,13 +25,13 @@ These are the tiebreakers. When a decision is ambiguous, the option that serves 
 
 **Attack-speed timeline.** Each combatant has a timer set by their attack speed; whoever's fills first swings. This is the axis that makes a greataxe build genuinely different from a dagger build rather than just slower.
 
-**The weapon is the class.** There is no class picker. A two-handed weapon makes you a berserker; daggers make you a duelist. The weapon sets your archetype and your resource. Finding a new weapon type is therefore a build pivot, not a stat upgrade.
+**The weapon is the class.** There is no class picker. A two-handed weapon makes you a Berserker; daggers make you an Assassin. The weapon sets your archetype and your resource. Finding a new weapon type is therefore a build pivot, not a stat upgrade.
 
 **Resources are generation rules, not bars.** What makes an archetype feel different is _how its resource fills_, and each rule relates to the timeline differently:
 
 | Weapon           | Resource | Builds from              | Wants                       |
 | ---------------- | -------- | ------------------------ | --------------------------- |
-| Two-handed       | Rage     | Taking damage            | The enemy swinging fast     |
+| Two-handed       | Rage     | Damage swung at you      | The enemy swinging fast     |
 | Daggers          | Focus    | Hits landed              | Its own timer fast          |
 | Sword and shield | Resolve  | Being attacked, blocking | Long fights (not in v0.1)   |
 | Staff            | Mana     | Passive tick             | Neither timer (not in v0.1) |
