@@ -42,6 +42,22 @@ At threshold a resource spends itself automatically on an empowered attack. This
 
 v0.1 ships **two** archetypes, two-handed (Rage) and daggers (Focus), because they are opposites on the timeline. Two is the minimum that demonstrates the pillar; one demonstrates nothing.
 
+## The world
+
+**A source of corruption exists somewhere, and it has been leaking outward for a long time.** Everything in this world is a function of distance to it.
+
+**Corruption escalates in kind, not just degree.** Near the bastion it is a detail — an animal with too many joints, fur the wrong colour, eyes that do not match. Further out the original creature gets harder to read. Near the source it stops being biological at all. This single gradient is the difficulty curve, the art direction, and the reward curve at once. Almost everything hangs off it.
+
+**Something is behind it, and it does not know we exist.** We are incidental to whatever this is. It never speaks, never taunts, never notices. Treat that as a hard rule: no antagonist dialogue, no villain reveal, no monologue, ever. The world explains itself through what the player finds, or it does not explain itself.
+
+**It cannot be beaten, only held back.** There is no win condition and everyone in the fiction knows it. This is what lets the game run forever without lying to the player.
+
+**The player is a hunter**, working out of one of the last bastions where clean wildlife survives. They hunt for two reasons that pull against each other: scarce materials, and holding the line. Clean creatures yield dependable materials and are the last of their kind — you are the one depleting them. Corrupted ones are dangerous and strange, and killing them is the only thing slowing the spread.
+
+**The hero is anonymous by design.** No name, no class, no backstory — they are the weapon in their hand. That was a mechanical decision, and it happens to be exactly what a persistent shared world needs later. Do not write anything that makes the hero singular.
+
+**Implied, not yet decided:** regions are corruption bands ordered by distance from the source. Clean and tainted materials are the natural item axis — dependable versus stronger-but-wrong.
+
 ## Tone and art direction
 
 High/heroic fantasy. Gleaming plate, cathedral light, dragons, archmages, big readable spell effects. Classic D&D energy played straight — not grim, not comedic.
