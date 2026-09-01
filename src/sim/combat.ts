@@ -78,8 +78,13 @@ function resolveAttack(
     resource.current = 0;
   }
 
+  // Flat reduction first, then percentage. That ordering is what makes flat
+  // reduction shine against many small hits and near-worthless against one huge
+  // one — the property that gives armour slots opposite matchup profiles.
+  //
   // Always at least 1 through, so no combination of items can make you immortal.
-  const damage = Math.max(1, Math.round(rawDamage * (1 - damageReductionOf(defender))));
+  const afterFlat = Math.max(0, rawDamage - defender.flatDamageReduction);
+  const damage = Math.max(1, Math.round(afterFlat * (1 - damageReductionOf(defender))));
   const prevented = rawDamage - damage;
 
   defender.health = Math.max(0, defender.health - damage);

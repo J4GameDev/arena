@@ -7,11 +7,18 @@
  * One fight is an anecdote. This is the tool that turns a hunch about a number
  * into evidence, and it is why the simulation is a pure function.
  */
+import { ITEMS } from '../src/data/items.ts';
 import { MONSTERS } from '../src/data/monsters.ts';
 import { WEAPONS } from '../src/data/weapons.ts';
 import { runFight } from '../src/sim/combat.ts';
 import { createHero, createMonster } from '../src/sim/combatants.ts';
-import type { CombatEvent, MonsterDefinition, Weapon } from '../src/sim/types.ts';
+import type { CombatEvent, Item, MonsterDefinition, Weapon } from '../src/sim/types.ts';
+
+/** Bare versus fully kitted, so the value of a loadout is visible per archetype. */
+const LOADOUTS: readonly { label: string; items: readonly Item[] }[] = [
+  { label: 'bare', items: [] },
+  { label: 'geared', items: ITEMS },
+];
 
 const runsArgIndex = process.argv.indexOf('--runs');
 const RUNS = runsArgIndex === -1 ? 2000 : Number(process.argv[runsArgIndex + 1] ?? '2000');
@@ -24,6 +31,7 @@ if (!Number.isFinite(RUNS) || RUNS < 1) {
 console.log(`${RUNS} fights per matchup\n`);
 console.log(
   pad('Weapon', 12) +
+    pad('Kit', 8) +
     pad('Monster', 17) +
     pad('Win', 8) +
     pad('Avg time', 10) +
@@ -35,8 +43,10 @@ console.log(
 console.log('-'.repeat(100));
 
 for (const weapon of WEAPONS) {
-  for (const monster of MONSTERS) {
-    report(weapon, monster, sample(weapon, monster));
+  for (const loadout of LOADOUTS) {
+    for (const monster of MONSTERS) {
+      report(weapon, loadout.label, monster, sample(weapon, loadout.items, monster));
+    }
   }
 }
 
@@ -51,7 +61,7 @@ interface Sample {
   readonly deathsAtFullMeter: number;
 }
 
-function sample(weapon: Weapon, monster: MonsterDefinition): Sample {
+function sample(weapon: Weapon, items: readonly Item[], monster: MonsterDefinition): Sample {
   let wins = 0;
   let totalSeconds = 0;
   let totalEmpowered = 0;
@@ -60,7 +70,7 @@ function sample(weapon: Weapon, monster: MonsterDefinition): Sample {
   let deathsAtFullMeter = 0;
 
   for (let seed = 0; seed < RUNS; seed += 1) {
-    const hero = createHero(weapon.archetype, weapon);
+    const hero = createHero(weapon.archetype, weapon, items);
     const result = runFight(hero, createMonster(monster), seed);
 
     if (result.winner === hero.name) wins += 1;
@@ -103,12 +113,13 @@ function endedWithFullMeter(events: readonly CombatEvent[], heroName: string): b
   return false;
 }
 
-function report(weapon: Weapon, monster: MonsterDefinition, s: Sample): void {
+function report(weapon: Weapon, kit: string, monster: MonsterDefinition, s: Sample): void {
   const losses = RUNS - s.wins;
   const wastedShare = losses === 0 ? '—' : `${s.deathsAtFullMeter} of ${losses} losses`;
 
   console.log(
     pad(weapon.archetype, 12) +
+      pad(kit, 8) +
       pad(monster.name, 17) +
       pad(`${((s.wins / RUNS) * 100).toFixed(1)}%`, 8) +
       pad(`${(s.totalSeconds / RUNS).toFixed(2)}s`, 10) +

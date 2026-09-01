@@ -8,6 +8,59 @@
 export type ResourceKind = 'rage' | 'focus';
 
 /**
+ * Equipment positions. The weapon is not one of these — it sets the archetype
+ * and is handled separately.
+ *
+ * Armour (head/torso/legs/feet/hands) is crafted from what you hunt and keeps
+ * you alive. Trinkets (rings, necklace) come from the corruption and carry the
+ * build-defining resource modifiers.
+ */
+export type Slot = 'head' | 'torso' | 'legs' | 'feet' | 'hands' | 'ring' | 'necklace';
+
+/**
+ * What an affix can do. Deliberately weighted toward effects *every* build can
+ * use but values differently — attack speed is worth roughly double to a Focus
+ * build than a Rage one. Affixes only some builds can use at all, like evasion,
+ * are the minority on purpose: they make good chase items and bad common ones.
+ */
+export type ModifierKind =
+  /** Flat health added to the hero's maximum. */
+  | 'maxHealth'
+  /** Flat damage added to every swing. */
+  | 'damage'
+  /** Multiplier on attack rate. 0.1 means 10% faster. */
+  | 'attackSpeed'
+  /** Flat damage removed from every hit taken, applied before any percentage. */
+  | 'flatDamageReduction'
+  /** Added to evasion chance as a fraction. 0.05 means 5 percentage points. */
+  | 'evasion'
+  /** Added to damage variance. Negative tightens the spread. */
+  | 'damageVariance'
+  /** Multiplier on how fast the resource fills. 0.2 means 20% faster. */
+  | 'resourceGain'
+  /** Multiplier on the resource threshold. Negative means it fills sooner. */
+  | 'resourceThreshold'
+  /** Added to the payoff multiplier on an empowered attack. */
+  | 'empowerMultiplier';
+
+export interface Modifier {
+  readonly kind: ModifierKind;
+  readonly value: number;
+}
+
+export interface Item {
+  readonly id: string;
+  readonly name: string;
+  readonly slot: Slot;
+  /**
+   * Three affixes: the first is the slot's guaranteed identity, the rest are
+   * rolled. Modelled as a list rather than fixed fields so that a generator can
+   * produce these later without rewriting every item in the game.
+   */
+  readonly modifiers: readonly Modifier[];
+}
+
+/**
  * How a resource fills. This is the whole personality of an archetype:
  * Rage cares about the *enemy's* attack rate, Focus cares about its own.
  */
@@ -79,6 +132,8 @@ export interface Combatant {
   readonly attack: AttackProfile;
   /** Chance to avoid an incoming attack outright, 0 to 1. */
   readonly evasion: number;
+  /** Flat damage removed from every hit taken, before any percentage reduction. */
+  readonly flatDamageReduction: number;
   /** null for combatants with no resource engine — every monster, for now. */
   resource: ResourceState | null;
   /** Seconds on the fight clock when this combatant next swings. */
