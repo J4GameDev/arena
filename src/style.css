@@ -1,27 +1,440 @@
+/*
+ * Grounded, not heroic. Leather, iron, bone, lamplight.
+ *
+ * Corruption should be the only thing in a frame that looks wrong, which means
+ * everything else has to look right — so the palette is warm, muted and natural,
+ * and nothing here glows.
+ */
+
 :root {
-  --bg: #12100e;
-  --fg: #e8e0d0;
-  --dim: #8a7f6d;
+  --ink: #0f0d0b;
+  --ink-raised: #1a1613;
+  --ink-edge: #2b2520;
+
+  --bone: #e6ddcc;
+  --bone-dim: #a89880;
+  --bone-faint: #6d6152;
+
+  --rust: #a4552f;
+  --moss: #6f7a4a;
+  --blood: #8c2f27;
+  --gold: #c8a24a;
 
   color-scheme: dark;
-  font-family: system-ui, sans-serif;
-  background: var(--bg);
-  color: var(--fg);
+  font-family: ui-serif, Georgia, 'Times New Roman', serif;
+  background: var(--ink);
+  color: var(--bone);
+}
+
+* {
+  box-sizing: border-box;
 }
 
 body {
   margin: 0;
   min-height: 100vh;
+  background: radial-gradient(120% 80% at 50% 0%, #171310 0%, var(--ink) 60%);
 }
 
-.shell {
+#app {
+  max-width: 62rem;
+  margin: 0 auto;
+  padding: 2rem 1.25rem 4rem;
   display: grid;
-  place-content: center;
-  gap: 0.5rem;
-  min-height: 100vh;
-  text-align: center;
+  gap: 1.5rem;
 }
 
-.shell p {
-  color: var(--dim);
+/* --- Header --- */
+
+.top h1 {
+  margin: 0;
+  font-size: 2rem;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+}
+
+.top .sub {
+  margin: 0.25rem 0 0;
+  color: var(--bone-dim);
+  font-size: 0.95rem;
+}
+
+/* --- Panels --- */
+
+.panel {
+  border: 1px solid var(--ink-edge);
+  background: var(--ink-raised);
+  padding: 1.1rem 1.25rem 1.35rem;
+}
+
+.panel h2 {
+  margin: 0 0 0.9rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--bone-faint);
+}
+
+.panel h2 .count {
+  color: var(--bone-dim);
+}
+
+.empty {
+  margin: 0;
+  color: var(--bone-faint);
+  font-style: italic;
+}
+
+/* --- Stats --- */
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(8rem, 1fr));
+  gap: 0.65rem 1.25rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.stats li {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+  border-bottom: 1px solid var(--ink-edge);
+  padding-bottom: 0.3rem;
+  font-size: 0.9rem;
+}
+
+.stats span {
+  color: var(--bone-faint);
+}
+
+.stats strong {
+  font-weight: 600;
+}
+
+/* --- Equipment and items --- */
+
+.slots,
+.items {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(11rem, 1fr));
+  gap: 0.75rem;
+}
+
+.slot,
+.item {
+  border: 1px solid var(--ink-edge);
+  background: #131010;
+  padding: 0.7rem 0.75rem 0.8rem;
+  display: grid;
+  gap: 0.4rem;
+  align-content: start;
+}
+
+.slot.empty {
+  border-style: dashed;
+  opacity: 0.5;
+  min-height: 5rem;
+}
+
+.slot-name {
+  margin: 0;
+  font-size: 0.7rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--bone-faint);
+}
+
+.item-name {
+  margin: 0;
+  font-size: 1rem;
+  color: var(--bone);
+}
+
+.affixes {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 0.15rem;
+  font-size: 0.85rem;
+}
+
+.affixes .good {
+  color: var(--moss);
+}
+
+.affixes .bad {
+  color: var(--rust);
+}
+
+.item-actions {
+  display: flex;
+  gap: 0.4rem;
+  margin-top: 0.2rem;
+}
+
+/* --- Buttons --- */
+
+button {
+  font: inherit;
+  font-size: 0.85rem;
+  color: var(--ink);
+  background: var(--bone-dim);
+  border: 1px solid var(--bone-dim);
+  padding: 0.35rem 0.8rem;
+  cursor: pointer;
+  transition: background 120ms ease;
+}
+
+button:hover:not(:disabled) {
+  background: var(--bone);
+}
+
+button:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+button.ghost {
+  background: transparent;
+  color: var(--bone-faint);
+  border-color: var(--ink-edge);
+}
+
+button.ghost:hover {
+  color: var(--bone);
+  background: transparent;
+  border-color: var(--bone-faint);
+}
+
+/* --- Hunts --- */
+
+.hunts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+  gap: 0.75rem;
+}
+
+.hunt {
+  display: grid;
+  gap: 0.2rem;
+  text-align: left;
+  padding: 0.85rem 1rem;
+  background: #17120f;
+  color: var(--bone);
+  border-color: var(--ink-edge);
+}
+
+.hunt:hover:not(:disabled) {
+  background: #1f1813;
+  border-color: var(--rust);
+}
+
+.hunt-name {
+  font-size: 1.05rem;
+}
+
+.hunt-note {
+  font-size: 0.75rem;
+  color: var(--bone-faint);
+  letter-spacing: 0.04em;
+}
+
+/* --- The fight --- */
+
+.stage {
+  display: grid;
+  gap: 1.25rem;
+}
+
+.fight {
+  display: grid;
+  gap: 1rem;
+}
+
+.combatants {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.25rem;
+}
+
+.side {
+  position: relative;
+  border: 1px solid var(--ink-edge);
+  background: var(--ink-raised);
+  padding: 1rem;
+  display: grid;
+  gap: 0.4rem;
+  align-content: start;
+  transition: border-color 200ms ease;
+}
+
+.side.charged {
+  border-color: var(--gold);
+}
+
+.side.hurt .health .fill {
+  background: var(--blood);
+}
+
+.side-name {
+  margin: 0;
+  font-size: 1.1rem;
+}
+
+.bar {
+  height: 0.55rem;
+  background: #0b0908;
+  border: 1px solid var(--ink-edge);
+  overflow: hidden;
+}
+
+.bar .fill {
+  display: block;
+  height: 100%;
+  width: 100%;
+  transition: width 180ms ease;
+}
+
+.health .fill {
+  background: var(--moss);
+}
+
+.meter {
+  height: 0.4rem;
+}
+
+.meter .fill {
+  width: 0%;
+  background: var(--gold);
+}
+
+.health-text,
+.meter-text {
+  margin: 0;
+  font-size: 0.8rem;
+  color: var(--bone-faint);
+  font-variant-numeric: tabular-nums;
+}
+
+/* --- Floating numbers --- */
+
+.floaters {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: visible;
+}
+
+.floater {
+  position: absolute;
+  top: 1.5rem;
+  right: 1rem;
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: var(--bone);
+  animation: rise 900ms ease-out forwards;
+}
+
+.floater.crit {
+  color: var(--gold);
+  font-size: 1.8rem;
+}
+
+.floater.empowered {
+  color: var(--rust);
+  font-size: 1.7rem;
+}
+
+.floater.blocked,
+.floater.evade {
+  color: var(--bone-faint);
+  font-size: 1rem;
+}
+
+.floater.heal {
+  color: var(--moss);
+}
+
+@keyframes rise {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-2.5rem);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .floater {
+    animation-duration: 1ms;
+  }
+
+  .bar .fill {
+    transition: none;
+  }
+}
+
+/* --- Fight log --- */
+
+.log {
+  margin: 0;
+  padding: 0.75rem 1rem;
+  list-style: none;
+  border: 1px solid var(--ink-edge);
+  background: #0b0908;
+  height: 11rem;
+  overflow-y: auto;
+  font-size: 0.9rem;
+  color: var(--bone-dim);
+  display: grid;
+  gap: 0.25rem;
+  align-content: start;
+}
+
+.log .final {
+  color: var(--bone);
+}
+
+.skip {
+  justify-self: end;
+}
+
+/* --- Outcome --- */
+
+.outcome {
+  border: 1px solid var(--ink-edge);
+  background: var(--ink-raised);
+  padding: 1.25rem;
+  display: grid;
+  gap: 0.75rem;
+  justify-items: start;
+}
+
+.outcome h2 {
+  margin: 0;
+  font-size: 1.4rem;
+  font-weight: 500;
+}
+
+.outcome p {
+  margin: 0;
+  color: var(--bone-dim);
+}
+
+.item.found {
+  border-color: var(--gold);
+  width: 100%;
+  max-width: 18rem;
+}
+
+@media (max-width: 34rem) {
+  .combatants {
+    grid-template-columns: 1fr;
+  }
 }

@@ -31,6 +31,27 @@ export function rollItem(slot: Slot, rng: Rng): Item {
   };
 }
 
+const DROPPABLE_SLOTS: readonly Slot[] = [
+  'head',
+  'torso',
+  'legs',
+  'feet',
+  'hands',
+  'ring',
+  'necklace',
+];
+
+/**
+ * What a defeated enemy leaves behind: one item, in a slot chosen at random.
+ *
+ * Uniform across slots for now. Tying drops to what the creature *was* —
+ * hide from animals, gear from corrupted hunters — is the obvious next step
+ * and the thing the world has been asking for since the loot split was written.
+ */
+export function rollDrop(rng: Rng): Item {
+  return rollItem(rng.pick(DROPPABLE_SLOTS), rng);
+}
+
 /** A full set: one of every slot, with two rings. */
 export function rollLoadout(rng: Rng): Item[] {
   const slots: Slot[] = ['head', 'torso', 'legs', 'feet', 'hands', 'ring', 'ring', 'necklace'];
