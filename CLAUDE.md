@@ -253,6 +253,8 @@ Good ideas that are not v0.1. Written down so they stop taking up room.
 
 **It is playable.** Choose a weapon, hunt, watch the fight resolve, take the loot, wear it, go again. Progress saves to the browser.
 
+**The v0.1 scope is met, and it is not being called done.** Every item on the scope list exists. The owner's verdict: technically there, but a far cry from a point to celebrate — icons and better art come before the word "finished" gets used. Treat the state as _scope met, not shipped_. It is still worth a post, precisely because both halves are true.
+
 **Built and tested — 52 tests:** the combat simulation (attack-speed timeline, Rage and Focus, crit on both sides, block, evasion, lifesteal, initiative, resource retention), two archetypes both reachable in game, six monsters (a teacher, four band-one animals, a gate), eight equipment slots, 19 affix kinds, weighted affix pools and the item roller, run state and saving, the fight view, and eight sprites. Monster definitions can carry armour and evasion; the simulation already supported both, so exposing them was plumbing rather than mechanics. Three harnesses: `npm run fight`, `npm run balance`, `npm run outliers`.
 
 **Balance, against the gear the game actually drops.** `npm run balance` rolls real loadouts rather than equipping a fixed set, and reports geared results as a distribution. **Read p90, not the median** — a player keeps good drops and bins bad ones, so they converge on the top of the distribution. The median describes a loadout nobody keeps.
@@ -285,7 +287,7 @@ The gate target is p90 near 80%. Both archetypes are in the band, eight to nine 
 
 **Known and deliberately unfixed:**
 
-- **Wasted Rage meters.** Against rolled gear, **3,577 of 3,766** geared Berserker losses to the boss — 95% — end holding a full meter. (An earlier 629-of-830 figure was measured against hand-authored gear that no longer exists.) Rage fills from a 38-damage boss swing in two hits, and the greataxe swings every 1.5 seconds, so you almost always die loaded. Now judgeable, since the UI shows the bar: decide whether it reads as a berserker dying mid-fury or as a payoff being stolen. If the latter, the levers are a higher Rage threshold or letting a full meter fire at once.
+- **Wasted Rage meters.** Against rolled gear, **3,577 of 3,766** geared Berserker losses to the boss — 95% — end holding a full meter. (An earlier 629-of-830 figure was measured against hand-authored gear that no longer exists.) Rage fills from a 38-damage boss swing in two hits, and the greataxe swings every 1.5 seconds, so you almost always die loaded. Now judgeable, since the UI shows the bar: decide whether it reads as a berserker dying mid-fury or as a payoff being stolen. If the latter, the levers are a higher Rage threshold or letting a full meter fire at once. **The owner is playtesting this himself before deciding. Do not propose fixes until he reports back.**
 - **No levels, no abilities, no item icons, no background art.** Items in the pack are still text.
 
 ## Notes
