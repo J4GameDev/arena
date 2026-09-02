@@ -85,6 +85,8 @@ This is a deliberate reversal of an earlier call. The world is wildlife, frontie
 
 When designing any creature, first decide its band, then work outward from a real animal. Never start from a fantasy monster.
 
+**Band one is named "Strange"** — Strange Boar, Strange Elk. It says something is off without saying what. "Turned" was tried and rejected: it reads as undead, which over-commits the fiction before the player has seen anything.
+
 **Palette.** Muted and natural near the bastion. As distance grows, colour goes wrong before shape does — a hue that does not occur in nature, arriving before the anatomy breaks.
 
 **Sprites live in `public/sprites/<id>.png`**, looked up by id — `oswald.png` for a monster, `greataxe.png` for the hero wielding that weapon. 64x64, transparent, rendered at 96-128px with `image-rendering: pixelated`. A missing sprite removes itself rather than showing a broken image, so content can land before its art does.
@@ -247,18 +249,26 @@ Good ideas that are not v0.1. Written down so they stop taking up room.
 
 **It is playable.** Choose a weapon, hunt, watch the fight resolve, take the loot, wear it, go again. Progress saves to the browser.
 
-**Built and tested — 52 tests:** the combat simulation (attack-speed timeline, Rage and Focus, crit on both sides, block, evasion, lifesteal, initiative, resource retention), two archetypes both reachable in game, three monsters, eight equipment slots, 19 affix kinds, weighted affix pools and the item roller, run state and saving, the fight view, and five sprites. Three harnesses: `npm run fight`, `npm run balance`, `npm run outliers`.
+**Built and tested — 52 tests:** the combat simulation (attack-speed timeline, Rage and Focus, crit on both sides, block, evasion, lifesteal, initiative, resource retention), two archetypes both reachable in game, six monsters (a teacher, four band-one animals, a gate), eight equipment slots, 19 affix kinds, weighted affix pools and the item roller, run state and saving, the fight view, and eight sprites. Monster definitions can carry armour and evasion; the simulation already supported both, so exposing them was plumbing rather than mechanics. Three harnesses: `npm run fight`, `npm run balance`, `npm run outliers`.
 
 **Balance, against the gear the game actually drops.** `npm run balance` rolls real loadouts rather than equipping a fixed set, and reports geared results as a distribution. **Read p90, not the median** — a player keeps good drops and bins bad ones, so they converge on the top of the distribution. The median describes a loadout nobody keeps.
 
-| Weapon    | Monster        | Bare  | Geared p50 | Geared p90 | Big hits bare (fewest) |
-| --------- | -------------- | ----- | ---------- | ---------- | ---------------------- |
-| Berserker | Oswald         | 100%  | 100%       | 100%       | 1                      |
-| Berserker | Turned Boar    | 100%  | 100%       | 100%       | 1                      |
-| Berserker | Strayed Hunter | 0.7%  | 60.0%      | **84.0%**  | 1                      |
-| Assassin  | Oswald         | 100%  | 100%       | 100%       | 2                      |
-| Assassin  | Turned Boar    | 99.8% | 100%       | 100%       | 2                      |
-| Assassin  | Strayed Hunter | 2.5%  | 35.3%      | **76.7%**  | 2                      |
+| Weapon    | Monster        | Bare  | Bare avg | Geared p50 | Geared p90 | Big hits bare (fewest) |
+| --------- | -------------- | ----- | -------- | ---------- | ---------- | ---------------------- |
+| Berserker | Oswald         | 100%  | 6.3s     | 100%       | 100%       | 1                      |
+| Berserker | Strange Boar   | 100%  | 6.1s     | 100%       | 100%       | 1                      |
+| Berserker | Strange Elk    | 100%  | 16.1s    | 100%       | 100%       | **0**                  |
+| Berserker | Strange Wolf   | 100%  | 7.8s     | 100%       | 100%       | 0                      |
+| Berserker | Strange Bear   | 100%  | 10.2s    | 100%       | 100%       | 1                      |
+| Berserker | Strayed Hunter | 0.7%  | 8.7s     | 59.3%      | **84.0%**  | 1                      |
+| Assassin  | Oswald         | 100%  | 8.0s     | 100%       | 100%       | 2                      |
+| Assassin  | Strange Boar   | 98.5% | 7.5s     | 100%       | 100%       | 2                      |
+| Assassin  | Strange Elk    | 100%  | 15.6s    | 100%       | 100%       | **5**                  |
+| Assassin  | Strange Wolf   | 100%  | 8.0s     | 100%       | 100%       | 2                      |
+| Assassin  | Strange Bear   | 9.6%  | 14.7s    | 99.3%      | 100%       | 3                      |
+| Assassin  | Strayed Hunter | 2.5%  | 9.4s     | 34.7%      | **75.3%**  | 2                      |
+
+**The roster now has a fight for every build.** The Elk is the first enemy that favours the Assassin: it barely swings, so the Berserker's Rage never fires (fewest big hits **0**) while Focus fires five times. The Bear is the sharpest Assassin-punisher: 3 armour is a rounding error to a 22-damage greataxe and half of a 6-damage dagger, and it splits the archetypes 100% to 9.6% bare.
 
 The gate target is p90 near 80%. Both archetypes are in the band, seven points apart against a five-point target. Bare is correctly hopeless and the teaching guarantee still holds. This was reached with `MAGNITUDE_SCALE = 0.7` in `src/data/affixes.ts` — measured, not chosen; halving overshot to 64% and 39%. Retune that constant before touching individual ranges.
 
@@ -266,13 +276,12 @@ The gate target is p90 near 80%. Both archetypes are in the band, seven points a
 
 **Next, in order:**
 
-1. **Content between the Turned Boar and the Strayed Hunter.** There is currently a tutorial, one animal, and a wall.
+1. **Two tuning calls for the owner.** The Bear leaves a bare Assassin at 9.6% — nearly a second gate for that build, though any gear opens it. And the Elk's Berserker-punishment is entirely feel (sixteen seconds with a dead meter) rather than outcome, since both builds still win; giving it evasion would make the slow greataxe swings miss and turn feel into risk.
 2. **Item icons and a fight background.** The pack is still text.
 
 **Known and deliberately unfixed:**
 
 - **Wasted Rage meters.** 629 of 830 geared Berserker losses to the boss end holding a full meter. Now judgeable, since the UI shows the bar — decide whether it reads as a berserker dying mid-fury or as a payoff being stolen.
-- **The Turned Boar wants a retune.** It inherited Oswald's teaching numbers and no longer needs guarantees.
 - **No levels, no abilities, no item icons, no background art.** Items in the pack are still text.
 
 ## Notes

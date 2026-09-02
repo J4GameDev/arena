@@ -172,6 +172,13 @@ export interface MonsterDefinition {
   readonly critChance: number;
   readonly defeat: DefeatStyle;
   readonly lineage: Lineage;
+  /**
+   * Flat damage removed from every hit this monster takes. Guts a fast weapon's
+   * small hits and barely dents a slow weapon's big ones. Defaults to 0.
+   */
+  readonly armour?: number;
+  /** Chance to avoid a hit outright. Defaults to 0. */
+  readonly evasion?: number;
   /** One line on what this monster is meant to punish. See pillar two. */
   readonly designRole: string;
 }

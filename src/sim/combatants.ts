@@ -56,8 +56,8 @@ export function createMonster(definition: MonsterDefinition): Combatant {
     health: definition.maxHealth,
     attack: definition.attack,
 
-    evasion: 0, // monsters stand and take it, for now
-    flatDamageReduction: 0,
+    evasion: definition.evasion ?? 0,
+    flatDamageReduction: definition.armour ?? 0,
     percentDamageReduction: 0,
     blockChance: 0,
     critResistance: 0,

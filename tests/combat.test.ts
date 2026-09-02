@@ -1,11 +1,11 @@
 import { describe, expect, it } from 'vitest';
-import { TURNED_BOAR, STRAYED_HUNTER } from '../src/data/monsters';
+import { STRANGE_BOAR, STRAYED_HUNTER } from '../src/data/monsters';
 import { GREATAXE, TWIN_DAGGERS } from '../src/data/weapons';
 import { runFight } from '../src/sim/combat';
 import { createHero, createMonster } from '../src/sim/combatants';
 
 const hero = () => createHero('Hero', GREATAXE);
-const boar = () => createMonster(TURNED_BOAR);
+const boar = () => createMonster(STRANGE_BOAR);
 
 describe('runFight', () => {
   it('is deterministic for a given seed', () => {

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { STRAYED_HUNTER, TURNED_BOAR } from '../src/data/monsters';
+import { STRAYED_HUNTER, STRANGE_BOAR } from '../src/data/monsters';
 import { GREATAXE, TWIN_DAGGERS } from '../src/data/weapons';
 import { BLOCK_REDUCTION, runFight } from '../src/sim/combat';
 import { createHero, createMonster } from '../src/sim/combatants';
@@ -11,7 +11,7 @@ function trinket(kind: ModifierKind, value: number): Item {
   return { id: kind, name: kind, slot: 'ring', modifiers: [{ kind, value }] };
 }
 
-const boar = () => createMonster(TURNED_BOAR);
+const boar = () => createMonster(STRANGE_BOAR);
 const hunter = () => createMonster(STRAYED_HUNTER);
 
 describe('crit', () => {

@@ -41,6 +41,7 @@ console.log(
   pad('Weapon', 12) +
     pad('Monster', 17) +
     pad('Bare', 9) +
+    pad('Bare avg s', 12) +
     pad('Geared p50', 12) +
     pad('Geared p90', 12) +
     'Big hits bare (fewest in any fight)',
@@ -56,6 +57,7 @@ for (const weapon of WEAPONS) {
       pad(weapon.archetype, 12) +
         pad(monster.name, 17) +
         pad(fmt(bare.winRate), 9) +
+        pad(`${bare.averageSeconds.toFixed(1)}s`, 12) +
         pad(fmt(percentile(geared, 0.5)), 12) +
         pad(fmt(percentile(geared, 0.9)), 12) +
         String(bare.fewestEmpowered),
@@ -65,18 +67,21 @@ for (const weapon of WEAPONS) {
 
 interface BareSample {
   readonly winRate: number;
+  readonly averageSeconds: number;
   /** Fewest big hits in any single fight. 0 means the mechanic can hide. */
   readonly fewestEmpowered: number;
 }
 
 function bareSample(weapon: Weapon, monster: MonsterDefinition): BareSample {
   let wins = 0;
+  let seconds = 0;
   let fewestEmpowered = Number.POSITIVE_INFINITY;
 
   for (let seed = 0; seed < BARE_FIGHTS; seed += 1) {
     const hero = createHero(weapon.archetype, weapon);
     const result = runFight(hero, createMonster(monster), seed);
     if (result.winner === hero.name) wins += 1;
+    seconds += result.durationSeconds;
 
     let empowered = 0;
     for (const event of result.events) {
@@ -87,7 +92,11 @@ function bareSample(weapon: Weapon, monster: MonsterDefinition): BareSample {
     fewestEmpowered = Math.min(fewestEmpowered, empowered);
   }
 
-  return { winRate: (wins / BARE_FIGHTS) * 100, fewestEmpowered };
+  return {
+    winRate: (wins / BARE_FIGHTS) * 100,
+    averageSeconds: seconds / BARE_FIGHTS,
+    fewestEmpowered,
+  };
 }
 
 /** One win rate per rolled loadout, sorted ascending. */
