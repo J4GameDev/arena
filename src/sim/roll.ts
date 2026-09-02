@@ -1,4 +1,4 @@
-import { MAGNITUDES, SLOT_POOLS, weightOf } from '../data/affixes.ts';
+import { MAGNITUDES, MAGNITUDE_SCALE, SLOT_POOLS, weightOf } from '../data/affixes.ts';
 import type { Rng } from './rng.ts';
 import type { Item, Modifier, ModifierKind, Slot } from './types.ts';
 
@@ -60,7 +60,7 @@ export function rollLoadout(rng: Rng): Item[] {
 
 function rollMagnitude(kind: ModifierKind, scale: number, rng: Rng): number {
   const range = MAGNITUDES[kind];
-  const raw = (range.min + rng.next() * (range.max - range.min)) * scale;
+  const raw = (range.min + rng.next() * (range.max - range.min)) * scale * MAGNITUDE_SCALE;
 
   // Round for legibility — a player should never read "+2.7391 health".
   const factor = 10 ** range.decimals;

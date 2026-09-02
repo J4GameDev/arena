@@ -255,20 +255,19 @@ Good ideas that are not v0.1. Written down so they stop taking up room.
 | --------- | -------------- | ----- | ---------- | ---------- | ---------------------- |
 | Berserker | Oswald         | 100%  | 100%       | 100%       | 1                      |
 | Berserker | Turned Boar    | 100%  | 100%       | 100%       | 1                      |
-| Berserker | Strayed Hunter | 0.7%  | 89.3%      | **99.3%**  | 1                      |
+| Berserker | Strayed Hunter | 0.7%  | 60.0%      | **84.0%**  | 1                      |
 | Assassin  | Oswald         | 100%  | 100%       | 100%       | 2                      |
 | Assassin  | Turned Boar    | 99.8% | 100%       | 100%       | 2                      |
-| Assassin  | Strayed Hunter | 2.5%  | 62.0%      | **97.3%**  | 2                      |
+| Assassin  | Strayed Hunter | 2.5%  | 35.3%      | **76.7%**  | 2                      |
 
-The gate target is p90 near 80%. Both archetypes sit at 97-99%, so **gear is roughly twice as strong as it should be**. Bare is correctly hopeless and the teaching guarantee still holds.
+The gate target is p90 near 80%. Both archetypes are in the band, seven points apart against a five-point target. Bare is correctly hopeless and the teaching guarantee still holds. This was reached with `MAGNITUDE_SCALE = 0.7` in `src/data/affixes.ts` — measured, not chosen; halving overshot to 64% and 39%. Retune that constant before touching individual ranges.
 
-**The archetype gap is consistency, not ceiling.** At the median the Berserker is far ahead (89.3% against 62.0%), but at p90 they are within two points. The Assassin is not weaker — it is more gear-dependent, which suits a fragile build needing the right kit. Worth keeping rather than flattening.
+**The archetype gap is consistency, not ceiling.** At the median the Berserker is far ahead (60% against 35%), but at p90 they are seven points apart. The Assassin is not weaker — it is more gear-dependent, which suits a fragile build needing the right kit. Worth keeping rather than flattening.
 
 **Next, in order:**
 
-1. **Halve the affix magnitudes again**, targeting p90 near 80% against the gate rather than the 97-99% they reach now.
-2. **Content between the Turned Boar and the Strayed Hunter.** There is currently a tutorial, one animal, and a wall.
-3. **Item icons and a fight background.** The pack is still text.
+1. **Content between the Turned Boar and the Strayed Hunter.** There is currently a tutorial, one animal, and a wall.
+2. **Item icons and a fight background.** The pack is still text.
 
 **Known and deliberately unfixed:**
 

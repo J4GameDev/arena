@@ -128,7 +128,11 @@ export function weightOf(pool: SlotPool, kind: ModifierKind): number {
 export interface MagnitudeRange {
   readonly min: number;
   readonly max: number;
-  /** Decimal places to round to, so the number a player reads stays legible. */
+  /**
+   * Decimal places to keep. Percentage affixes carry three so that scaling does
+   * not collapse a 1-2% range onto a single value; the *display* still rounds
+   * to something a player can read, so legibility is unaffected.
+   */
   readonly decimals: number;
 }
 
@@ -139,30 +143,47 @@ export interface MagnitudeRange {
  * the band-one gate — every Berserker loadout cleared it — so every range here
  * was halved. Gear is an edge, not a doubling, and eight slots of three affixes
  * add up much faster than any single line suggests.
+ *
+ * The ranges below are the *designed* values. MAGNITUDE_SCALE tunes all of them
+ * at once, so the gate can be brought to target without rewriting every line
+ * and fighting rounding on the integer affixes.
  */
+
+/**
+ * Global multiplier on every rolled magnitude.
+ *
+ * Measured, not chosen: at 1.0 the band-one gate fell to 97-99% of good
+ * loadouts against a target near 80%. Halving overshot to 64% and 39% and
+ * opened a 25-point gap between archetypes. 0.7 lands both at 83-84%, one
+ * point apart. Retune this before touching individual ranges.
+ */
+export const MAGNITUDE_SCALE = 0.7;
+
 export const MAGNITUDES: Readonly<Record<ModifierKind, MagnitudeRange>> = {
   maxHealth: { min: 1, max: 4, decimals: 0 },
-  healthPercent: { min: 0.01, max: 0.03, decimals: 2 },
-  flatDamageReduction: { min: 1, max: 2, decimals: 0 },
-  percentDamageReduction: { min: 0.01, max: 0.03, decimals: 2 },
-  evasion: { min: 0.01, max: 0.02, decimals: 2 },
-  critResistance: { min: 0.01, max: 0.02, decimals: 2 },
-  blockChance: { min: 0.02, max: 0.04, decimals: 2 },
+  healthPercent: { min: 0.01, max: 0.03, decimals: 3 },
+  // One decimal, not zero: at MAGNITUDE_SCALE these ranges are narrow enough that
+  // integer rounding collapsed every roll onto the same value.
+  flatDamageReduction: { min: 1, max: 2, decimals: 1 },
+  percentDamageReduction: { min: 0.01, max: 0.03, decimals: 3 },
+  evasion: { min: 0.01, max: 0.02, decimals: 3 },
+  critResistance: { min: 0.01, max: 0.02, decimals: 3 },
+  blockChance: { min: 0.02, max: 0.04, decimals: 3 },
 
-  initiative: { min: 0.03, max: 0.1, decimals: 2 },
+  initiative: { min: 0.03, max: 0.1, decimals: 3 },
 
-  damage: { min: 1, max: 2, decimals: 0 },
-  damagePercent: { min: 0.02, max: 0.04, decimals: 2 },
-  attackSpeed: { min: 0.01, max: 0.03, decimals: 2 },
+  damage: { min: 1, max: 2, decimals: 1 },
+  damagePercent: { min: 0.02, max: 0.04, decimals: 3 },
+  attackSpeed: { min: 0.01, max: 0.03, decimals: 3 },
   // Rolls either way on purpose: some builds genuinely want swingier damage.
-  damageVariance: { min: -0.02, max: 0.02, decimals: 2 },
-  critChance: { min: 0.01, max: 0.03, decimals: 2 },
-  critMultiplier: { min: 0.05, max: 0.12, decimals: 2 },
-  lifesteal: { min: 0.01, max: 0.03, decimals: 2 },
+  damageVariance: { min: -0.02, max: 0.02, decimals: 3 },
+  critChance: { min: 0.01, max: 0.03, decimals: 3 },
+  critMultiplier: { min: 0.05, max: 0.12, decimals: 3 },
+  lifesteal: { min: 0.01, max: 0.03, decimals: 3 },
 
-  resourceGain: { min: 0.02, max: 0.05, decimals: 2 },
+  resourceGain: { min: 0.02, max: 0.05, decimals: 3 },
   // Negative is the good direction here — the meter fills sooner.
-  resourceThreshold: { min: -0.04, max: -0.01, decimals: 2 },
-  resourceRetention: { min: 0.03, max: 0.08, decimals: 2 },
-  empowerMultiplier: { min: 0.05, max: 0.12, decimals: 2 },
+  resourceThreshold: { min: -0.04, max: -0.01, decimals: 3 },
+  resourceRetention: { min: 0.03, max: 0.08, decimals: 3 },
+  empowerMultiplier: { min: 0.05, max: 0.12, decimals: 3 },
 };

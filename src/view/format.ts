@@ -42,11 +42,18 @@ const DISPLAY: Readonly<Record<ModifierKind, Display>> = {
 
 export function formatModifier(modifier: Modifier): string {
   const display = DISPLAY[modifier.kind];
-  const value = display.percent ? Math.round(modifier.value * 100) : modifier.value;
-  const sign = value > 0 ? '+' : '−';
-  const magnitude = Math.abs(value);
+  const sign = modifier.value > 0 ? '+' : '−';
 
-  return `${sign}${magnitude}${display.percent ? '%' : ''} ${display.label}`;
+  if (!display.percent) {
+    return `${sign}${Math.abs(modifier.value)} ${display.label}`;
+  }
+
+  // Small percentages keep one decimal so two different rolls never read as
+  // the same number. Past 10% the decimal stops earning its space.
+  const percent = Math.abs(modifier.value * 100);
+  const shown = percent < 10 ? percent.toFixed(1).replace(/\.0$/, '') : Math.round(percent);
+
+  return `${sign}${shown}% ${display.label}`;
 }
 
 /** Whether an affix helps, so the UI can colour it without re-deriving the rule. */
