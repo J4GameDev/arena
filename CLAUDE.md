@@ -1,6 +1,6 @@
 # Arena — Project North Star
 
-> `arena` is a working title. Renaming is a change to `package.json`, `index.html`, and this file. Do it whenever the real name shows up.
+> `arena` is a working title. Renaming touches `package.json`, `index.html`, this file, the Vercel project, and `.claude/launch.json`. **Leave the save key `arena.run` in `src/state/storage.ts` alone** — changing it silently wipes every player's progress. Do the rename whenever the real name shows up.
 >
 > **Live:** https://arena-mu-coral.vercel.app — Vercel redeploys this automatically on every push to `main`.
 >
@@ -66,7 +66,7 @@ He also rhymes with the boss. The first thing you fight is a hunter; the hardest
 
 **Corrupted humans are the worst things out there**, because they were the most dangerous animal to begin with. They are hunters who went too far out and did not come back — which means the hardest enemies in the game are a preview of what happens to the player. Nobody says this out loud. The player works it out when one of them is carrying a weapon they recognise.
 
-**Two loot sources, and the split is thematic rather than designed.** Animals yield materials — hide, bone, whatever grew through them. Corrupted hunters yield _gear_, because they are still carrying it, and since a weapon defines an archetype, killing one that swung a greataxe drops a greataxe.
+**Two loot sources, and the split is thematic rather than designed.** Animals yield materials — hide, bone, whatever grew through them. Corrupted hunters yield _gear_, because they are still carrying it, and since a weapon defines an archetype, killing one that swung a greataxe should drop a greataxe. (Currently a corrupted hunter has a 25% chance to leave a random weapon you do not yet own; the Strayed Hunter's own weapon is not modelled. The specific-weapon version is the intent.)
 
 **Implied, not yet decided:** regions are corruption bands ordered by distance from the source. Clean and tainted materials are the natural item axis — dependable versus stronger-but-wrong. Nearer the bastion you hunt animals; further out you kill people, so the moral gradient tracks the difficulty gradient.
 
@@ -125,7 +125,7 @@ Sprite paths are passed _into_ the view, never stored on a Combatant. The simula
 ```
 src/
   sim/     Pure game logic. Zero DOM, zero rendering, zero I/O. Deterministic.
-  data/    Content as data — monsters, weapons, affix pools and magnitudes.
+  data/    Content as data — monsters, weapons, resource rules, affix pools and magnitudes.
   view/    Presentation. All DOM and CSS, including the battle scene.
   state/   Run state, persistence, save/load.
 tests/     Vitest. Primarily targets sim/.
@@ -245,7 +245,7 @@ Good ideas that are not v0.1. Written down so they stop taking up room.
 
 - **Gambit conditions.** Let the player set _when_ a resource spends: "only below 40% health," "only when the enemy is enraged." Turns spending into a second build axis on top of gear.
 - **Resolve and Mana archetypes** — sword-and-shield and staff, once Rage and Focus are proven.
-- **Unavoidable attacks.** A monster property that ignores evasion entirely — "you cannot sidestep a mountain." Turns a boss into a puzzle that disables the thing you were relying on. Good fit for the Strayed Hunter when mid-tier monsters get designed.
+- **Unavoidable attacks.** A monster property that ignores evasion entirely — "you cannot sidestep a mountain." Turns a boss into a puzzle that disables the thing you were relying on. A fit for the Strayed Hunter if it ever needs sharpening against the Assassin.
 - **Conditional affixes.** Effects with a trigger — gain resource on evade, bonus damage while the meter is full, the first hit of a fight empowered. Agreed as a later pass after the flat affixes were proven; these are what players build _around_ rather than merely accumulate.
 - **Levels and class abilities.** Both will move every balance number, which is why gear is tuned to roughly-right rather than precisely. Levels need a job that gear does not already do, and abilities need to come from the weapon rather than a skill tree, or pillar one quietly dies.
 
@@ -274,9 +274,9 @@ Good ideas that are not v0.1. Written down so they stop taking up room.
 
 **The roster now has a fight for every build.** The Elk is the first enemy that favours the Assassin: it barely swings, so the Berserker's Rage never fires (fewest big hits **0**) while Focus fires five times. The Bear is the sharpest Assassin-punisher: 3 armour is a rounding error to a 22-damage greataxe and half of a 6-damage dagger. Both builds win it bare — 100% and 95% — but the Assassin takes half again as long. That is what a regular's edge should look like: a different fight, not a different outcome.
 
-The gate target is p90 near 80%. Both archetypes are in the band, seven points apart against a five-point target. Bare is correctly hopeless and the teaching guarantee still holds. This was reached with `MAGNITUDE_SCALE = 0.7` in `src/data/affixes.ts` — measured, not chosen; halving overshot to 64% and 39%. Retune that constant before touching individual ranges.
+The gate target is p90 near 80%. Both archetypes are in the band, eight to nine points apart against a five-point target — p90 from sixty loadouts wobbles a point or two between runs, so read the gap as "a bit wide" rather than as a precise figure. Bare is correctly hopeless and the teaching guarantee still holds. This was reached with `MAGNITUDE_SCALE = 0.7` in `src/data/affixes.ts` — measured, not chosen; halving overshot to 64% and 39%. Retune that constant before touching individual ranges.
 
-**The archetype gap is consistency, not ceiling.** At the median the Berserker is far ahead (60% against 35%), but at p90 they are seven points apart. The Assassin is not weaker — it is more gear-dependent, which suits a fragile build needing the right kit. Worth keeping rather than flattening.
+**The archetype gap is consistency, not ceiling.** At the median the Berserker is far ahead (60% against 35%), but at p90 they are within about nine points. The Assassin is not weaker — it is more gear-dependent, which suits a fragile build needing the right kit. Worth keeping rather than flattening.
 
 **Next, in order:**
 
@@ -285,7 +285,7 @@ The gate target is p90 near 80%. Both archetypes are in the band, seven points a
 
 **Known and deliberately unfixed:**
 
-- **Wasted Rage meters.** 629 of 830 geared Berserker losses to the boss end holding a full meter. Now judgeable, since the UI shows the bar — decide whether it reads as a berserker dying mid-fury or as a payoff being stolen.
+- **Wasted Rage meters.** Against rolled gear, **3,577 of 3,766** geared Berserker losses to the boss — 95% — end holding a full meter. (An earlier 629-of-830 figure was measured against hand-authored gear that no longer exists.) Rage fills from a 38-damage boss swing in two hits, and the greataxe swings every 1.5 seconds, so you almost always die loaded. Now judgeable, since the UI shows the bar: decide whether it reads as a berserker dying mid-fury or as a payoff being stolen. If the latter, the levers are a higher Rage threshold or letting a full meter fire at once.
 - **No levels, no abilities, no item icons, no background art.** Items in the pack are still text.
 
 ## Notes
