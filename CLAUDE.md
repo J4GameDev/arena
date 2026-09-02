@@ -93,6 +93,8 @@ When designing any creature, first decide its band, then work outward from a rea
 
 Sprite paths are passed _into_ the view, never stored on a Combatant. The simulation has no idea art exists and should keep it that way.
 
+**64 pixels cannot carry a subtle detail.** A clouded eye, a missing ear, a patch of discoloured fur — each is one or two pixels at this size and the model mostly ignores them. What actually rendered on the first band-one animals was red eyes. Either the wrongness has to be large enough to read at 64px (a whole limb, a silhouette that is off, a colour that dominates) or the sprite has to be bigger. Do not describe a sprite by its prompt; describe it by what came back.
+
 **Prompt shape that worked**, for consistency: subject and stance, then materials, then "muted earth tones of brown grey and dull green", then "soft natural lighting from upper left", then "plain and grounded", and always end with "no magic, no glow, no glowing effects" — pixel-art models reach for neon and rim-light unless told twice not to.
 
 **Practical.** Art is pixel art via the **PixelLab MCP**. Keep the same palette family, lighting direction, and sprite dimensions within a category. Direction drifts fast when assets are generated one at a time, so look at what already exists before adding to it. Generations are a finite monthly budget — settle a look on cheap single sprites before committing to anything animated.
@@ -166,6 +168,8 @@ Corollaries:
 **The loop, repeated per corruption band:** grind the band's regular enemies for gear, then use that gear to beat the band's boss, which opens the next band. The grind has to be long enough to matter and short enough not to bore.
 
 **Gear is an edge, not a doubling.** A full set is worth roughly a third more power. Affix magnitudes are deliberately small — eight slots of three affixes add up fast, and an item that looks exciting alone will be broken in a set.
+
+**Regular enemies are the grind, and they are tuned as the grind.** Winnable bare by every build most of the time. Each one favours a build _slightly_ — a different kind of fight, not a different outcome — and none of them is a wall. A regular that a bare build loses nine times in ten is a gate wearing the wrong label. Only the gate is allowed to be impossible.
 
 **Bosses are gates, and they are tuned as gates.** The target for a band boss:
 
@@ -259,16 +263,16 @@ Good ideas that are not v0.1. Written down so they stop taking up room.
 | Berserker | Strange Boar   | 100%  | 6.1s     | 100%       | 100%       | 1                      |
 | Berserker | Strange Elk    | 100%  | 16.1s    | 100%       | 100%       | **0**                  |
 | Berserker | Strange Wolf   | 100%  | 7.8s     | 100%       | 100%       | 0                      |
-| Berserker | Strange Bear   | 100%  | 10.2s    | 100%       | 100%       | 1                      |
+| Berserker | Strange Bear   | 100%  | 10.9s    | 100%       | 100%       | 0                      |
 | Berserker | Strayed Hunter | 0.7%  | 8.7s     | 59.3%      | **84.0%**  | 1                      |
 | Assassin  | Oswald         | 100%  | 8.0s     | 100%       | 100%       | 2                      |
 | Assassin  | Strange Boar   | 98.5% | 7.5s     | 100%       | 100%       | 2                      |
 | Assassin  | Strange Elk    | 100%  | 15.6s    | 100%       | 100%       | **5**                  |
 | Assassin  | Strange Wolf   | 100%  | 8.0s     | 100%       | 100%       | 2                      |
-| Assassin  | Strange Bear   | 9.6%  | 14.7s    | 99.3%      | 100%       | 3                      |
+| Assassin  | Strange Bear   | 95.1% | 15.9s    | 100%       | 100%       | 4                      |
 | Assassin  | Strayed Hunter | 2.5%  | 9.4s     | 34.7%      | **75.3%**  | 2                      |
 
-**The roster now has a fight for every build.** The Elk is the first enemy that favours the Assassin: it barely swings, so the Berserker's Rage never fires (fewest big hits **0**) while Focus fires five times. The Bear is the sharpest Assassin-punisher: 3 armour is a rounding error to a 22-damage greataxe and half of a 6-damage dagger, and it splits the archetypes 100% to 9.6% bare.
+**The roster now has a fight for every build.** The Elk is the first enemy that favours the Assassin: it barely swings, so the Berserker's Rage never fires (fewest big hits **0**) while Focus fires five times. The Bear is the sharpest Assassin-punisher: 3 armour is a rounding error to a 22-damage greataxe and half of a 6-damage dagger. Both builds win it bare — 100% and 95% — but the Assassin takes half again as long. That is what a regular's edge should look like: a different fight, not a different outcome.
 
 The gate target is p90 near 80%. Both archetypes are in the band, seven points apart against a five-point target. Bare is correctly hopeless and the teaching guarantee still holds. This was reached with `MAGNITUDE_SCALE = 0.7` in `src/data/affixes.ts` — measured, not chosen; halving overshot to 64% and 39%. Retune that constant before touching individual ranges.
 
@@ -276,8 +280,8 @@ The gate target is p90 near 80%. Both archetypes are in the band, seven points a
 
 **Next, in order:**
 
-1. **Two tuning calls for the owner.** The Bear leaves a bare Assassin at 9.6% — nearly a second gate for that build, though any gear opens it. And the Elk's Berserker-punishment is entirely feel (sixteen seconds with a dead meter) rather than outcome, since both builds still win; giving it evasion would make the slow greataxe swings miss and turn feel into risk.
-2. **Item icons and a fight background.** The pack is still text.
+1. **Item icons and a fight background.** The pack is still text.
+2. **Band-one sprites that actually read as strange.** At 64px the one-detail wrongness did not render; what came back was normal animals with red eyes. Acceptable for now. When revisited: lead the prompt with a wrongness big enough to survive 64px, or use a larger canvas.
 
 **Known and deliberately unfixed:**
 

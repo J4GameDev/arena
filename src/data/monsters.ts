@@ -92,8 +92,12 @@ export const STRANGE_WOLF: MonsterDefinition = {
 export const STRANGE_BEAR: MonsterDefinition = {
   id: 'strange-bear',
   name: 'Strange Bear',
-  maxHealth: 150,
-  attack: { damage: 16, attacksPerSecond: 0.5, variance: 0.15 },
+  // A regular, not a gate. At 150 health and 16 damage a bare Assassin won
+  // one fight in ten — a wall wearing the wrong label. This keeps the armour,
+  // which is the whole identity, and lets the Assassin win almost always
+  // while making it grind for it.
+  maxHealth: 130,
+  attack: { damage: 12, attacksPerSecond: 0.5, variance: 0.15 },
   critChance: 0.05,
   // Thick hide in patches where hide should not grow. Takes 3 off every hit:
   // a rounding error to a 22-damage greataxe, half of a 6-damage dagger.
@@ -101,8 +105,9 @@ export const STRANGE_BEAR: MonsterDefinition = {
   defeat: 'dies',
   lineage: 'animal',
   designRole:
-    'The Assassin-punisher and the hardest regular hunt. Armour that barely dents the ' +
-    'Berserker guts the Assassin. The "you are not ready yet" fight before the gate.',
+    'The Assassin-punisher, and the hardest regular hunt — but still a regular. Armour ' +
+    'that barely dents the Berserker halves the Assassin, so the same fight is quick for ' +
+    'one build and a long grind for the other. Different fight, same outcome.',
 };
 
 export const STRAYED_HUNTER: MonsterDefinition = {
