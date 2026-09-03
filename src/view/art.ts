@@ -44,7 +44,7 @@ interface FigureHeight {
 const FIGURE_HEIGHTS: Readonly<Record<string, FigureHeight>> = {
   greataxe: { meters: 1.85, figurePx: 52 },
   'twin-daggers': { meters: 1.75, figurePx: 59 },
-  oswald: { meters: 1.75, figurePx: 57 },
+  oswald: { meters: 1.75, figurePx: 61 },
   'strange-boar': { meters: 1.0, figurePx: 57 },
   'strange-elk': { meters: 2.3, figurePx: 54 },
   'strange-wolf': { meters: 0.85, figurePx: 32 },

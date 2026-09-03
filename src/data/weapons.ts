@@ -101,12 +101,17 @@ export const SHORT_BOW: Weapon = {
     'whoever is swinging, and the next arrow springs it: the thing in front of you loses ' +
     'its next swing. Slow to matter in a short fight. Decisive in a long one.',
   // Starts at range, so the first arrow is already nocked when the fight begins.
-  attack: { damage: 9, attacksPerSecond: 1.2, variance: 0.2 },
+  // 10 rather than 9: on hunts the Ranger died in fight two, the way the
+  // Assassin did before its fix, and the same lever applies — end fights
+  // sooner. Ordered by the owner with the evasion below.
+  attack: { damage: 10, attacksPerSecond: 1.2, variance: 0.2 },
   resource: SNARE,
   threshold: 60, // six seconds
   empowerMultiplier: 1.5,
   maxDamageReduction: 0,
-  evasion: 0,
+  // Fights at range, so some of what is swung at it never arrives. Ten
+  // percent: a baseline the boots and rings build on, not the whole budget.
+  evasion: 0.1,
   blockChance: 0,
   initiative: 0.5,
   // The whole payoff. A snared enemy's next swing comes three seconds late,
@@ -127,7 +132,8 @@ export const STAFF: Weapon = {
   // At 10 damage and a x3 burst the Warlock lost to the Mugger bare and had a
   // 2% gate; the burst has to be worth the blood it costs. Measured: 12 and
   // x4 gave 86% at the gate, x3.5 gave 74%, x3.75 gave 78%.
-  attack: { damage: 12, attacksPerSecond: 0.9, variance: 0.25 },
+  // 13 rather than 12 for the same reason as the Ranger: hunts, fight two.
+  attack: { damage: 13, attacksPerSecond: 0.9, variance: 0.25 },
   resource: MANA,
   threshold: 60, // thirty health actually lost
   empowerMultiplier: 3.75,
