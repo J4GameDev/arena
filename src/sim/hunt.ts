@@ -28,6 +28,14 @@ export type HuntLength = (typeof HUNT_LENGTHS)[number];
  */
 export const WEAPON_FIND_CHANCE = 0.25;
 
+/**
+ * Between fights you bind your wounds: this fraction of the health you are
+ * missing comes back before the next encounter. 0 carries every scratch to
+ * the end; 1 would make a hunt a string of unrelated fights. Measured with
+ * `npm run hunts` — see CLAUDE.md for the target.
+ */
+export const REST_RECOVERY = 0;
+
 export type EncounterKind = 'animal' | 'person' | 'ambush';
 
 export interface Encounter {
@@ -64,6 +72,7 @@ export function runHunt(
   length: number,
   seed: number,
   unownedWeaponIds: readonly string[],
+  recovery: number = REST_RECOVERY,
 ): HuntResult {
   const rng = new Rng(seed);
   const encounters: Encounter[] = [];
@@ -88,6 +97,12 @@ export function runHunt(
       survived = false;
       break;
     }
+
+    // Bind your wounds. Whole points only, so the number on screen stays honest.
+    health = Math.min(
+      heroTemplate.maxHealth,
+      health + Math.floor((heroTemplate.maxHealth - health) * recovery),
+    );
 
     // A timed-out fight is a standoff: nobody died, so nothing is taken.
     if (result.winner !== hero.name) continue;
