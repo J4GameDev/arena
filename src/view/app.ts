@@ -4,7 +4,7 @@ import { runFight } from '../sim/combat.ts';
 import { createHero, createMonster } from '../sim/combatants.ts';
 import { Rng } from '../sim/rng.ts';
 import { rollDrop } from '../sim/roll.ts';
-import type { Combatant, Item, Modifier, MonsterDefinition, Slot, Weapon } from '../sim/types.ts';
+import type { Combatant, Item, Modifier, MonsterDefinition, Weapon } from '../sim/types.ts';
 import {
   acquireWeapon,
   addToBackpack,
@@ -22,22 +22,9 @@ import {
   type RunState,
 } from '../state/run.ts';
 import { loadRun, saveRun } from '../state/storage.ts';
+import { figureFor, iconFor, sceneFor, spriteFor } from './art.ts';
 import { playFight } from './fight-view.ts';
 import { formatModifier, isBeneficial } from './format.ts';
-
-/** Sprites live in public/sprites and are looked up by id. */
-const spriteFor = (id: string): string => `/sprites/${id}.png`;
-
-/** One icon per slot: every item in a slot shares a name, so it shares a picture. */
-const iconFor = (slot: Slot): string => `/icons/${slot}.png`;
-
-/**
- * Where a fight happens. The spar is inside the walls; everything else is out
- * past them. Decided here, in the view, because the simulation has no idea
- * that places exist.
- */
-const sceneFor = (definition: MonsterDefinition): string =>
-  `/scenes/${definition.defeat === 'yields' ? 'bastion' : 'forest-edge'}.png`;
 
 /**
  * How often a corrupted kill yields a weapon you do not already have.
@@ -83,8 +70,8 @@ export function start(mount: HTMLElement): void {
     mount.append(stage);
 
     await playFight(stage, you, foe, result, {
-      hero: spriteFor(run.weaponId),
-      foe: spriteFor(definition.id),
+      hero: figureFor(run.weaponId),
+      foe: figureFor(definition.id),
       scene: sceneFor(definition),
     });
 

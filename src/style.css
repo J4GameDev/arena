@@ -261,6 +261,8 @@ button.ghost:hover {
  * them in. Pixel art, so it scales without blur.
  */
 .scene {
+  /* Pixels per metre. Every figure is drawn to this one scale. */
+  --ppm: 60;
   position: relative;
   aspect-ratio: 400 / 224;
   border: 1px solid var(--ink-edge);
@@ -466,9 +468,8 @@ button.ghost:hover {
 }
 
 @media (max-width: 34rem) {
-  .scene .portrait {
-    width: 80px;
-    height: 80px;
+  .scene {
+    --ppm: 38;
   }
 
   .side-name {
@@ -580,9 +581,10 @@ button.ghost:hover {
   filter: drop-shadow(0 3px 0 rgba(0, 0, 0, 0.45));
 }
 
+/* The whole 64px canvas stands for --canvas-metres of world; see view/art.ts. */
 .scene .portrait {
-  width: 128px;
-  height: 128px;
+  width: calc(var(--canvas-metres, 2) * var(--ppm) * 1px);
+  height: calc(var(--canvas-metres, 2) * var(--ppm) * 1px);
 }
 
 .portrait.large {

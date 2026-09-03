@@ -1,4 +1,5 @@
 import type { Combatant, CombatEvent, FightResult } from '../sim/types.ts';
+import type { Figure } from './art.ts';
 
 /**
  * Plays a finished fight back to the player.
@@ -30,8 +31,8 @@ interface Side {
  * simulation has no idea art exists and should keep it that way.
  */
 export interface FightArt {
-  readonly hero: string;
-  readonly foe: string;
+  readonly hero: Figure;
+  readonly foe: Figure;
   /** Backdrop for the whole exchange. Where you are, not who you are. */
   readonly scene: string;
 }
@@ -155,7 +156,7 @@ function apply(event: CombatEvent, sides: Map<string, Side>, log: HTMLOListEleme
   }
 }
 
-function sideMarkup(kind: 'hero' | 'foe', combatant: Combatant, sprite: string): string {
+function sideMarkup(kind: 'hero' | 'foe', combatant: Combatant, figure: Figure): string {
   const meter =
     combatant.resource === null
       ? ''
@@ -172,7 +173,13 @@ function sideMarkup(kind: 'hero' | 'foe', combatant: Combatant, sprite: string):
         ${meter}
       </div>
       <div class="figure">
-        <img class="portrait" src="${escape(sprite)}" alt="" onerror="this.remove()" />
+        <img
+          class="portrait"
+          src="${escape(figure.sprite)}"
+          style="--canvas-metres: ${figure.canvasMetres}"
+          alt=""
+          onerror="this.remove()"
+        />
         <div class="floaters"></div>
       </div>
     </div>
