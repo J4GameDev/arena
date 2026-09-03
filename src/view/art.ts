@@ -5,6 +5,12 @@
 /** Sprites live in public/sprites and are looked up by id. */
 export const spriteFor = (id: string): string => `/sprites/${id}.png`;
 
+/**
+ * A face, for when someone speaks. Lives in public/portraits. The full-body
+ * sprite is for the fight; a conversation wants eyes.
+ */
+export const portraitFor = (id: string): string => `/portraits/${id}.png`;
+
 /** One icon per slot: every item in a slot shares a name, so it shares a picture. */
 export const iconFor = (slot: string): string => `/icons/${slot}.png`;
 

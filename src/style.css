@@ -1094,8 +1094,7 @@ button.ghost:hover {
   }
 }
 
-/* Oswald and the rack: one thing at a time, with air around it. */
-.meeting,
+/* The rack: one thing at a time, with air around it. */
 .rack {
   min-height: 60vh;
   max-width: 34rem;
@@ -1108,9 +1107,48 @@ button.ghost:hover {
   animation: settle 600ms ease-out;
 }
 
-.meeting .portrait.large {
-  justify-self: center;
-  margin-bottom: 0.25rem;
+/*
+ * A conversation, the old RPG way: the speaker's face top left, the words
+ * starting to its right and opening up to the full width once they clear
+ * it. A float does exactly that and nothing else does it as simply.
+ */
+.dialog {
+  max-width: 38rem;
+  margin: 6vh auto 0;
+  padding: 1.5rem 1.75rem 1.75rem;
+  border: 1px solid var(--ink-edge);
+  background: var(--ink-raised);
+  text-align: left;
+  animation: settle 600ms ease-out;
+}
+
+.dialog::after {
+  content: '';
+  display: block;
+  clear: both;
+}
+
+.dialog .face {
+  float: left;
+  width: 128px;
+  height: 128px;
+  margin: 0.2rem 1.25rem 0.75rem 0;
+  image-rendering: pixelated;
+  border: 1px solid var(--ink-edge);
+  background: #0b0908;
+}
+
+.dialog .speaker-name {
+  margin-bottom: 0.6rem;
+}
+
+.dialog .speech {
+  margin-bottom: 0.7rem;
+}
+
+.dialog .story-actions {
+  clear: both;
+  padding-top: 0.5rem;
 }
 
 .speaker-name {

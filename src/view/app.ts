@@ -46,7 +46,7 @@ import {
   type RunState,
 } from '../state/run.ts';
 import { clearRun, loadRun, saveRun } from '../state/storage.ts';
-import { emptyIconFor, figureFor, iconFor, sceneFor, spriteFor } from './art.ts';
+import { emptyIconFor, figureFor, iconFor, portraitFor, sceneFor, spriteFor } from './art.ts';
 import { playFight } from './fight-view.ts';
 import { formatModifier, isBeneficial } from './format.ts';
 
@@ -283,10 +283,11 @@ export function start(mount: HTMLElement): void {
     }
 
     if (intro === 'meeting') {
-      // Oswald, on his own screen, with room around him.
+      // Oswald, the old way: his face top left, the words starting beside it
+      // and opening up underneath once they clear it.
       mount.innerHTML = `
-        <section class="meeting">
-          <img class="portrait large" src="${spriteFor(OSWALD.id)}" alt="" onerror="this.remove()" />
+        <section class="meeting dialog">
+          <img class="face" src="${portraitFor(OSWALD.id)}" alt="" onerror="this.remove()" />
           <p class="speaker-name">Oswald</p>
           <p class="speech">He looks the way he always has: gray in the beard, the scar through one eyebrow, hands that never seem to be doing nothing. Today he looks at you a little longer than usual.</p>
           <p class="speech quote">${escape(`"So. Today."`)}</p>
