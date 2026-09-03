@@ -52,6 +52,9 @@ interface FigureHeight {
 const FIGURE_HEIGHTS: Readonly<Record<string, FigureHeight>> = {
   greataxe: { meters: 1.85, figurePx: 52 },
   'twin-daggers': { meters: 1.75, figurePx: 59 },
+  'sword-and-shield': { meters: 1.8, figurePx: 61 },
+  'short-bow': { meters: 1.75, figurePx: 58 },
+  staff: { meters: 1.8, figurePx: 61 },
   oswald: { meters: 1.75, figurePx: 61 },
   'strange-boar': { meters: 1.0, figurePx: 57 },
   'strange-elk': { meters: 2.3, figurePx: 54 },
@@ -60,6 +63,24 @@ const FIGURE_HEIGHTS: Readonly<Record<string, FigureHeight>> = {
   'strayed-hunter': { meters: 2.0, figurePx: 60 },
   bandit: { meters: 1.75, figurePx: 57 },
   mugger: { meters: 1.9, figurePx: 54 },
+};
+
+/**
+ * The hero sprites come in two bodies, and each body stands at its own
+ * pixel height on the canvas. Measured once per sprite when it was chosen;
+ * re-measure if one is replaced. The class row above supplies the meters.
+ */
+const HERO_FIGURE_PX: Readonly<Record<string, number>> = {
+  'greataxe-male': 61,
+  'greataxe-female': 60,
+  'twin-daggers-male': 57,
+  'twin-daggers-female': 60,
+  'sword-and-shield-male': 61,
+  'sword-and-shield-female': 61,
+  'short-bow-male': 58,
+  'short-bow-female': 58,
+  'staff-male': 61,
+  'staff-female': 54,
 };
 
 /** Fallback for a sprite nobody has measured yet: drawn as if it were a person. */
@@ -80,9 +101,11 @@ export function figureFor(id: string): Figure {
 
 /** The hero's figure: the class's height, the chosen body's picture. */
 export function heroFigureFor(weaponId: string, sex: string): Figure {
+  const height = FIGURE_HEIGHTS[weaponId] ?? UNMEASURED;
+  const figurePx = HERO_FIGURE_PX[`${weaponId}-${sex}`] ?? height.figurePx;
   return {
-    ...figureFor(weaponId),
     sprite: heroSpriteFor(weaponId, sex),
+    canvasMeters: (height.meters * 64) / figurePx,
     fallback: spriteFor(weaponId),
   };
 }
