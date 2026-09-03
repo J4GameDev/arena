@@ -851,13 +851,19 @@ button.ghost:hover {
 
 .hero-bar {
   display: grid;
-  grid-template-columns: auto 1fr;
+  grid-template-columns: auto 1fr auto;
   grid-template-areas:
-    'portrait words'
-    'portrait stats';
+    'portrait words restart'
+    'portrait stats stats';
   column-gap: 1.25rem;
   row-gap: 0.75rem;
   align-items: center;
+}
+
+.restart {
+  grid-area: restart;
+  align-self: start;
+  font-size: 0.75rem;
 }
 
 .hero-bar .portrait {

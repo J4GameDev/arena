@@ -45,7 +45,7 @@ import {
   type EquipPosition,
   type RunState,
 } from '../state/run.ts';
-import { loadRun, saveRun } from '../state/storage.ts';
+import { clearRun, loadRun, saveRun } from '../state/storage.ts';
 import { emptyIconFor, figureFor, iconFor, sceneFor, spriteFor } from './art.ts';
 import { playFight } from './fight-view.ts';
 import { formatModifier, isBeneficial } from './format.ts';
@@ -351,6 +351,7 @@ export function start(mount: HTMLElement): void {
           <h1>The Bastion</h1>
           <p class="sub">${escape(weapon.name)} · ${escape(weapon.archetype)}</p>
         </div>
+        <button class="ghost restart" data-restart type="button">Start over</button>
         <ul class="stats compact">
           ${stat('Health', String(you.maxHealth))}
           ${stat('Damage', String(Math.round(you.attack.damage)))}
@@ -383,6 +384,22 @@ export function start(mount: HTMLElement): void {
 
     bind('[data-tab]', (button) => {
       tab = button.dataset['tab'] as Tab;
+      render();
+    });
+    bind('[data-restart]', () => {
+      // The one destructive button in the game. It asks.
+      if (
+        !confirm(
+          'Start over? This hunter, everything worn, and everything in the stores are gone for good.',
+        )
+      )
+        return;
+      clearRun();
+      state = null;
+      intro = 'title';
+      beat = 0;
+      tab = 'gear';
+      openCell = null;
       render();
     });
     bind('[data-cell]', (button) => {
