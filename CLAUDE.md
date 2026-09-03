@@ -107,7 +107,9 @@ Sprite paths are passed _into_ the view, never stored on a Combatant. The simula
 
 **Readability in the scene.** Figures and text on a painting blend into it. The fix chosen from four mocked options: the painting sits on its own layer at three-quarter brightness and color, every figure gets a dark outline one sprite-pixel wide, and each stands on a soft dark pad at the same baseline (sprites are shifted on disk so their feet sit on the bottom row). No plates behind the bars and no HUD strip — those were the rejected options. If it is still hard to read, the next levers are prompting scenes for an empty midground where the fighters stand, and drawing the figures larger.
 
-**Item icons live in `public/icons/<slot>.png`**, 32x32, one per slot. Every item in a slot shares a name, so it shares a picture. Weapons reuse their sprites.
+**Item icons live in `public/icons/<slot>.png`**, 32x32, one per slot. Every item in a slot shares a name, so it shares a picture. Weapons reuse their sprites. Each slot also has `<slot>-empty.png`, the same picture as a dim gray silhouette, derived from the icon rather than drawn: an empty slot reads as "a hood goes here", a filled one as the hood.
+
+**The camp is four tabs**, by the owner's design: **Gear** (a table of slots — weapon, head, torso, hands, legs, feet, two rings, necklace — with the empty icon or the item, and a picker under it listing what you own for whichever slot you click), **Go out** (provisions, how far, the areas and the two chosen fights), **Craft** (cookfire and tanner, using the same slot icons), and **Inventory** (rations, meat, hides with their sources, and the pack). Stats and portrait stay in the header on every tab. Nothing is on display that was not asked for.
 
 **64 pixels cannot carry a subtle detail.** A clouded eye, a missing ear, a patch of discolored fur — each is one or two pixels at this size and the model mostly ignores them. What actually rendered on the first band-one animals was red eyes. Either the wrongness has to be large enough to read at 64px (a whole limb, a silhouette that is off, a color that dominates) or the sprite has to be bigger. Do not describe a sprite by its prompt; describe it by what came back.
 
@@ -331,7 +333,7 @@ The Elk still starves Rage (fewest big hits **0**) while Focus fires five times;
 
 **Known and deliberately unfixed:**
 
-- **Wasted Rage meters.** Against rolled gear, **3,577 of 3,766** geared Berserker losses to the boss — 95% — end holding a full meter. Rage fills from a 38-damage boss swing in two hits, and the greataxe swings every 1.5 seconds, so you almost always die loaded. Now judgeable, since the UI shows the bar: decide whether it reads as a berserker dying mid-fury or as a payoff being stolen. If the latter, the levers are a higher Rage threshold or letting a full meter fire at once. **The owner is playtesting this himself before deciding. Do not propose fixes until he reports back.**
+- **Wasted Rage meters — decided: leave it.** Most geared Berserker losses to the boss end holding a full meter, because Rage fills from one boss swing in two hits and the greataxe swings every 1.5 seconds. The owner played it and ruled on 3 Sep 2026: the Berserker is fine as it is, and he will change it later if he wants to. Do not reopen it; do not propose fixes.
 - **The hunt harness's crafted set is a random mix of hides.** A real player picks. The p90 partly covers this, but a "best material per slot" set would sit higher than the table says.
 - **No levels, no abilities, no attack animation.** Figures stand still while numbers fly.
 

@@ -20,6 +20,7 @@ import type {
   MaterialId,
   Modifier,
   MonsterDefinition,
+  Slot,
   Weapon,
 } from '../sim/types.ts';
 import {
@@ -30,11 +31,11 @@ import {
   craft,
   craftCost,
   discardItem,
-  grantHuntersPack,
-  HUNTERS_PACK,
   equipItem,
   equippedItems,
   EQUIP_POSITIONS,
+  grantHuntersPack,
+  HUNTERS_PACK,
   newRun,
   recordDefeat,
   setHuntLength,
@@ -46,7 +47,7 @@ import {
   type RunState,
 } from '../state/run.ts';
 import { loadRun, saveRun } from '../state/storage.ts';
-import { figureFor, iconFor, sceneFor, spriteFor } from './art.ts';
+import { emptyIconFor, figureFor, iconFor, sceneFor, spriteFor } from './art.ts';
 import { playFight } from './fight-view.ts';
 import { formatModifier, isBeneficial } from './format.ts';
 
@@ -88,9 +89,28 @@ const THE_ROAD_OUT = chosenFight(
   'forest-edge',
 );
 
+/** The camp is one screen with four tabs. Nothing is on display that was not asked for. */
+type Tab = 'gear' | 'out' | 'craft' | 'inventory';
+
+const TABS: readonly { readonly id: Tab; readonly label: string }[] = [
+  { id: 'gear', label: 'Gear' },
+  { id: 'out', label: 'Go out' },
+  { id: 'craft', label: 'Craft' },
+  { id: 'inventory', label: 'Inventory' },
+];
+
+/** The gear table's cells: the weapon, then every wearable position. */
+type GearCell = 'weapon' | EquipPosition;
+
+const GEAR_CELLS: readonly GearCell[] = ['weapon', ...EQUIP_POSITIONS];
+
 export function start(mount: HTMLElement): void {
   let state: RunState | null = loadRun();
   let busy = false;
+
+  // Screen state, not run state: forgotten on reload, never saved.
+  let tab: Tab = 'gear';
+  let openCell: GearCell | null = null;
 
   const commit = (next: RunState): void => {
     state = next;
@@ -173,6 +193,8 @@ export function start(mount: HTMLElement): void {
     stage.append(outcome(hunt, you.name, packNow));
     stage.querySelector('.continue')?.addEventListener('click', () => {
       busy = false;
+      // Coming home with a haul, the natural next look is at what you can make.
+      if (hunt.kept.meat > 0 || Object.keys(hunt.kept.materials).length > 0) tab = 'craft';
       commit(next);
     });
 
@@ -218,15 +240,13 @@ export function start(mount: HTMLElement): void {
     const weapon = weaponById(run.weaponId);
 
     mount.innerHTML = `
-      <header class="top">
-        <h1>The Bastion</h1>
-        <p class="sub">${escape(weapon.name)} · ${escape(weapon.archetype)}</p>
-      </header>
-
-      <section class="panel">
-        <h2>You</h2>
-        <img class="portrait large" src="${spriteFor(run.weaponId)}" alt="" onerror="this.remove()" />
-        <ul class="stats">
+      <header class="top hero-bar">
+        <img class="portrait" src="${spriteFor(run.weaponId)}" alt="" onerror="this.remove()" />
+        <div class="hero-words">
+          <h1>The Bastion</h1>
+          <p class="sub">${escape(weapon.name)} · ${escape(weapon.archetype)}</p>
+        </div>
+        <ul class="stats compact">
           ${stat('Health', String(you.maxHealth))}
           ${stat('Damage', String(Math.round(you.attack.damage)))}
           ${stat('Attacks / sec', you.attack.attacksPerSecond.toFixed(2))}
@@ -236,78 +256,35 @@ export function start(mount: HTMLElement): void {
           ${stat('Crit', percent(you.critChance))}
           ${stat('Lifesteal', percent(you.lifesteal))}
         </ul>
-      </section>
+      </header>
+
+      <nav class="tabs">
+        ${TABS.map(
+          (candidate) =>
+            `<button class="tab ${candidate.id === tab ? 'selected' : ''}" data-tab="${candidate.id}" type="button">${candidate.label}</button>`,
+        ).join('')}
+      </nav>
 
       ${
-        run.ownedWeaponIds.length > 1
-          ? `<section class="panel">
-              <h2>Arms</h2>
-              <div class="items">
-                ${run.ownedWeaponIds
-                  .map((id) => weaponCard(weaponById(id), id === run.weaponId))
-                  .join('')}
-              </div>
-            </section>`
-          : ''
+        tab === 'gear'
+          ? gearTab(run)
+          : tab === 'out'
+            ? outTab(run)
+            : tab === 'craft'
+              ? craftTab(run)
+              : inventoryTab(run)
       }
-
-      <section class="panel">
-        <h2>Worn</h2>
-        <div class="slots">
-          ${EQUIP_POSITIONS.map((position) => slotCard(position, run.equipped[position])).join('')}
-        </div>
-      </section>
-
-      <section class="panel">
-        <h2>Go out</h2>
-        <p class="provisions">${provisionsLine(run)}</p>
-        <div class="length">
-          <span class="length-label">How far</span>
-          ${HUNT_LENGTHS.map(
-            (
-              length,
-            ) => `<button class="length-choice ${length === run.huntLength ? 'selected' : ''}"
-              data-length="${length}" type="button">${length} fights</button>`,
-          ).join('')}
-          <span class="length-note">Your wounds go with you. Fall and half of what you carry stays out there.</span>
-        </div>
-        <div class="hunts">
-          ${AREAS.map((area) => areaCard(area, `${run.huntLength} fights`, run)).join('')}
-          ${areaCard(THE_YARD, 'One fight', run)}
-          ${areaCard(THE_ROAD_OUT, 'One fight', run)}
-        </div>
-      </section>
-
-      <section class="panel">
-        <h2>Cookfire</h2>
-        <div class="cookfire">
-          <p class="item-name">Meat <span class="count">×${run.meat}</span></p>
-          <p class="item-name">Rations <span class="count">×${run.rations}</span></p>
-          <p class="pitch">Meat keeps a day. Cook it here and it keeps for the road: one meat, one ration, ${RATION_HEAL} health back when you need it.</p>
-          <div class="item-actions">
-            <button data-cook="1" type="button" ${run.meat > 0 ? '' : 'disabled'}>Cook one</button>
-            <button data-cook="all" type="button" ${run.meat > 0 ? '' : 'disabled'}>Cook all</button>
-          </div>
-        </div>
-      </section>
-
-      <section class="panel">
-        <h2>Tanner</h2>
-        <div class="tanner">
-          ${MATERIAL_LIST.map((material) => materialRow(material.id, run)).join('')}
-        </div>
-      </section>
-
-      <section class="panel">
-        <h2>Pack <span class="count">${run.backpack.length}</span></h2>
-        ${
-          run.backpack.length === 0
-            ? '<p class="empty">Nothing yet. Make something, or take it off someone.</p>'
-            : `<div class="items">${run.backpack.map(itemCard).join('')}</div>`
-        }
-      </section>
     `;
 
+    bind('[data-tab]', (button) => {
+      tab = button.dataset['tab'] as Tab;
+      render();
+    });
+    bind('[data-cell]', (button) => {
+      const cell = button.dataset['cell'] as GearCell;
+      openCell = openCell === cell ? null : cell;
+      render();
+    });
     bind('[data-length]', (button) => {
       const length = Number(button.dataset['length']) as HuntLength;
       commit(setHuntLength(run, length));
@@ -331,13 +308,31 @@ export function start(mount: HTMLElement): void {
     });
     bind('[data-equip]', (button) => {
       const item = run.backpack.find((candidate) => candidate.id === button.dataset['equip']);
-      if (item !== undefined) commit(equipItem(run, item, positionFor(item, run)));
+      if (item === undefined) return;
+      // From the gear table, the item goes into the slot that is open.
+      const position =
+        openCell !== null && openCell !== 'weapon' && slotOf(openCell) === item.slot
+          ? openCell
+          : positionFor(item, run);
+      commit(equipItem(run, item, position));
     });
     bind('[data-discard]', (button) => commit(discardItem(run, button.dataset['discard'] ?? '')));
     bind('[data-unequip]', (button) =>
       commit(unequipItem(run, button.dataset['unequip'] as EquipPosition)),
     );
     bind('[data-wield]', (button) => commit(wieldWeapon(run, button.dataset['wield'] ?? '')));
+  }
+
+  function gearTab(run: RunState): string {
+    return `
+      <section class="panel">
+        <h2>Worn</h2>
+        <div class="doll">
+          ${GEAR_CELLS.map((cell) => gearCell(cell, run, cell === openCell)).join('')}
+        </div>
+        ${openCell === null ? '<p class="aside">Pick a slot to see what you could put there.</p>' : picker(openCell, run)}
+      </section>
+    `;
   }
 
   function bind(selector: string, handler: (button: HTMLButtonElement) => void): void {
@@ -355,45 +350,77 @@ function positionFor(item: Item, run: RunState): EquipPosition {
   return run.equipped.ring1 === undefined ? 'ring1' : 'ring2';
 }
 
-function areaCard(area: Area, lengthNote: string, run: RunState): string {
-  const faced = area.animals
-    .concat(area.people)
-    .map((spawn) => spawn.monster)
-    .filter((monster) => run.defeated.includes(monster.id)).length;
-  const known = area.animals.length + area.people.length;
+// --- Gear ---
 
+function gearCell(cell: GearCell, run: RunState, open: boolean): string {
+  if (cell === 'weapon') {
+    const weapon = WEAPONS.find((candidate) => candidate.id === run.weaponId);
+    return `
+      <button class="cell filled ${open ? 'open' : ''}" data-cell="weapon" type="button">
+        ${icon(spriteFor(run.weaponId))}
+        <span class="cell-label">Weapon</span>
+        <span class="cell-name">${escape(weapon?.name ?? '')}</span>
+      </button>
+    `;
+  }
+
+  const item = run.equipped[cell];
+  const slot = slotOf(cell);
+  if (item === undefined) {
+    return `
+      <button class="cell empty ${open ? 'open' : ''}" data-cell="${cell}" type="button">
+        ${icon(emptyIconFor(slot))}
+        <span class="cell-label">${label(cell)}</span>
+        <span class="cell-name">—</span>
+      </button>
+    `;
+  }
   return `
-    <button class="hunt" data-hunt="${area.id}" type="button">
-      <span class="hunt-name">${escape(area.name)}</span>
-      <span class="hunt-desc">${escape(area.description)}</span>
-      <span class="hunt-note">${escape(lengthNote)} · ${faced === 0 ? 'nothing faced yet' : `${faced} of ${known} kinds faced`}</span>
+    <button class="cell filled ${open ? 'open' : ''}" data-cell="${cell}" type="button">
+      ${icon(iconFor(slot))}
+      <span class="cell-label">${label(cell)}</span>
+      <span class="cell-name">${escape(item.name)}</span>
     </button>
   `;
 }
 
-function materialRow(materialId: MaterialId, run: RunState): string {
-  const material = MATERIAL_LIST.find((candidate) => candidate.id === materialId);
-  if (material === undefined) return '';
-  const have = run.materials[materialId] ?? 0;
-  const source = MONSTERS.find((monster) => monster.material === materialId);
+/** What you own for one slot: what is on, then what is in the pack. */
+function picker(cell: GearCell, run: RunState): string {
+  if (cell === 'weapon') {
+    return `
+      <div class="picker">
+        <h3>Arms</h3>
+        <div class="items">
+          ${run.ownedWeaponIds
+            .map((id) => WEAPONS.find((candidate) => candidate.id === id))
+            .filter((weapon): weapon is Weapon => weapon !== undefined)
+            .map((weapon) => weaponCard(weapon, weapon.id === run.weaponId))
+            .join('')}
+        </div>
+        ${run.ownedWeaponIds.length === 1 ? '<p class="aside">Other weapons have to be taken off someone.</p>' : ''}
+      </div>
+    `;
+  }
+
+  const slot = slotOf(cell);
+  const worn = run.equipped[cell];
+  const spare = run.backpack.filter((item) => item.slot === slot);
+  const source = CRAFTABLE_SLOTS.includes(slot)
+    ? 'The tanner makes these from hide.'
+    : 'These come off people. Nobody makes them.';
 
   return `
-    <div class="material ${have === 0 ? 'none' : ''}">
-      <div class="material-head">
-        <p class="item-name">${escape(material.name)} <span class="count">×${have}</span></p>
-        <p class="pitch">${escape(material.note)}${source === undefined ? '' : ` From the ${escape(source.name)}.`}</p>
+    <div class="picker">
+      <h3>${label(cell)}</h3>
+      <div class="items">
+        ${worn === undefined ? '' : itemCard(worn, { worn: cell })}
+        ${spare.map((item) => itemCard(item, { worn: null })).join('')}
       </div>
-      <div class="craft-actions">
-        ${CRAFTABLE_SLOTS.map((slot) => {
-          const cost = craftCost(slot) ?? 0;
-          const affordable = canCraft(run, slot, materialId);
-          return `<button class="craft" data-craft="${slot}" data-material="${materialId}"
-            type="button" ${affordable ? '' : 'disabled'}>
-            <img class="icon small" src="${iconFor(slot)}" alt="" onerror="this.remove()" />
-            <span>${label(slot)}</span><span class="cost">${cost}</span>
-          </button>`;
-        }).join('')}
-      </div>
+      ${
+        worn === undefined && spare.length === 0
+          ? `<p class="aside">Nothing for this slot yet. ${source}</p>`
+          : ''
+      }
     </div>
   `;
 }
@@ -420,45 +447,67 @@ function weaponCard(weapon: Weapon, inHand: boolean): string {
   `;
 }
 
-function slotCard(position: EquipPosition, item: Item | undefined): string {
-  if (item === undefined) {
-    return `
-      <div class="slot empty">
-        <div class="item-head">
-          ${icon(iconFor(slotOf(position)))}
-          <p class="slot-name">${label(position)}</p>
-        </div>
-      </div>
-    `;
-  }
+/** An item card. `worn` names the position it is in, or null if it is in the pack. */
+function itemCard(item: Item, where: { readonly worn: EquipPosition | null }): string {
   return `
-    <div class="slot">
+    <div class="item ${where.worn === null ? '' : 'in-hand'}">
       <div class="item-head">
         ${icon(iconFor(item.slot))}
         <div>
-          <p class="slot-name">${label(position)}</p>
           <p class="item-name">${escape(item.name)}</p>
+          ${where.worn === null ? '' : '<p class="in-hand-note">Worn</p>'}
         </div>
       </div>
       <ul class="affixes">${item.modifiers.map(affixLine).join('')}</ul>
-      <button class="ghost" data-unequip="${position}" type="button">Remove</button>
+      <div class="item-actions">
+        ${
+          where.worn === null
+            ? `<button data-equip="${item.id}" type="button">Wear</button>
+               <button class="ghost" data-discard="${item.id}" type="button">Discard</button>`
+            : `<button class="ghost" data-unequip="${where.worn}" type="button">Remove</button>`
+        }
+      </div>
     </div>
   `;
 }
 
-function itemCard(item: Item): string {
+// --- Go out ---
+
+function outTab(run: RunState): string {
   return `
-    <div class="item">
-      <div class="item-head">
-        ${icon(iconFor(item.slot))}
-        <p class="item-name">${escape(item.name)}</p>
+    <section class="panel">
+      <h2>Go out</h2>
+      <p class="provisions">${provisionsLine(run)}</p>
+      <div class="length">
+        <span class="length-label">How far</span>
+        ${HUNT_LENGTHS.map(
+          (length) => `<button class="length-choice ${length === run.huntLength ? 'selected' : ''}"
+            data-length="${length}" type="button">${length} fights</button>`,
+        ).join('')}
+        <span class="length-note">Your wounds go with you. Fall and half of what you carry stays out there.</span>
       </div>
-      <ul class="affixes">${item.modifiers.map(affixLine).join('')}</ul>
-      <div class="item-actions">
-        <button data-equip="${item.id}" type="button">Wear</button>
-        <button class="ghost" data-discard="${item.id}" type="button">Discard</button>
+      <div class="hunts">
+        ${AREAS.map((area) => areaCard(area, `${run.huntLength} fights`, run)).join('')}
+        ${areaCard(THE_YARD, 'One fight', run)}
+        ${areaCard(THE_ROAD_OUT, 'One fight', run)}
       </div>
-    </div>
+    </section>
+  `;
+}
+
+function areaCard(area: Area, lengthNote: string, run: RunState): string {
+  const faced = area.animals
+    .concat(area.people)
+    .map((spawn) => spawn.monster)
+    .filter((monster) => run.defeated.includes(monster.id)).length;
+  const known = area.animals.length + area.people.length;
+
+  return `
+    <button class="hunt" data-hunt="${area.id}" type="button">
+      <span class="hunt-name">${escape(area.name)}</span>
+      <span class="hunt-desc">${escape(area.description)}</span>
+      <span class="hunt-note">${escape(lengthNote)} · ${faced === 0 ? 'nothing faced yet' : `${faced} of ${known} kinds faced`}</span>
+    </button>
   `;
 }
 
@@ -468,6 +517,96 @@ function provisionsLine(run: RunState): string {
   }
   return `You carry ${run.rations} ${run.rations === 1 ? 'ration' : 'rations'}. You eat one whenever a fight leaves you under ${Math.round(EAT_BELOW * 100)}% health.`;
 }
+
+// --- Craft ---
+
+function craftTab(run: RunState): string {
+  return `
+    <section class="panel">
+      <h2>Cookfire</h2>
+      <div class="cookfire">
+        <p class="item-name">Meat <span class="count">×${run.meat}</span> · Rations <span class="count">×${run.rations}</span></p>
+        <p class="pitch">Meat keeps a day. Cook it here and it keeps for the road: one meat, one ration, ${RATION_HEAL} health back when you need it.</p>
+        <div class="item-actions">
+          <button data-cook="1" type="button" ${run.meat > 0 ? '' : 'disabled'}>Cook one</button>
+          <button data-cook="all" type="button" ${run.meat > 0 ? '' : 'disabled'}>Cook all</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2>Tanner</h2>
+      <div class="tanner">
+        ${MATERIAL_LIST.map((material) => materialRow(material.id, run)).join('')}
+      </div>
+    </section>
+  `;
+}
+
+function materialRow(materialId: MaterialId, run: RunState): string {
+  const material = MATERIAL_LIST.find((candidate) => candidate.id === materialId);
+  if (material === undefined) return '';
+  const have = run.materials[materialId] ?? 0;
+
+  return `
+    <div class="material ${have === 0 ? 'none' : ''}">
+      <div class="material-head">
+        <p class="item-name">${escape(material.name)} <span class="count">×${have}</span></p>
+        <p class="pitch">${escape(material.note)}</p>
+      </div>
+      <div class="craft-actions">
+        ${CRAFTABLE_SLOTS.map((slot) => {
+          const cost = craftCost(slot) ?? 0;
+          const affordable = canCraft(run, slot, materialId);
+          return `<button class="craft" data-craft="${slot}" data-material="${materialId}"
+            type="button" ${affordable ? '' : 'disabled'}>
+            <img class="icon small" src="${iconFor(slot)}" alt="" onerror="this.remove()" />
+            <span>${label(slot)}</span><span class="cost">${cost}</span>
+          </button>`;
+        }).join('')}
+      </div>
+    </div>
+  `;
+}
+
+// --- Inventory ---
+
+function inventoryTab(run: RunState): string {
+  const spare = run.backpack;
+  return `
+    <section class="panel">
+      <h2>Provisions</h2>
+      <ul class="stores">
+        <li><span>Rations</span><strong>${run.rations}</strong></li>
+        <li><span>Meat</span><strong>${run.meat}</strong></li>
+      </ul>
+    </section>
+
+    <section class="panel">
+      <h2>Hides</h2>
+      <ul class="stores">
+        ${MATERIAL_LIST.map((material) => {
+          const source = MONSTERS.find((monster) => monster.material === material.id);
+          return `<li>
+            <span>${escape(material.name)} <em>${source === undefined ? '' : `from the ${escape(source.name)}`}</em></span>
+            <strong>${run.materials[material.id] ?? 0}</strong>
+          </li>`;
+        }).join('')}
+      </ul>
+    </section>
+
+    <section class="panel">
+      <h2>Pack <span class="count">${spare.length}</span></h2>
+      ${
+        spare.length === 0
+          ? '<p class="empty">Nothing spare. Everything you own is on you.</p>'
+          : `<div class="items">${spare.map((item) => itemCard(item, { worn: null })).join('')}</div>`
+      }
+    </section>
+  `;
+}
+
+// --- Coming home ---
 
 function outcome(hunt: HuntResult, heroName: string, packGiven: boolean): HTMLElement {
   const node = document.createElement('div');
@@ -571,6 +710,8 @@ function haulMarkup(haul: Haul): string {
   `;
 }
 
+// --- Bits ---
+
 function affixLine(modifier: Modifier): string {
   const text = formatModifier(modifier);
   return `<li class="${isBeneficial(modifier) ? 'good' : 'bad'}">${escape(text)}</li>`;
@@ -589,7 +730,7 @@ function percent(value: number): string {
   return `${Math.round(value * 100)}%`;
 }
 
-function label(position: EquipPosition | string): string {
+function label(position: EquipPosition | Slot): string {
   const slot = slotOf(position as EquipPosition);
   return slot.charAt(0).toUpperCase() + slot.slice(1);
 }

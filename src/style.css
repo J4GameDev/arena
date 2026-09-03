@@ -836,3 +836,149 @@ button.ghost:hover {
   color: var(--gold);
   font-size: 0.9rem;
 }
+
+/* --- The camp: header, tabs --- */
+
+.hero-bar {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  grid-template-areas:
+    'portrait words'
+    'portrait stats';
+  column-gap: 1.25rem;
+  row-gap: 0.75rem;
+  align-items: center;
+}
+
+.hero-bar .portrait {
+  grid-area: portrait;
+  justify-self: start;
+}
+
+.hero-words {
+  grid-area: words;
+}
+
+.stats.compact {
+  grid-area: stats;
+  grid-template-columns: repeat(auto-fit, minmax(7rem, 1fr));
+  gap: 0.35rem 1rem;
+  font-size: 0.85rem;
+}
+
+.tabs {
+  display: flex;
+  gap: 0.25rem;
+  border-bottom: 1px solid var(--ink-edge);
+}
+
+.tab {
+  background: transparent;
+  color: var(--bone-faint);
+  border: 1px solid transparent;
+  border-bottom: none;
+  padding: 0.5rem 1rem;
+  font-size: 0.8rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.tab:hover:not(:disabled) {
+  background: transparent;
+  color: var(--bone);
+}
+
+.tab.selected {
+  color: var(--bone);
+  background: var(--ink-raised);
+  border-color: var(--ink-edge);
+  margin-bottom: -1px;
+}
+
+/* --- Gear table --- */
+
+.doll {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(8.5rem, 1fr));
+  gap: 0.6rem;
+}
+
+.cell {
+  display: grid;
+  justify-items: center;
+  gap: 0.3rem;
+  padding: 0.8rem 0.5rem 0.7rem;
+  background: #131010;
+  color: var(--bone);
+  border: 1px solid var(--ink-edge);
+  text-align: center;
+}
+
+.cell:hover:not(:disabled) {
+  background: #1a1512;
+  border-color: var(--bone-faint);
+}
+
+.cell.open {
+  border-color: var(--gold);
+}
+
+.cell.empty {
+  color: var(--bone-faint);
+}
+
+.cell-label {
+  font-size: 0.65rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--bone-faint);
+}
+
+.cell-name {
+  font-size: 0.85rem;
+  line-height: 1.25;
+}
+
+.picker {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--ink-edge);
+}
+
+.picker h3 {
+  margin: 0 0 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--bone-dim);
+}
+
+/* --- Inventory --- */
+
+.stores {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 0.5rem;
+}
+
+.stores li {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  border-bottom: 1px solid var(--ink-edge);
+  padding-bottom: 0.35rem;
+}
+
+.stores em {
+  font-style: normal;
+  color: var(--bone-faint);
+  font-size: 0.8rem;
+  margin-left: 0.4rem;
+}
+
+.stores strong {
+  color: var(--gold);
+}

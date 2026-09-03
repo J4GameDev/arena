@@ -8,6 +8,12 @@ export const spriteFor = (id: string): string => `/sprites/${id}.png`;
 /** One icon per slot: every item in a slot shares a name, so it shares a picture. */
 export const iconFor = (slot: string): string => `/icons/${slot}.png`;
 
+/**
+ * The same picture as a dim gray silhouette, for an empty slot: "a hood goes
+ * here". Derived from the slot icon rather than drawn, so the two always match.
+ */
+export const emptyIconFor = (slot: string): string => `/icons/${slot}-empty.png`;
+
 /** Scenes live in public/scenes. An area names its own; a chosen fight names one too. */
 export const sceneFor = (sceneId: string): string => `/scenes/${sceneId}.png`;
 
