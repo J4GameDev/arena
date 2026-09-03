@@ -72,16 +72,21 @@ export const SWORD_AND_SHIELD: Weapon = {
     'A short sword and a round shield. Resolve fills from every blow you take or turn ' +
     'aside, and spends on a shield bash. You are at your best when something is hitting ' +
     'you often, and at your worst when nothing is.',
-  // Middling everything, plus the shield. The sword is not the point.
-  attack: { damage: 12, attacksPerSecond: 1.0, variance: 0.15 },
+  // The sword hits harder than it looks, because the shield is all the
+  // defense there is. Measured against the gate: 12 damage gave a geared p90
+  // of 17%, 14 gave 40%, 16 gave 73%. The gate is the fight Resolve never
+  // fires in (one blow every three seconds), so damage carries it there.
+  attack: { damage: 16, attacksPerSecond: 1.0, variance: 0.15 },
   resource: RESOLVE,
-  threshold: 6, // six blows taken or blocked
+  threshold: 5, // five blows taken or blocked
   empowerMultiplier: 2.5,
   maxDamageReduction: 0,
   evasion: 0,
-  // The shield: a blow in three lands soft. Reliable and partial, like Rage's
-  // reduction, but present from the first swing rather than earned.
-  blockChance: 0.3,
+  // The shield: about a blow in three lands soft. Reliable and partial, like
+  // Rage's reduction, but present from the first swing rather than earned.
+  // 35% rather than 30% took the gate from 73% to 76%; 40% with less damage
+  // did not get there, so the shield is the finish, not the foundation.
+  blockChance: 0.35,
   initiative: 0,
   snareSeconds: 0,
 };
@@ -119,10 +124,13 @@ export const STAFF: Weapon = {
     'A staff with something wrong set into the head of it. The crystal drinks the health ' +
     'you lose and gives it back as a burst that hits like nothing else in your hands. You ' +
     'are strongest when you are hurt, and the staff would like you hurt.',
-  attack: { damage: 10, attacksPerSecond: 0.9, variance: 0.25 },
+  // At 10 damage and a x3 burst the Warlock lost to the Mugger bare and had a
+  // 2% gate; the burst has to be worth the blood it costs. Measured: 12 and
+  // x4 gave 86% at the gate, x3.5 gave 74%, x3.75 gave 78%.
+  attack: { damage: 12, attacksPerSecond: 0.9, variance: 0.25 },
   resource: MANA,
-  threshold: 60, // forty health actually lost
-  empowerMultiplier: 3.0,
+  threshold: 60, // thirty health actually lost
+  empowerMultiplier: 3.75,
   maxDamageReduction: 0,
   evasion: 0,
   blockChance: 0,

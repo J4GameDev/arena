@@ -70,5 +70,5 @@ export const SNARE: ResourceRule = {
 export const MANA: ResourceRule = {
   ...NOTHING,
   kind: 'mana',
-  gainPerHealthLost: 1.5, // at threshold 60, a burst for every 40 health lost
+  gainPerHealthLost: 2, // at threshold 60, a burst for every 30 health lost
 };
