@@ -866,9 +866,24 @@ button.ghost:hover {
   align-items: center;
 }
 
-.restart {
+.restart,
+.restart-ask {
   grid-area: restart;
   align-self: start;
+  font-size: 0.75rem;
+}
+
+.restart-ask {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  color: var(--bone-dim);
+}
+
+.restart-yes {
+  background: var(--blood);
+  border-color: var(--blood);
+  color: var(--bone);
   font-size: 0.75rem;
 }
 

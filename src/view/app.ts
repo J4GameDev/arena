@@ -160,6 +160,8 @@ export function start(mount: HTMLElement): void {
   let intro: IntroStep = 'title';
   let beat = 0;
   let sex: Sex = 'male';
+  /** Start over asks twice, in the page. Browser pop-ups get swallowed by some viewers. */
+  let confirmingRestart = false;
 
   const commit = (next: RunState): void => {
     state = next;
@@ -388,7 +390,15 @@ export function start(mount: HTMLElement): void {
           <h1>The Bastion</h1>
           <p class="sub">${escape(weapon.name)} · ${escape(weapon.archetype)}</p>
         </div>
-        <button class="ghost restart" data-restart type="button">Start over</button>
+        ${
+          confirmingRestart
+            ? `<span class="restart-ask">
+                 <span>Lose this hunter and everything in the stores?</span>
+                 <button class="restart-yes" data-restart-yes type="button">Start over</button>
+                 <button class="ghost" data-restart-no type="button">Keep going</button>
+               </span>`
+            : `<button class="ghost restart" data-restart type="button">Start over</button>`
+        }
         <ul class="stats compact">
           ${stat('Health', String(you.maxHealth))}
           ${stat('Damage', String(Math.round(you.attack.damage)))}
@@ -424,13 +434,16 @@ export function start(mount: HTMLElement): void {
       render();
     });
     bind('[data-restart]', () => {
-      // The one destructive button in the game. It asks.
-      if (
-        !confirm(
-          'Start over? This hunter, everything worn, and everything in the stores are gone for good.',
-        )
-      )
-        return;
+      confirmingRestart = true;
+      render();
+    });
+    bind('[data-restart-no]', () => {
+      confirmingRestart = false;
+      render();
+    });
+    bind('[data-restart-yes]', () => {
+      // The one destructive button in the game, and it asked first.
+      confirmingRestart = false;
       clearRun();
       state = null;
       intro = 'title';
