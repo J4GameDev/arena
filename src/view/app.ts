@@ -44,9 +44,19 @@ import {
   wieldWeapon,
   type EquipPosition,
   type RunState,
+  type Sex,
 } from '../state/run.ts';
 import { clearRun, loadRun, saveRun } from '../state/storage.ts';
-import { emptyIconFor, figureFor, iconFor, portraitFor, sceneFor, spriteFor } from './art.ts';
+import {
+  emptyIconFor,
+  figureFor,
+  heroFigureFor,
+  heroSpriteFor,
+  iconFor,
+  portraitFor,
+  sceneFor,
+  spriteFor,
+} from './art.ts';
 import { playFight } from './fight-view.ts';
 import { formatModifier, isBeneficial } from './format.ts';
 
@@ -100,7 +110,7 @@ const THE_ROAD_OUT = chosenFight(
  * is told nothing the world cannot show them later. Nobody explains the
  * corruption. Somebody boils bones. Nothing here is a speech.
  */
-type IntroStep = 'title' | 'story' | 'meeting' | 'rack';
+type IntroStep = 'title' | 'body' | 'story' | 'meeting' | 'rack';
 
 const STORY: readonly string[] = [
   'You were born inside this wall. Split logs, taller than two men, older than anyone who remembers them going up. You have never been past it. This morning, for the first time, the gate is open for you.',
@@ -149,6 +159,7 @@ export function start(mount: HTMLElement): void {
   let openCell: GearCell | null = null;
   let intro: IntroStep = 'title';
   let beat = 0;
+  let sex: Sex = 'male';
 
   const commit = (next: RunState): void => {
     state = next;
@@ -205,7 +216,7 @@ export function start(mount: HTMLElement): void {
         encounter.combatants,
         encounter.result,
         {
-          hero: figureFor(run.weaponId),
+          hero: heroFigureFor(run.weaponId, run.sex),
           foes: encounter.monsters.map((monster) => figureFor(monster.id)),
           scene: sceneFor(area.scene),
         },
@@ -250,6 +261,31 @@ export function start(mount: HTMLElement): void {
         </section>
       `;
       bind('[data-begin]', () => {
+        intro = 'body';
+        render();
+      });
+      return;
+    }
+
+    if (intro === 'body') {
+      // Who you are, before what you carry. Art only; it changes no number.
+      mount.innerHTML = `
+        <section class="rack">
+          <p class="speaker-name">Who you are</p>
+          <div class="choices">
+            <button class="choice body-choice" data-sex="male" type="button">
+              <img class="portrait" src="${heroSpriteFor('greataxe', 'male')}" alt="" onerror="this.remove()" />
+              <span class="choice-name">A man</span>
+            </button>
+            <button class="choice body-choice" data-sex="female" type="button">
+              <img class="portrait" src="${heroSpriteFor('greataxe', 'female')}" alt="" onerror="this.remove()" />
+              <span class="choice-name">A woman</span>
+            </button>
+          </div>
+        </section>
+      `;
+      bind('[data-sex]', (button) => {
+        sex = button.dataset['sex'] as Sex;
         intro = 'story';
         beat = 0;
         render();
@@ -327,7 +363,7 @@ export function start(mount: HTMLElement): void {
     `;
 
     bind('.choice', (button) => {
-      const run = newRun(button.dataset['weapon'] ?? '');
+      const run = newRun(button.dataset['weapon'] ?? '', sex);
       state = run;
       saveRun(run);
       // No camp yet. The first thing you do with a weapon is show him.
@@ -347,7 +383,7 @@ export function start(mount: HTMLElement): void {
 
     mount.innerHTML = `
       <header class="top hero-bar">
-        <img class="portrait" src="${spriteFor(run.weaponId)}" alt="" onerror="this.remove()" />
+        <img class="portrait" src="${heroSpriteFor(run.weaponId, run.sex)}" alt="" onerror="this.onerror=null;this.src='${spriteFor(run.weaponId)}'" />
         <div class="hero-words">
           <h1>The Bastion</h1>
           <p class="sub">${escape(weapon.name)} · ${escape(weapon.archetype)}</p>

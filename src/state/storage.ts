@@ -7,7 +7,7 @@ const STORAGE_KEY = 'arena.run';
  * discarded rather than migrated — there is nothing in it yet worth rescuing,
  * and silently loading a half-understood save is worse than starting over.
  */
-const SAVE_VERSION = 4;
+const SAVE_VERSION = 5;
 
 interface SaveEnvelope {
   readonly version: number;

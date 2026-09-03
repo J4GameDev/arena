@@ -1197,3 +1197,16 @@ button.ghost:hover {
     animation: none;
   }
 }
+
+/* --- Who you are --- */
+
+.body-choice {
+  justify-items: center;
+  text-align: center;
+}
+
+.body-choice .portrait {
+  width: 128px;
+  height: 128px;
+  margin-bottom: 0.5rem;
+}

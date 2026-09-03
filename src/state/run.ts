@@ -27,7 +27,16 @@ export function slotOf(position: EquipPosition): Slot {
   return position === 'ring1' || position === 'ring2' ? 'ring' : position;
 }
 
+/**
+ * Who the hunter is, before the weapon. Chosen once at the start, like the
+ * weapon, and it decides which sprite stands in the yard. It changes no
+ * number anywhere: the build is the character, and this is only the body.
+ */
+export type Sex = 'male' | 'female';
+
 export interface RunState {
+  /** The body the player chose at the start. Art only. */
+  readonly sex: Sex;
   /** The weapon currently in hand. This is the player's class. */
   readonly weaponId: string;
   /**
@@ -55,8 +64,9 @@ export interface RunState {
   readonly dropSeed: number;
 }
 
-export function newRun(weaponId: string): RunState {
+export function newRun(weaponId: string, sex: Sex = 'male'): RunState {
   return {
+    sex,
     weaponId,
     ownedWeaponIds: [weaponId],
     equipped: {},

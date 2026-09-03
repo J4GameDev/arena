@@ -6,6 +6,14 @@
 export const spriteFor = (id: string): string => `/sprites/${id}.png`;
 
 /**
+ * The hero's sprite: one per class and body, `greataxe-female.png`. Until a
+ * body's sprite exists the view falls back to the class's old sprite, so a
+ * missing picture never leaves the field empty.
+ */
+export const heroSpriteFor = (weaponId: string, sex: string): string =>
+  `/sprites/${weaponId}-${sex}.png`;
+
+/**
  * A face, for when someone speaks. Lives in public/portraits. The full-body
  * sprite is for the fight; a conversation wants eyes.
  */
@@ -61,9 +69,20 @@ const UNMEASURED: FigureHeight = { meters: 1.8, figurePx: 56 };
 export interface Figure {
   readonly sprite: string;
   readonly canvasMeters: number;
+  /** Shown instead if `sprite` is missing. The class's old picture, for the hero. */
+  readonly fallback?: string;
 }
 
 export function figureFor(id: string): Figure {
   const height = FIGURE_HEIGHTS[id] ?? UNMEASURED;
   return { sprite: spriteFor(id), canvasMeters: (height.meters * 64) / height.figurePx };
+}
+
+/** The hero's figure: the class's height, the chosen body's picture. */
+export function heroFigureFor(weaponId: string, sex: string): Figure {
+  return {
+    ...figureFor(weaponId),
+    sprite: heroSpriteFor(weaponId, sex),
+    fallback: spriteFor(weaponId),
+  };
 }
