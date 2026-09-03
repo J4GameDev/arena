@@ -286,8 +286,8 @@ export function start(mount: HTMLElement): void {
           <img class="portrait" src="${spriteFor(OSWALD.id)}" alt="" onerror="this.remove()" />
           <div>
             <p class="speaker-name">Oswald</p>
-            <p class="speech">He is older than you expected and has both his hands, which is rarer here than it should be. He looks at you the way he would look at weather.</p>
-            <p class="speech quote">${escape(`"Oswald. You'll do. We need hands more than we need names. Take one of these, whichever sits right. You won't get to choose twice. Then come out to the yard and show me you can swing it."`)}</p>
+            <p class="speech">He stops a few paces off and wipes his hands on his coat. Gray in the beard, a scar through one eyebrow, and the easy stance of a man who has been the one holding the spear for a long time.</p>
+            <p class="speech quote">${escape(`"You came in by the north road? Then you've seen the state of it." He nods at the rack behind him. "I'm Oswald. I take the new ones out the first time, so I like to know what they can do before I put them at my back. Pick one. Whichever feels like yours. That's the one you'll be carrying from here on, so don't be quick about it."`)}</p>
           </div>
         </div>
         <div class="choices">
@@ -300,7 +300,7 @@ export function start(mount: HTMLElement): void {
             </button>`,
           ).join('')}
         </div>
-        <p class="aside">Whatever else you end up carrying, you will have made it, or taken it off someone.</p>
+        <p class="aside">Once it is in your hands, he will want to see you use it.</p>
       </section>
     `;
 
