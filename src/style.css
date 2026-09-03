@@ -1088,26 +1088,29 @@ button.ghost:hover {
   }
 }
 
-.meeting {
+/* Oswald and the rack: one thing at a time, with air around it. */
+.meeting,
+.rack {
+  min-height: 60vh;
+  max-width: 34rem;
+  margin: 0 auto;
   display: grid;
-  gap: 1.25rem;
+  align-content: center;
+  justify-items: center;
+  gap: 0.9rem;
+  text-align: center;
+  animation: settle 600ms ease-out;
 }
 
-.speaker {
-  display: grid;
-  grid-template-columns: auto 1fr;
-  gap: 1.25rem;
-  align-items: center;
-}
-
-.speaker .portrait {
-  justify-self: start;
+.meeting .portrait.large {
+  justify-self: center;
+  margin-bottom: 0.25rem;
 }
 
 .speaker-name {
-  margin: 0 0 0.4rem;
+  margin: 0;
   font-size: 0.7rem;
-  letter-spacing: 0.14em;
+  letter-spacing: 0.18em;
   text-transform: uppercase;
   color: var(--bone-faint);
 }
@@ -1115,16 +1118,32 @@ button.ghost:hover {
 .speech {
   margin: 0;
   color: var(--bone-dim);
-  line-height: 1.5;
+  line-height: 1.6;
+  font-size: 1.05rem;
 }
 
 .speech.quote {
-  margin-top: 0.5rem;
   color: var(--bone);
+  font-size: 1.15rem;
 }
 
-@media (max-width: 34rem) {
-  .speaker {
-    grid-template-columns: 1fr;
+.meeting .story-actions {
+  margin-top: 1rem;
+}
+
+.rack .choices {
+  width: 100%;
+  margin-top: 0.75rem;
+  text-align: left;
+}
+
+.rack .aside {
+  margin-top: 0.5rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .meeting,
+  .rack {
+    animation: none;
   }
 }

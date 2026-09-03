@@ -100,7 +100,7 @@ const THE_ROAD_OUT = chosenFight(
  * is told nothing the world cannot show them later. Nobody explains the
  * corruption. Somebody boils bones. Nothing here is a speech.
  */
-type IntroStep = 'title' | 'story' | 'choice';
+type IntroStep = 'title' | 'story' | 'meeting' | 'rack';
 
 const STORY: readonly string[] = [
   'You were born inside this wall. Split logs, taller than two men, older than anyone who remembers them going up. You have never been past it. This morning, for the first time, the gate is open for you.',
@@ -271,28 +271,46 @@ export function start(mount: HTMLElement): void {
         </section>
       `;
       bind('[data-next]', () => {
-        if (last) intro = 'choice';
+        if (last) intro = 'meeting';
         else beat += 1;
         render();
       });
       bind('[data-skip]', () => {
-        intro = 'choice';
+        intro = 'meeting';
         render();
       });
       return;
     }
 
-    // Oswald hands over the only choice the game makes for you.
-    mount.innerHTML = `
-      <section class="panel meeting">
-        <div class="speaker">
-          <img class="portrait" src="${spriteFor(OSWALD.id)}" alt="" onerror="this.remove()" />
-          <div>
-            <p class="speaker-name">Oswald</p>
-            <p class="speech">He looks the way he always has: gray in the beard, the scar through one eyebrow, hands that never seem to be doing nothing. Today he looks at you a little longer than usual.</p>
-            <p class="speech quote">${escape(`"So. Today." He does not look up from the snare he is mending. "Plenty of people told you not to. I know, because they told me too. I'll tell you what I told them: better you learn this from me than from the woods." He nods at the rack. "Pick one. Whichever sits right in your hands. You'll carry it from here on, so take your time. Then meet me in the yard and show me what I taught you."`)}</p>
+    if (intro === 'meeting') {
+      // Oswald, on his own screen, with room around him.
+      mount.innerHTML = `
+        <section class="meeting">
+          <img class="portrait large" src="${spriteFor(OSWALD.id)}" alt="" onerror="this.remove()" />
+          <p class="speaker-name">Oswald</p>
+          <p class="speech">He looks the way he always has: gray in the beard, the scar through one eyebrow, hands that never seem to be doing nothing. Today he looks at you a little longer than usual.</p>
+          <p class="speech quote">${escape(`"So. Today."`)}</p>
+          <p class="speech">He does not look up from the snare he is mending.</p>
+          <p class="speech quote">${escape(`"Plenty of people told you not to. I know, because they told me too. I'll tell you what I told them: better you learn this from me than from the woods."`)}</p>
+          <p class="speech">He nods at the rack.</p>
+          <p class="speech quote">${escape(`"Pick one. Whichever sits right in your hands. You'll carry it from here on, so take your time. Then meet me in the yard and show me what I taught you."`)}</p>
+          <div class="story-actions">
+            <button data-rack type="button">Go to the rack</button>
           </div>
-        </div>
+        </section>
+      `;
+      bind('[data-rack]', () => {
+        intro = 'rack';
+        render();
+      });
+      return;
+    }
+
+    // The rack: the only choice the game makes for you, and nothing else on the screen.
+    mount.innerHTML = `
+      <section class="rack">
+        <p class="speaker-name">The rack</p>
+        <p class="speech">Two things on it worth taking. Everything else is snares and rope.</p>
         <div class="choices">
           ${WEAPONS.map(
             (weapon) => `
