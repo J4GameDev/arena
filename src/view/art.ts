@@ -38,6 +38,8 @@ const FIGURE_HEIGHTS: Readonly<Record<string, FigureHeight>> = {
   'strange-wolf': { meters: 0.85, figurePx: 32 },
   'strange-bear': { meters: 1.2, figurePx: 43 },
   'strayed-hunter': { meters: 2.0, figurePx: 60 },
+  bandit: { meters: 1.75, figurePx: 57 },
+  mugger: { meters: 1.9, figurePx: 54 },
 };
 
 /** Fallback for a sprite nobody has measured yet: drawn as if it were a person. */

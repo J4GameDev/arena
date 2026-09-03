@@ -9,6 +9,8 @@
  * "how far can you walk". This answers it for every weapon at every length,
  * bare and in crafted gear, and reports where the falls happen.
  *
+ * Everyone carries the Hunter's Pack's six rations unless told otherwise.
+ *
  * "Crafted" means what the tanner actually makes: five armor pieces from a
  * random mix of hides, plus three trinkets taken off people. As with the
  * balance harness, read p90 — a player keeps the good set.
@@ -24,10 +26,8 @@ import type { Area, Item, Slot, Weapon } from '../src/sim/types.ts';
 
 const HUNTS = numberArg('--hunts', 400);
 const SETS = numberArg('--sets', 30);
-/** Override the game's rest recovery to try a value before committing to it. */
-const RECOVERY = process.argv.includes('--recovery')
-  ? Number(process.argv[process.argv.indexOf('--recovery') + 1])
-  : undefined;
+/** Rations carried. Six is what the Hunter's Pack gives a brand-new hunter. */
+const RATIONS = numberArg('--rations', 6);
 
 console.log(`${HUNTS} hunts per cell, bare; ${SETS} crafted sets x ${HUNTS / 4} hunts, geared.\n`);
 console.log(
@@ -73,7 +73,7 @@ function bareSample(weapon: Weapon, area: Area, length: number): BareSample {
   const falls = new Map<number, number>();
 
   for (let seed = 0; seed < HUNTS; seed += 1) {
-    const hunt = runHunt(createHero(weapon.archetype, weapon), area, length, seed, [], RECOVERY);
+    const hunt = runHunt(createHero(weapon.archetype, weapon), area, length, seed, [], RATIONS);
     fights += hunt.encounters.length;
     if (hunt.survived) home += 1;
     else falls.set(hunt.encounters.length, (falls.get(hunt.encounters.length) ?? 0) + 1);
@@ -107,7 +107,7 @@ function gearedRates(weapon: Weapon, area: Area, length: number): number[] {
         length,
         seed,
         [],
-        RECOVERY,
+        RATIONS,
       );
       if (hunt.survived) home += 1;
     }

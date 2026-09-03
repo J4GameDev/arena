@@ -114,9 +114,18 @@ export const STRANGE_BEAR: MonsterDefinition = {
     'one build and a long grind for the other. Different fight, same outcome.',
 };
 
-export const STRAYED_TRAPPER: MonsterDefinition = {
-  id: 'strayed-trapper',
-  name: 'Strayed Trapper',
+/*
+ * The people of band one are not corrupted. They are bandits: ordinary men
+ * who prey on hunters coming home loaded, because that is easier than hunting.
+ * The corruption has not touched anyone the player meets until the gate —
+ * the Strayed Hunter is the first, and after him the road fills with more.
+ * People drop finished gear, from any slot, and sometimes the weapon they
+ * carried. They never drop hide or meat.
+ */
+
+export const BANDIT: MonsterDefinition = {
+  id: 'bandit',
+  name: 'Bandit',
   maxHealth: 80,
   // Knife work: many quick shallow cuts. Armor guts it, and it feeds Rage in
   // a steady trickle rather than a dump.
@@ -130,20 +139,20 @@ export const STRAYED_TRAPPER: MonsterDefinition = {
     'as fast as it is. Drops finished gear rather than hide: it was made, not skinned.',
 };
 
-export const STRAYED_WOODSMAN: MonsterDefinition = {
-  id: 'strayed-woodsman',
-  name: 'Strayed Woodsman',
+export const MUGGER: MonsterDefinition = {
+  id: 'mugger',
+  name: 'Mugger',
   maxHealth: 140,
-  // A felling axe. Slow and heavy: every swing dumps a chunk of Rage and
+  // A woodcutter's axe. Slow and heavy: every swing dumps a chunk of Rage and
   // takes a chunk of an Assassin.
   attack: { damage: 18, attacksPerSecond: 0.55, variance: 0.15 },
   critChance: 0.05,
   defeat: 'dies',
   lineage: 'person',
   designRole:
-    'The other uncommon person. A smaller Strayed Hunter: slow enormous swings that feed the ' +
-    'greataxe and threaten the daggers. A preview of the gate, from someone who was on the ' +
-    'same road and did not get as far.',
+    'The other bandit: bigger, slower, and swinging something meant for trees. A preview ' +
+    'of the gate in miniature — slow enormous swings that feed the greataxe and threaten ' +
+    'the daggers — from a man who is only greedy, not yet wrong.',
 };
 
 export const STRAYED_HUNTER: MonsterDefinition = {
@@ -171,7 +180,7 @@ export const MONSTERS: readonly MonsterDefinition[] = [
   STRANGE_ELK,
   STRANGE_WOLF,
   STRANGE_BEAR,
-  STRAYED_TRAPPER,
-  STRAYED_WOODSMAN,
+  BANDIT,
+  MUGGER,
   STRAYED_HUNTER,
 ];

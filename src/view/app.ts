@@ -3,7 +3,15 @@ import { CRAFTABLE_SLOTS, MATERIAL_LIST } from '../data/materials.ts';
 import { MONSTERS, OSWALD, STRAYED_HUNTER } from '../data/monsters.ts';
 import { WEAPONS } from '../data/weapons.ts';
 import { createHero } from '../sim/combatants.ts';
-import { HUNT_LENGTHS, runHunt, type Haul, type HuntLength, type HuntResult } from '../sim/hunt.ts';
+import {
+  EAT_BELOW,
+  HUNT_LENGTHS,
+  RATION_HEAL,
+  runHunt,
+  type Haul,
+  type HuntLength,
+  type HuntResult,
+} from '../sim/hunt.ts';
 import { Rng } from '../sim/rng.ts';
 import type {
   Area,
@@ -18,9 +26,12 @@ import {
   addHaul,
   advanceDropSeed,
   canCraft,
+  cook,
   craft,
   craftCost,
   discardItem,
+  grantHuntersPack,
+  HUNTERS_PACK,
   equipItem,
   equippedItems,
   EQUIP_POSITIONS,
@@ -28,6 +39,7 @@ import {
   recordDefeat,
   setHuntLength,
   slotOf,
+  spendRations,
   unequipItem,
   wieldWeapon,
   type EquipPosition,
@@ -104,7 +116,7 @@ export function start(mount: HTMLElement): void {
     const you = heroFrom(run);
     const rng = new Rng(run.dropSeed);
     const unowned = WEAPONS.filter((w) => !run.ownedWeaponIds.includes(w.id)).map((w) => w.id);
-    const hunt = runHunt(you, area, length, rng.int(1, 2_000_000_000), unowned);
+    const hunt = runHunt(you, area, length, rng.int(1, 2_000_000_000), unowned, run.rations);
 
     mount.innerHTML = '';
     const stage = document.createElement('section');
@@ -148,13 +160,17 @@ export function start(mount: HTMLElement): void {
       health = encounter.result.heroHealth;
     }
 
-    let next = addHaul(advanceDropSeed(run), hunt.kept);
+    let next = spendRations(addHaul(advanceDropSeed(run), hunt.kept), hunt.rationsEaten);
     for (const encounter of hunt.encounters) {
       if (encounter.result.winner !== you.name) continue;
       for (const monster of encounter.monsters) next = recordDefeat(next, monster.id);
     }
 
-    stage.append(outcome(hunt, you.name));
+    // The first time Oswald yields, he hands over the Hunter's Pack.
+    const packNow = area === THE_YARD && hunt.survived && !run.packGiven;
+    if (packNow) next = grantHuntersPack(next);
+
+    stage.append(outcome(hunt, you.name, packNow));
     stage.querySelector('.continue')?.addEventListener('click', () => {
       busy = false;
       commit(next);
@@ -244,6 +260,7 @@ export function start(mount: HTMLElement): void {
 
       <section class="panel">
         <h2>Go out</h2>
+        <p class="provisions">${provisionsLine(run)}</p>
         <div class="length">
           <span class="length-label">How far</span>
           ${HUNT_LENGTHS.map(
@@ -258,6 +275,19 @@ export function start(mount: HTMLElement): void {
           ${AREAS.map((area) => areaCard(area, `${run.huntLength} fights`, run)).join('')}
           ${areaCard(THE_YARD, 'One fight', run)}
           ${areaCard(THE_ROAD_OUT, 'One fight', run)}
+        </div>
+      </section>
+
+      <section class="panel">
+        <h2>Cookfire</h2>
+        <div class="cookfire">
+          <p class="item-name">Meat <span class="count">×${run.meat}</span></p>
+          <p class="item-name">Rations <span class="count">×${run.rations}</span></p>
+          <p class="pitch">Meat keeps a day. Cook it here and it keeps for the road: one meat, one ration, ${RATION_HEAL} health back when you need it.</p>
+          <div class="item-actions">
+            <button data-cook="1" type="button" ${run.meat > 0 ? '' : 'disabled'}>Cook one</button>
+            <button data-cook="all" type="button" ${run.meat > 0 ? '' : 'disabled'}>Cook all</button>
+          </div>
         </div>
       </section>
 
@@ -288,6 +318,10 @@ export function start(mount: HTMLElement): void {
       if (area === undefined) return;
       const length = AREAS.includes(area) ? run.huntLength : 1;
       void goOut(run, area, length);
+    });
+    bind('[data-cook]', (button) => {
+      const count = button.dataset['cook'] === 'all' ? run.meat : 1;
+      commit(cook(run, count));
     });
     bind('[data-craft]', (button) => {
       const slot = button.dataset['craft'] as (typeof CRAFTABLE_SLOTS)[number];
@@ -428,7 +462,14 @@ function itemCard(item: Item): string {
   `;
 }
 
-function outcome(hunt: HuntResult, heroName: string): HTMLElement {
+function provisionsLine(run: RunState): string {
+  if (run.rations === 0) {
+    return 'No rations. Whatever you lose out there, you carry to the end.';
+  }
+  return `You carry ${run.rations} ${run.rations === 1 ? 'ration' : 'rations'}. You eat one whenever a fight leaves you under ${Math.round(EAT_BELOW * 100)}% health.`;
+}
+
+function outcome(hunt: HuntResult, heroName: string, packGiven: boolean): HTMLElement {
   const node = document.createElement('div');
   node.className = 'outcome';
 
@@ -448,6 +489,20 @@ function outcome(hunt: HuntResult, heroName: string): HTMLElement {
     <ol class="road">
       ${hunt.encounters.map((encounter) => `<li>${escape(encounterLine(encounter, heroName))}</li>`).join('')}
     </ol>
+    ${
+      hunt.rationsEaten > 0
+        ? `<p class="aside">Ate ${hunt.rationsEaten} ${hunt.rationsEaten === 1 ? 'ration' : 'rations'} on the way.</p>`
+        : ''
+    }
+    ${
+      packGiven
+        ? `<div class="item found">
+             <p class="slot-name">From Oswald</p>
+             <p class="item-name">A Hunter's Pack</p>
+             <p class="pitch">${HUNTERS_PACK.rations} rations, ${HUNTERS_PACK.materials['boar-hide']} boar hide, ${HUNTERS_PACK.materials['wolf-pelt']} wolf pelt. He does not make a speech about it.</p>
+           </div>`
+        : ''
+    }
     ${haulMarkup(hunt.kept)}
     <button class="continue" type="button">Back to the bastion</button>
   `;
@@ -471,12 +526,18 @@ function haulMarkup(haul: Haul): string {
     .map((id) => WEAPONS.find((weapon) => weapon.id === id))
     .filter((weapon): weapon is Weapon => weapon !== undefined);
 
-  if (materials.length === 0 && haul.items.length === 0 && weapons.length === 0) {
+  if (
+    materials.length === 0 &&
+    haul.meat === 0 &&
+    haul.items.length === 0 &&
+    weapons.length === 0
+  ) {
     return '<p class="empty">Nothing to carry back.</p>';
   }
 
   return `
     <div class="haul">
+      ${haul.meat > 0 ? `<p class="haul-line">Meat <strong>×${haul.meat}</strong></p>` : ''}
       ${materials
         .map(([id, count]) => {
           const material = MATERIAL_LIST.find((candidate) => candidate.id === id);

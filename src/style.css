@@ -814,3 +814,25 @@ button.ghost:hover {
 .haul-line strong {
   color: var(--gold);
 }
+
+/* --- Cookfire and provisions --- */
+
+.provisions {
+  margin: 0 0 0.9rem;
+  font-size: 0.9rem;
+  color: var(--bone-dim);
+}
+
+.cookfire {
+  display: grid;
+  gap: 0.4rem;
+}
+
+.cookfire p {
+  margin: 0;
+}
+
+.cookfire .count {
+  color: var(--gold);
+  font-size: 0.9rem;
+}

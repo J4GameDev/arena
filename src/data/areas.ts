@@ -4,8 +4,8 @@ import {
   STRANGE_BOAR,
   STRANGE_ELK,
   STRANGE_WOLF,
-  STRAYED_TRAPPER,
-  STRAYED_WOODSMAN,
+  BANDIT,
+  MUGGER,
 } from './monsters.ts';
 
 /**
@@ -29,8 +29,8 @@ export const FOREST_EDGE: Area = {
     { monster: STRANGE_BEAR, weight: 1 },
   ],
   people: [
-    { monster: STRAYED_TRAPPER, weight: 1 },
-    { monster: STRAYED_WOODSMAN, weight: 1 },
+    { monster: BANDIT, weight: 1 },
+    { monster: MUGGER, weight: 1 },
   ],
   personChance: 1 / 7,
   ambushChance: 1 / 8,

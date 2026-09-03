@@ -41,6 +41,12 @@ export interface RunState {
   readonly backpack: readonly Item[];
   /** Hides brought back from hunts, by material. What the tanner works with. */
   readonly materials: Readonly<Partial<Record<MaterialId, number>>>;
+  /** Raw. Cooked at the bastion, one for one, into rations. */
+  readonly meat: number;
+  /** Cooked. Every one you own goes out with you and is eaten when needed. */
+  readonly rations: number;
+  /** Oswald gives the Hunter's Pack once, after the first spar. */
+  readonly packGiven: boolean;
   /** How far the player last chose to go. Remembered so the choice sticks. */
   readonly huntLength: HuntLength;
   /** Monster ids the player has beaten at least once. */
@@ -56,6 +62,9 @@ export function newRun(weaponId: string): RunState {
     equipped: {},
     backpack: [],
     materials: {},
+    meat: 0,
+    rations: 0,
+    packGiven: false,
     huntLength: 3,
     defeated: [],
     dropSeed: 1,
@@ -76,10 +85,42 @@ export function addHaul(state: RunState, haul: Haul): RunState {
   let next: RunState = {
     ...state,
     materials,
+    meat: state.meat + haul.meat,
     backpack: [...state.backpack, ...haul.items],
   };
   for (const weaponId of haul.weaponIds) next = acquireWeapon(next, weaponId);
   return next;
+}
+
+/** Rations eaten on the road are gone whether or not the hunt came home. */
+export function spendRations(state: RunState, eaten: number): RunState {
+  return { ...state, rations: Math.max(0, state.rations - eaten) };
+}
+
+/** The cookfire: meat becomes rations one for one, at home only. */
+export function cook(state: RunState, count: number): RunState {
+  const cooked = Math.min(count, state.meat);
+  if (cooked <= 0) return state;
+  return { ...state, meat: state.meat - cooked, rations: state.rations + cooked };
+}
+
+/**
+ * What Oswald hands over after the first spar. Enough to eat through a bad
+ * first trip and make one piece of armor, and not a scrap more. He gives it
+ * once; it is not a shop.
+ */
+export const HUNTERS_PACK = {
+  rations: 6,
+  materials: { 'boar-hide': 4, 'wolf-pelt': 2 } as Readonly<Partial<Record<MaterialId, number>>>,
+} as const;
+
+export function grantHuntersPack(state: RunState): RunState {
+  if (state.packGiven) return state;
+  const materials = { ...state.materials };
+  for (const [id, count] of Object.entries(HUNTERS_PACK.materials)) {
+    materials[id as MaterialId] = (materials[id as MaterialId] ?? 0) + (count ?? 0);
+  }
+  return { ...state, materials, rations: state.rations + HUNTERS_PACK.rations, packGiven: true };
 }
 
 export function craftCost(slot: Slot): number | undefined {

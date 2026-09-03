@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { FOREST_EDGE } from '../src/data/areas';
 import { MATERIALS } from '../src/data/materials';
-import { STRANGE_WOLF, STRAYED_TRAPPER } from '../src/data/monsters';
+import { STRANGE_WOLF, BANDIT } from '../src/data/monsters';
 import { GREATAXE, TWIN_DAGGERS } from '../src/data/weapons';
 import { createHero } from '../src/sim/combatants';
 import { runHunt } from '../src/sim/hunt';
@@ -90,7 +90,7 @@ describe('runHunt', () => {
   it('loots finished gear, and sometimes a weapon, only from people', () => {
     const roadOfPeople: Area = {
       ...FOREST_EDGE,
-      people: [{ monster: STRAYED_TRAPPER, weight: 1 }],
+      people: [{ monster: BANDIT, weight: 1 }],
       personChance: 1,
     };
     let sawItem = false;
@@ -130,6 +130,7 @@ describe('crafting', () => {
   it('spends hide and puts the piece in the pack', () => {
     const run = addHaul(newRun(GREATAXE.id), {
       materials: { 'boar-hide': 5 },
+      meat: 0,
       items: [],
       weaponIds: [],
     });
@@ -147,10 +148,11 @@ describe('crafting', () => {
   it('adds a haul to the stores and the arms', () => {
     const run = addHaul(newRun(GREATAXE.id), {
       materials: { 'elk-hide': 2 },
+      meat: 0,
       items: [],
       weaponIds: [TWIN_DAGGERS.id],
     });
-    const again = addHaul(run, { materials: { 'elk-hide': 1 }, items: [], weaponIds: [] });
+    const again = addHaul(run, { materials: { 'elk-hide': 1 }, meat: 0, items: [], weaponIds: [] });
     expect(again.materials['elk-hide']).toBe(3);
     expect(again.ownedWeaponIds).toEqual([GREATAXE.id, TWIN_DAGGERS.id]);
   });
