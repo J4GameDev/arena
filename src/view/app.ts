@@ -89,21 +89,24 @@ const THE_ROAD_OUT = chosenFight(
 );
 
 /**
- * The opening, before there is a run to save: a title, a short walk in
- * through the gate, and Oswald handing over the choice.
+ * The opening, before there is a run to save: a title, the morning you come
+ * of age, and Oswald handing over the choice.
  *
- * It is a scene, not a briefing. The player arrives somewhere and is shown
- * it — the wall, the smell of the place, the woods, the man walking over —
- * and is told nothing the world cannot show them later. Nobody explains
- * the corruption. Somebody boils bones. Nothing here is a speech.
+ * The player was born inside the wall. There is nowhere safe to have
+ * arrived from, so nobody arrives: today is the first day the gate is open
+ * for them, and the man waiting by the rack is the one who taught them to
+ * set a snare. It is a scene, not a briefing — the player is shown the
+ * place they have always known on the one morning it looks different, and
+ * is told nothing the world cannot show them later. Nobody explains the
+ * corruption. Somebody boils bones. Nothing here is a speech.
  */
 type IntroStep = 'title' | 'story' | 'choice';
 
 const STORY: readonly string[] = [
-  'The road ends at a wall of split logs, taller than two men. The gate is already closing behind you. Nobody asks where you came from. Out here that is a kindness.',
-  'Inside, the town smells of woodsmoke and wet hide. Somebody is boiling bones. Chickens. A child watching you from a doorway until a hand pulls her back in.',
-  'Past the wall the woods are still green. The elk still come down to the river at dusk. It is only that lately, some of them look up when they hear you, and do not run.',
-  'There are hunters here. Fewer every season. One of them has noticed you, and is walking over.',
+  'You were born inside this wall. Split logs, taller than two men. As a child you counted them; there are four hundred and twelve. This morning, for the first time, the gate is open for you.',
+  'The town smells the way it always has: woodsmoke, wet hide, somebody boiling bones. The same faces at the same doors. A few of them look at you differently today. A few look away.',
+  'Past the wall the woods are still green. The elk still come down to the river at dusk. The hunters say that lately some of them look up when they hear you, and do not run. The hunters have been saying less, lately.',
+  'Oswald taught you to set a snare when you were eight, and to keep quiet about it. He has been waiting by the rack since before you were up.',
 ];
 
 /** The camp is one screen with four tabs. Nothing is on display that was not asked for. */
@@ -286,8 +289,8 @@ export function start(mount: HTMLElement): void {
           <img class="portrait" src="${spriteFor(OSWALD.id)}" alt="" onerror="this.remove()" />
           <div>
             <p class="speaker-name">Oswald</p>
-            <p class="speech">He stops a few paces off and wipes his hands on his coat. Gray in the beard, a scar through one eyebrow, and the easy stance of a man who has been the one holding the spear for a long time.</p>
-            <p class="speech quote">${escape(`"You came in by the north road? Then you've seen the state of it." He nods at the rack behind him. "I'm Oswald. I take the new ones out the first time, so I like to know what they can do before I put them at my back. Pick one. Whichever feels like yours. That's the one you'll be carrying from here on, so don't be quick about it."`)}</p>
+            <p class="speech">He looks the way he always has: gray in the beard, the scar through one eyebrow, hands that never seem to be doing nothing. Today he looks at you a little longer than usual.</p>
+            <p class="speech quote">${escape(`"Of age, then. Half this town told you not to. They told me the same about you, and I said what I always say: better you learn it from me than from the woods." He nods at the rack. "Pick one. Whichever feels like yours. That's the one you'll be carrying from here on, so don't be quick about it. Then come out to the yard and show me what I taught you."`)}</p>
           </div>
         </div>
         <div class="choices">
@@ -300,7 +303,7 @@ export function start(mount: HTMLElement): void {
             </button>`,
           ).join('')}
         </div>
-        <p class="aside">Once it is in your hands, he will want to see you use it.</p>
+        <p class="aside">Once it is in your hands, he will want to see what you remember.</p>
       </section>
     `;
 
