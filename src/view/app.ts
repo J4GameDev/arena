@@ -33,7 +33,6 @@ import {
   discardItem,
   equipItem,
   equippedItems,
-  EQUIP_POSITIONS,
   grantHuntersPack,
   HUNTERS_PACK,
   newRun,
@@ -102,7 +101,23 @@ const TABS: readonly { readonly id: Tab; readonly label: string }[] = [
 /** The gear table's cells: the weapon, then every wearable position. */
 type GearCell = 'weapon' | EquipPosition;
 
-const GEAR_CELLS: readonly GearCell[] = ['weapon', ...EQUIP_POSITIONS];
+/**
+ * Laid out in the shape of a body, the way the old MMOs did it: head on top,
+ * the weapon in the left hand, trinkets down the right, hands and feet at the
+ * bottom. The order here is reading order; the stylesheet puts each cell in
+ * its place by name.
+ */
+const GEAR_CELLS: readonly GearCell[] = [
+  'head',
+  'weapon',
+  'torso',
+  'necklace',
+  'ring1',
+  'legs',
+  'ring2',
+  'hands',
+  'feet',
+];
 
 export function start(mount: HTMLElement): void {
   let state: RunState | null = loadRun();
@@ -356,7 +371,7 @@ function gearCell(cell: GearCell, run: RunState, open: boolean): string {
   if (cell === 'weapon') {
     const weapon = WEAPONS.find((candidate) => candidate.id === run.weaponId);
     return `
-      <button class="cell filled ${open ? 'open' : ''}" data-cell="weapon" type="button">
+      <button class="cell filled ${open ? 'open' : ''}" data-cell="weapon" type="button" style="grid-area: weapon">
         ${icon(spriteFor(run.weaponId))}
         <span class="cell-label">Weapon</span>
         <span class="cell-name">${escape(weapon?.name ?? '')}</span>
@@ -368,7 +383,7 @@ function gearCell(cell: GearCell, run: RunState, open: boolean): string {
   const slot = slotOf(cell);
   if (item === undefined) {
     return `
-      <button class="cell empty ${open ? 'open' : ''}" data-cell="${cell}" type="button">
+      <button class="cell empty ${open ? 'open' : ''}" data-cell="${cell}" type="button" style="grid-area: ${cell}">
         ${icon(emptyIconFor(slot))}
         <span class="cell-label">${label(cell)}</span>
         <span class="cell-name">—</span>
@@ -376,7 +391,7 @@ function gearCell(cell: GearCell, run: RunState, open: boolean): string {
     `;
   }
   return `
-    <button class="cell filled ${open ? 'open' : ''}" data-cell="${cell}" type="button">
+    <button class="cell filled ${open ? 'open' : ''}" data-cell="${cell}" type="button" style="grid-area: ${cell}">
       ${icon(iconFor(slot))}
       <span class="cell-label">${label(cell)}</span>
       <span class="cell-name">${escape(item.name)}</span>

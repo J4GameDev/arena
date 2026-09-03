@@ -897,10 +897,17 @@ button.ghost:hover {
 
 /* --- Gear table --- */
 
+/* A body: head on top, weapon in the left hand, trinkets down the right. */
 .doll {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(8.5rem, 1fr));
+  grid-template-columns: repeat(3, minmax(6.5rem, 8.5rem));
+  grid-template-areas:
+    '.      head   .'
+    'weapon torso  necklace'
+    'ring1  legs   ring2'
+    'hands  feet   .';
   gap: 0.6rem;
+  justify-content: center;
 }
 
 .cell {
