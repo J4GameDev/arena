@@ -114,10 +114,11 @@ export const SHORT_BOW: Weapon = {
   evasion: 0.1,
   blockChance: 0,
   initiative: 0.5,
-  // The whole payoff. A snared enemy's next swing comes three seconds late,
-  // which is two free arrows against most things and one whole missed heavy
-  // blow against the gate.
-  snareSeconds: 3,
+  // The whole payoff. A snared enemy's next swing comes two seconds late:
+  // a free arrow or two against most things, and a delayed heavy blow at
+  // the gate. Three seconds sent a bare Ranger past the gate one time in
+  // five; two seconds cost nothing on hunts and put the gate on target.
+  snareSeconds: 2,
 };
 
 export const STAFF: Weapon = {
