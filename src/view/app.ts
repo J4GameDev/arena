@@ -463,7 +463,8 @@ export function start(mount: HTMLElement): void {
     });
     bind('[data-hunt]', (button) => {
       const id = button.dataset['hunt'];
-      const area = [...AREAS, THE_YARD, THE_ROAD_OUT].find((candidate) => candidate.id === id);
+      // The yard is not here on purpose: the spar happens once, in the opening.
+      const area = [...AREAS, THE_ROAD_OUT].find((candidate) => candidate.id === id);
       if (area === undefined) return;
       const length = AREAS.includes(area) ? run.huntLength : 1;
       void goOut(run, area, length);
@@ -660,7 +661,6 @@ function outTab(run: RunState): string {
       </div>
       <div class="hunts">
         ${AREAS.map((area) => areaCard(area, `${run.huntLength} fights`, run)).join('')}
-        ${areaCard(THE_YARD, 'One fight', run)}
         ${areaCard(THE_ROAD_OUT, 'One fight', run)}
       </div>
     </section>
