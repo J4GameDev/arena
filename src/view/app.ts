@@ -4,7 +4,7 @@ import { runFight } from '../sim/combat.ts';
 import { createHero, createMonster } from '../sim/combatants.ts';
 import { Rng } from '../sim/rng.ts';
 import { rollDrop } from '../sim/roll.ts';
-import type { Combatant, Item, Modifier, MonsterDefinition, Weapon } from '../sim/types.ts';
+import type { Combatant, Item, Modifier, MonsterDefinition, Slot, Weapon } from '../sim/types.ts';
 import {
   acquireWeapon,
   addToBackpack,
@@ -23,10 +23,21 @@ import {
 } from '../state/run.ts';
 import { loadRun, saveRun } from '../state/storage.ts';
 import { playFight } from './fight-view.ts';
+import { formatModifier, isBeneficial } from './format.ts';
 
 /** Sprites live in public/sprites and are looked up by id. */
 const spriteFor = (id: string): string => `/sprites/${id}.png`;
-import { formatModifier, isBeneficial } from './format.ts';
+
+/** One icon per slot: every item in a slot shares a name, so it shares a picture. */
+const iconFor = (slot: Slot): string => `/icons/${slot}.png`;
+
+/**
+ * Where a fight happens. The spar is inside the walls; everything else is out
+ * past them. Decided here, in the view, because the simulation has no idea
+ * that places exist.
+ */
+const sceneFor = (definition: MonsterDefinition): string =>
+  `/scenes/${definition.defeat === 'yields' ? 'bastion-yard' : 'forest-edge'}.png`;
 
 /**
  * How often a corrupted kill yields a weapon you do not already have.
@@ -74,6 +85,7 @@ export function start(mount: HTMLElement): void {
     await playFight(stage, you, foe, result, {
       hero: spriteFor(run.weaponId),
       foe: spriteFor(definition.id),
+      scene: sceneFor(definition),
     });
 
     const won = result.winner === you.name;
@@ -241,8 +253,13 @@ function positionFor(item: Item, run: RunState): EquipPosition {
 function weaponCard(weapon: Weapon, inHand: boolean): string {
   return `
     <div class="item ${inHand ? 'in-hand' : ''}">
-      <p class="item-name">${escape(weapon.name)}</p>
-      <p class="slot-name">${escape(weapon.archetype)}</p>
+      <div class="item-head">
+        ${icon(spriteFor(weapon.id))}
+        <div>
+          <p class="item-name">${escape(weapon.name)}</p>
+          <p class="slot-name">${escape(weapon.archetype)}</p>
+        </div>
+      </div>
       <p class="pitch">${escape(weapon.pitch)}</p>
       <div class="item-actions">
         ${
@@ -257,12 +274,24 @@ function weaponCard(weapon: Weapon, inHand: boolean): string {
 
 function slotCard(position: EquipPosition, item: Item | undefined): string {
   if (item === undefined) {
-    return `<div class="slot empty"><p class="slot-name">${label(position)}</p></div>`;
+    return `
+      <div class="slot empty">
+        <div class="item-head">
+          ${icon(iconFor(slotOf(position)))}
+          <p class="slot-name">${label(position)}</p>
+        </div>
+      </div>
+    `;
   }
   return `
     <div class="slot">
-      <p class="slot-name">${label(position)}</p>
-      <p class="item-name">${escape(item.name)}</p>
+      <div class="item-head">
+        ${icon(iconFor(item.slot))}
+        <div>
+          <p class="slot-name">${label(position)}</p>
+          <p class="item-name">${escape(item.name)}</p>
+        </div>
+      </div>
       <ul class="affixes">${item.modifiers.map(affixLine).join('')}</ul>
       <button class="ghost" data-unequip="${position}" type="button">Remove</button>
     </div>
@@ -272,7 +301,10 @@ function slotCard(position: EquipPosition, item: Item | undefined): string {
 function itemCard(item: Item): string {
   return `
     <div class="item">
-      <p class="item-name">${escape(item.name)}</p>
+      <div class="item-head">
+        ${icon(iconFor(item.slot))}
+        <p class="item-name">${escape(item.name)}</p>
+      </div>
       <ul class="affixes">${item.modifiers.map(affixLine).join('')}</ul>
       <div class="item-actions">
         <button data-equip="${item.id}" type="button">Wear</button>
@@ -307,7 +339,10 @@ function outcome(
         ? ''
         : `<div class="item found weapon">
              <p class="slot-name">Taken from the body</p>
-             <p class="item-name">${escape(weaponFound.name)}</p>
+             <div class="item-head">
+               ${icon(spriteFor(weaponFound.id))}
+               <p class="item-name">${escape(weaponFound.name)}</p>
+             </div>
              <p class="pitch">${escape(weaponFound.pitch)}</p>
            </div>`
     }
@@ -315,7 +350,10 @@ function outcome(
       drop === null
         ? '<p class="empty">Nothing to carry back.</p>'
         : `<div class="item found">
-             <p class="item-name">${escape(drop.name)}</p>
+             <div class="item-head">
+               ${icon(iconFor(drop.slot))}
+               <p class="item-name">${escape(drop.name)}</p>
+             </div>
              <ul class="affixes">${drop.modifiers.map(affixLine).join('')}</ul>
            </div>`
     }
@@ -327,6 +365,11 @@ function outcome(
 function affixLine(modifier: Modifier): string {
   const text = formatModifier(modifier);
   return `<li class="${isBeneficial(modifier) ? 'good' : 'bad'}">${escape(text)}</li>`;
+}
+
+/** Missing art removes itself rather than showing a broken image. */
+function icon(src: string): string {
+  return `<img class="icon" src="${src}" alt="" onerror="this.remove()" />`;
 }
 
 function stat(name: string, value: string): string {

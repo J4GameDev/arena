@@ -32,6 +32,8 @@ interface Side {
 export interface FightArt {
   readonly hero: string;
   readonly foe: string;
+  /** Backdrop for the whole exchange. Where you are, not who you are. */
+  readonly scene: string;
 }
 
 export function playFight(
@@ -43,7 +45,7 @@ export function playFight(
 ): Promise<void> {
   mount.innerHTML = `
     <div class="fight">
-      <div class="combatants">
+      <div class="combatants" style="background-image: url('${escape(art.scene)}')">
         ${sideMarkup('hero', hero, art.hero)}
         ${sideMarkup('foe', monster, art.foe)}
       </div>

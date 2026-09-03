@@ -259,12 +259,20 @@ button.ghost:hover {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 1.25rem;
+  padding: 1.25rem;
+  border: 1px solid var(--ink-edge);
+  /* The scene sits behind both cards. Pixel art, so it scales without blur. */
+  background-color: var(--ink-raised);
+  background-size: cover;
+  background-position: center bottom;
+  image-rendering: pixelated;
 }
 
 .side {
   position: relative;
   border: 1px solid var(--ink-edge);
-  background: var(--ink-raised);
+  /* Translucent so the place shows through, opaque enough that numbers read. */
+  background: rgba(15, 13, 11, 0.78);
   padding: 1rem;
   display: grid;
   gap: 0.4rem;
@@ -512,6 +520,27 @@ button.ghost:hover {
 }
 
 /* --- Sprites --- */
+
+.icon {
+  image-rendering: pixelated;
+  width: 48px;
+  height: 48px;
+  flex: none;
+}
+
+.item-head {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.item-head p {
+  margin: 0;
+}
+
+.slot.empty .icon {
+  opacity: 0.35;
+}
 
 .portrait {
   image-rendering: pixelated;
