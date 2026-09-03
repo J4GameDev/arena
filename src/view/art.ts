@@ -23,7 +23,7 @@ export const sceneFor = (sceneId: string): string => `/scenes/${sceneId}.png`;
  * Every sprite fills its 64px canvas, so drawn at one size a boar comes out
  * as big as a man and an elk smaller than a wolf. Instead each figure is
  * given a real-world height in meters, and the scene draws it to a shared
- * scale (`--ppm`, pixels per metre, in the stylesheet).
+ * scale (`--ppm`, pixels per meter, in the stylesheet).
  *
  * `figurePx` is the height of the opaque pixels on the 64px canvas, measured
  * once when the sprite landed. Re-measure it if the sprite is regenerated.
