@@ -66,9 +66,11 @@ He also rhymes with the boss. The first thing you fight is a hunter; the hardest
 
 **Corrupted humans are the worst things out there**, because they were the most dangerous animal to begin with. They are hunters who went too far out and did not come back — which means the hardest enemies in the game are a preview of what happens to the player. Nobody says this out loud. The player works it out when one of them is carrying a weapon they recognize.
 
-**Two loot sources, and the split is thematic rather than designed.** Animals yield materials — hide, bone, whatever grew through them. Corrupted hunters yield _gear_, because they are still carrying it, and since a weapon defines an archetype, killing one that swung a greataxe should drop a greataxe. (Currently a corrupted hunter has a 25% chance to leave a random weapon you do not yet own; the Strayed Hunter's own weapon is not modelled. The specific-weapon version is the intent.)
+**But the first people you meet are only bandits.** Band one's people are not corrupted: they are ordinary men robbing hunters on the way home, because that is easier than hunting. The corruption has touched nobody the player meets until the gate — the Strayed Hunter is the first — and after him the road fills with hunters who fell to it. Bandits can come in variants (bandit, mugger, and so on) as the band needs them. This was the owner's call when the first "strayed" sprites came back looking like ordinary people: rather than fight the art, the fiction moved to meet it.
 
-**Implied, not yet decided:** regions are corruption bands ordered by distance from the source. Clean and tainted materials are the natural item axis — dependable versus stronger-but-wrong. Nearer the bastion you hunt animals; further out you kill people, so the moral gradient tracks the difficulty gradient.
+**Three loot sources, and the split is thematic rather than designed.** Animals yield hide and meat — one of each per kill, no rolling. People yield _gear_, because they are carrying it: a finished item from any slot, and one time in four a weapon you do not yet own. (The specific-weapon version — a Strayed Hunter who swung a greataxe leaves a greataxe — is still the intent and still not modelled.) Oswald yields nothing but the Hunter's Pack, once.
+
+**Areas are corruption bands ordered by distance from the source**, and the player picks an area, never an enemy. Clean and tainted materials remain the natural item axis — dependable versus stronger-but-wrong. Nearer the bastion you hunt animals and fend off bandits; further out you kill people who used to be hunters, so the moral gradient tracks the difficulty gradient.
 
 ## Tone and art direction
 
@@ -139,11 +141,11 @@ src/
   view/    Presentation. All DOM and CSS, including the battle scene.
   state/   Run state, persistence, save/load.
 tests/     Vitest. Primarily targets sim/.
-scripts/   Balance harness, outlier hunter, single-fight runner.
+scripts/   Balance harness, hunt harness, outlier hunter, single-fight runner.
 public/    Static assets served as-is. Sprites live in public/sprites/.
 ```
 
-Combat is a **pure function**: `(hero, monster, seed) => CombatEvent[]`. The view is a dumb playback layer that animates that event list. Consequences this buys, all of which matter:
+Combat is a **pure function**: `(hero, monsters, seed) => FightResult`, one hero against one or more monsters. A hunt is another pure function on top of it, `sim/hunt.ts`: it rolls encounters from an area's table, chains the fights with health carried forward, and reports what came home. The view is a dumb playback layer that animates the event lists. Consequences this buys, all of which matter:
 
 - **Balance by brute force.** Run 10,000 fights in a second to find broken items instead of guessing.
 - **Real tests.** Deterministic sim means a fight either produces the expected events or it doesn't.
@@ -171,11 +173,17 @@ Corollaries:
 
 **Weighting has real zeros, and they follow from the framework.** Lifesteal cannot appear on boots — not because it is unlikely, but because it is not what boots are. Zeros that come from a principle are ones a player accepts instantly; arbitrary ones just read as bad luck.
 
+**Crafting is the main way to get armor.** Animals leave hide; the tanner at the bastion turns hide into a piece for any armor slot. The material tilts the roll — each hide favors two affixes from the armor pool, drawn at double weight — so the player steers the loot by choosing what to hunt without ever being able to pick an affix. Names follow one convention for the whole first band, "<Material> <Slot>": Boar-hide Hood, Wolf-pelt Gloves. Costs are two hides for head, hands or feet, three for legs, four for the torso; a full set is thirteen kills of the player's choosing. Trinkets are not crafted: they come off people, which is the corruption's own supply line even when the people are only bandits. What deeper bands yield and what it is called is a bridge to cross when we get there.
+
 **Parked:** corrupted armor and weapons that deliberately break these restraints. Tainted gear that grants what its category should not is a natural late-game hook and fits the clean-versus-tainted material split. Not a v0.1 concern, and the framework above is the baseline it would deviate _from_.
 
 ## Progression and tuning targets
 
-**The loop, repeated per corruption band:** grind the band's regular enemies for gear, then use that gear to beat the band's boss, which opens the next band. The grind has to be long enough to matter and short enough not to bore.
+**The loop, repeated per corruption band:** go out into the band's area, come back with hide, meat and the odd piece taken off a bandit, cook and craft, go out further, and eventually take the band's gate, which opens the next band. The grind has to be long enough to matter and short enough not to bore.
+
+**A hunt is several fights, not one.** The player picks an area and how far to go — 3, 5 or 10 fights — and the hunt rolls straight through without them: animals most of the time, a person one time in seven, an ambush of two or three animals one time in eight. Health carries from fight to fight; the meter empties between. Rations are eaten by a standing rule: after any fight that leaves you under half health with another fight to come, you eat one and get forty back. Fall, and the hunt ends with half of everything gathered lost (rounded in the player's favor; weapons are never lost). The lengths exist so the player assesses risk _before_ leaving, which is the decision the loop is built around.
+
+**Hunt targets, bare with the Hunter's Pack (six rations):** three fights should get home most of the time, five sometimes, ten rarely. **Crafted at p90:** three near-certain, five most of the time, ten more often than not. Measured with `npm run hunts`, which also reports which fight the falls happen in — read that histogram before touching any monster.
 
 **Gear is an edge, not a doubling.** A full set is worth roughly a third more power. Affix magnitudes are deliberately small — eight slots of three affixes add up fast, and an item that looks exciting alone will be broken in a set.
 
@@ -247,6 +255,8 @@ Finished and deployed, not a prototype. Done means: someone can open a link, pla
 
 **In:** one hero · 8 equipment slots · a rolled item pool · ~5 monsters plus a gate boss · deterministic combat sim · battle view with HP bars and damage numbers · loot → equip → fight loop · localStorage save.
 
+**Grown on 3 Sep 2026, by the owner's decision, after the original list was met:** areas instead of chosen enemies · hunts of 3, 5 or 10 fights with health carried · ambushes · bandits · hide and meat · the tanner and the cookfire · the Hunter's Pack. Written here so nobody mistakes it for creep — it was a deliberate reshaping of the loop, not an accretion.
+
 **Out (defer, do not build):** offline/idle progression · prestige · skill trees · multiple heroes · shops · currencies · meta-progression of any kind.
 
 Scope creep is the primary risk to this project. When a new idea arrives mid-build, write it down and keep going.
@@ -255,7 +265,9 @@ Scope creep is the primary risk to this project. When a new idea arrives mid-bui
 
 Good ideas that are not v0.1. Written down so they stop taking up room.
 
-- **Gambit conditions.** Let the player set _when_ a resource spends: "only below 40% health," "only when the enemy is enraged." Turns spending into a second build axis on top of gear.
+- **Gambit conditions.** Let the player set _when_ a resource spends: "only below 40% health," "only when the enemy is enraged." Turns spending into a second build axis on top of gear. The eating rule (eat under half health) is the first gambit, currently fixed; a slider for it is the natural first step.
+- **Bandit variants and the road after the gate.** More kinds of bandit for band one, and corrupted hunters appearing in the tables once the Strayed Hunter is beaten.
+- **Specific weapons off specific people.** A Strayed Hunter who swung a greataxe leaves a greataxe.
 - **Resolve and Mana archetypes** — sword-and-shield and staff, once Rage and Focus are proven.
 - **Unavoidable attacks.** A monster property that ignores evasion entirely — "you cannot sidestep a mountain." Turns a boss into a puzzle that disables the thing you were relying on. A fit for the Strayed Hunter if it ever needs sharpening against the Assassin.
 - **Conditional affixes.** Effects with a trigger — gain resource on evade, bonus damage while the meter is full, the first hit of a fight empowered. Agreed as a later pass after the flat affixes were proven; these are what players build _around_ rather than merely accumulate.
@@ -263,13 +275,26 @@ Good ideas that are not v0.1. Written down so they stop taking up room.
 
 ## Where we left off
 
-**It is playable.** Choose a weapon, hunt, watch the fight resolve, take the loot, wear it, go again. Progress saves to the browser.
+**The loop is the one the owner asked for.** Pick a weapon, spar with Oswald and take his pack, pick how far to go, go out, meet what the forest sends, eat when it goes badly, come home with hide and meat, cook, craft, go again. Progress saves to the browser. The old "pick an enemy" loop is gone.
 
-**The v0.1 scope is met, and it is not being called done.** Every item on the scope list exists. The owner's verdict: technically there, but a far cry from a point to celebrate — icons and better art come before the word "finished" gets used. Treat the state as _scope met, not shipped_. It is still worth a post, precisely because both halves are true.
+**Built and tested — 77 tests:** the combat simulation (attack-speed timeline, Rage and Focus, crit on both sides, block, evasion, lifesteal, initiative, resource retention, several monsters at once), hunts (encounter tables, ambushes, carried health, rations, the fall tax), two archetypes both reachable in game, nine monsters (a teacher, four band-one animals, two bandits, a gate), eight equipment slots, 19 affix kinds, weighted and tilted rolls, crafting, the cookfire, the Hunter's Pack, run state and saving, the fight view with several foes, ten sprites, seven slot icons, and two scenes. Four harnesses: `npm run fight`, `npm run balance`, `npm run hunts`, `npm run outliers`.
 
-**Built and tested — 52 tests:** the combat simulation (attack-speed timeline, Rage and Focus, crit on both sides, block, evasion, lifesteal, initiative, resource retention), two archetypes both reachable in game, six monsters (a teacher, four band-one animals, a gate), eight equipment slots, 19 affix kinds, weighted affix pools and the item roller, run state and saving, the fight view, eight sprites, seven slot icons, and two scenes. Monster definitions can carry armor and evasion; the simulation already supported both, so exposing them was plumbing rather than mechanics. Three harnesses: `npm run fight`, `npm run balance`, `npm run outliers`.
+**Hunts, measured.** `npm run hunts` — 300 hunts per cell bare, 20 crafted sets of five tanner pieces plus three trinkets, everyone carrying six rations. "Home" is the share of hunts that get back to the walls. Read p90 for crafted, as ever.
 
-**Balance, against the gear the game actually drops.** `npm run balance` rolls real loadouts rather than equipping a fixed set, and reports geared results as a distribution. **Read p90, not the median** — a player keeps good drops and bins bad ones, so they converge on the top of the distribution. The median describes a loadout nobody keeps.
+| Weapon    | Length | Bare home | Crafted p50 | Crafted p90 | Where bare falls                |
+| --------- | ------ | --------- | ----------- | ----------- | ------------------------------- |
+| Berserker | 3      | 55%       | 84%         | **89%**     | mostly fight 3                  |
+| Berserker | 5      | 18%       | 76%         | **85%**     | fights 3–5                      |
+| Berserker | 10     | 0%        | 51%         | **69%**     | spread over fights 3–9          |
+| Assassin  | 3      | 22%       | 75%         | **83%**     | mostly fight 2                  |
+| Assassin  | 5      | 3%        | 61%         | **73%**     | fights 2–3                      |
+| Assassin  | 10     | 0%        | 29%         | **55%**     | fights 2–3, almost never past 5 |
+
+**The Berserker meets the hunt targets.** Three fights bare gets home a little over half the time, five sometimes, ten never; crafted p90 is near-certain at three, most of the time at five, and two in three at ten. Those are the targets as written.
+
+**The Assassin does not, and the reason is health, not damage.** It dies in fight two. Same hundred health as the Berserker, no damage reduction, and ten percent evasion is not a defence across five fights. The single-fight table never showed this because a single fight ends before the second wound lands. **Open, and the next tuning pass:** the levers are base health per archetype (the daggers could simply come with more of it), the ration's forty points, or the pack's six rations. Base health is the honest one — the others paper over it for both builds at once. **Do not touch monster numbers for this**; the regulars are still correctly tuned as regulars in the single-fight table below.
+
+**Single fights, for reference.** `npm run balance`, 2000 bare fights and 60 rolled loadouts x 150 fights per matchup. Every regular is winnable bare by both builds; the bandits slot in as regulars; the gate is unchanged.
 
 | Weapon    | Monster        | Bare  | Bare avg | Geared p50 | Geared p90 | Big hits bare (fewest) |
 | --------- | -------------- | ----- | -------- | ---------- | ---------- | ---------------------- |
@@ -278,28 +303,30 @@ Good ideas that are not v0.1. Written down so they stop taking up room.
 | Berserker | Strange Elk    | 100%  | 16.1s    | 100%       | 100%       | **0**                  |
 | Berserker | Strange Wolf   | 100%  | 7.8s     | 100%       | 100%       | 0                      |
 | Berserker | Strange Bear   | 100%  | 10.9s    | 100%       | 100%       | 0                      |
+| Berserker | Bandit         | 100%  | 6.2s     | 100%       | 100%       | 0                      |
+| Berserker | Mugger         | 100%  | 8.2s     | 100%       | 100%       | 1                      |
 | Berserker | Strayed Hunter | 0.7%  | 8.7s     | 59.3%      | **84.0%**  | 1                      |
 | Assassin  | Oswald         | 100%  | 8.0s     | 100%       | 100%       | 2                      |
 | Assassin  | Strange Boar   | 98.5% | 7.5s     | 100%       | 100%       | 2                      |
 | Assassin  | Strange Elk    | 100%  | 15.6s    | 100%       | 100%       | **5**                  |
 | Assassin  | Strange Wolf   | 100%  | 8.0s     | 100%       | 100%       | 2                      |
 | Assassin  | Strange Bear   | 95.1% | 15.9s    | 100%       | 100%       | 4                      |
+| Assassin  | Bandit         | 100%  | 5.9s     | 100%       | 100%       | 2                      |
+| Assassin  | Mugger         | 93.2% | 10.2s    | 100%       | 100%       | 3                      |
 | Assassin  | Strayed Hunter | 2.5%  | 9.4s     | 34.7%      | **75.3%**  | 2                      |
 
-**The roster now has a fight for every build.** The Elk is the first enemy that favors the Assassin: it barely swings, so the Berserker's Rage never fires (fewest big hits **0**) while Focus fires five times. The Bear is the sharpest Assassin-punisher: 3 armor is a rounding error to a 22-damage greataxe and half of a 6-damage dagger. Both builds win it bare — 100% and 95% — but the Assassin takes half again as long. That is what a regular's edge should look like: a different fight, not a different outcome.
-
-The gate target is p90 near 80%. Both archetypes are in the band, eight to nine points apart against a five-point target — p90 from sixty loadouts wobbles a point or two between runs, so read the gap as "a bit wide" rather than as a precise figure. Bare is correctly hopeless and the teaching guarantee still holds. This was reached with `MAGNITUDE_SCALE = 0.7` in `src/data/affixes.ts` — measured, not chosen; halving overshot to 64% and 39%. Retune that constant before touching individual ranges.
-
-**The archetype gap is consistency, not ceiling.** At the median the Berserker is far ahead (60% against 35%), but at p90 they are within about nine points. The Assassin is not weaker — it is more gear-dependent, which suits a fragile build needing the right kit. Worth keeping rather than flattening.
+The Elk still starves Rage (fewest big hits **0**) while Focus fires five times; the Bear is still the sharpest Assassin-punisher; the gate is still eight to nine points apart at p90 against a five-point target, reached with `MAGNITUDE_SCALE = 0.7` in `src/data/affixes.ts`. Retune that constant before touching individual ranges. The archetype gap at the median (59% against 35%) is consistency, not ceiling: the Assassin is more gear-dependent, which suits it.
 
 **Next, in order:**
 
-1. **Animate attacks.** The figures now stand in the world; they should move in it. A lunge on the attacker and a flinch on the defender, driven off the attack events the view already reads, before anything more ambitious.
+1. **The Assassin in hunts.** See above. Measure, then write the number in.
 2. **Band-one sprites that actually read as strange.** At 64px the one-detail wrongness did not render; what came back was normal animals with red eyes. Acceptable for now. When revisited: lead the prompt with a wrongness big enough to survive 64px, or use a larger canvas.
+3. **A third weapon**, before any animation. The owner's order: settle the character sprites and add classes first, then animate. Attack animation is designed for — the figures stand free in the scene — and not built.
 
 **Known and deliberately unfixed:**
 
-- **Wasted Rage meters.** Against rolled gear, **3,577 of 3,766** geared Berserker losses to the boss — 95% — end holding a full meter. (An earlier 629-of-830 figure was measured against hand-authored gear that no longer exists.) Rage fills from a 38-damage boss swing in two hits, and the greataxe swings every 1.5 seconds, so you almost always die loaded. Now judgeable, since the UI shows the bar: decide whether it reads as a berserker dying mid-fury or as a payoff being stolen. If the latter, the levers are a higher Rage threshold or letting a full meter fire at once. **The owner is playtesting this himself before deciding. Do not propose fixes until he reports back.**
+- **Wasted Rage meters.** Against rolled gear, **3,577 of 3,766** geared Berserker losses to the boss — 95% — end holding a full meter. Rage fills from a 38-damage boss swing in two hits, and the greataxe swings every 1.5 seconds, so you almost always die loaded. Now judgeable, since the UI shows the bar: decide whether it reads as a berserker dying mid-fury or as a payoff being stolen. If the latter, the levers are a higher Rage threshold or letting a full meter fire at once. **The owner is playtesting this himself before deciding. Do not propose fixes until he reports back.**
+- **The hunt harness's crafted set is a random mix of hides.** A real player picks. The p90 partly covers this, but a "best material per slot" set would sit higher than the table says.
 - **No levels, no abilities, no attack animation.** Figures stand still while numbers fly.
 
 ## Notes
