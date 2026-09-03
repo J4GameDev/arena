@@ -14,6 +14,7 @@ export const GREATAXE: Weapon = {
   id: 'greataxe',
   name: 'Rusted Greataxe',
   archetype: 'Berserker',
+  baseHealth: 100,
   pitch:
     'Slow, enormous swings. Rage fills from the blows aimed at you and hardens you as ' +
     'it climbs, then spends itself on one devastating hit. You stand and take it.',
@@ -32,6 +33,7 @@ export const TWIN_DAGGERS: Weapon = {
   id: 'twin-daggers',
   name: 'Twin Daggers',
   archetype: 'Assassin',
+  baseHealth: 100,
   pitch:
     'Fast, light strikes. Focus fills from every hit you land and spends on a finisher. ' +
     'You slip blows rather than absorb them, and you break easily when you do not.',

@@ -152,6 +152,12 @@ export interface Weapon {
   readonly archetype: string;
   /** How this weapon plays, in the player's language. Shown when choosing. */
   readonly pitch: string;
+  /**
+   * The health a hero has with this weapon and nothing else. The weapon is the
+   * class, so it owns the hero's constitution too: a build that cannot absorb
+   * or avoid a hit needs more of it to walk the same road.
+   */
+  readonly baseHealth: number;
   readonly attack: AttackProfile;
   readonly resource: ResourceRule;
   readonly threshold: number;

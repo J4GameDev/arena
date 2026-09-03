@@ -3,9 +3,8 @@ import type { Combatant, Item, MonsterDefinition, Weapon } from './types.ts';
 
 /**
  * The hero has no class and no level. Everything that makes them anything comes
- * from the weapon in their hands.
+ * from the weapon in their hands — including how much health they have.
  */
-export const HERO_BASE_HEALTH = 100;
 
 /**
  * What a critical hit multiplies damage by before any critMultiplier affixes.
@@ -18,8 +17,8 @@ export const BASE_CRIT_MULTIPLIER = 1.5;
 export function createHero(name: string, weapon: Weapon, items: readonly Item[] = []): Combatant {
   const bare: Combatant = {
     name,
-    maxHealth: HERO_BASE_HEALTH,
-    health: HERO_BASE_HEALTH,
+    maxHealth: weapon.baseHealth,
+    health: weapon.baseHealth,
     attack: weapon.attack,
 
     evasion: weapon.evasion,
