@@ -40,7 +40,7 @@ export const TWIN_DAGGERS: Weapon = {
   baseHealth: 100,
   pitch:
     'Fast, light cuts. Every hit you land fills Focus, and the fifth spends it on a ' +
-    'finisher at double damage. You slip one blow in seven. The rest you take in full.',
+    'finisher at double damage. Quick enough to slip some blows, too light to take many.',
   // Fast and small. Ramps to a payoff on its own schedule, ignoring the enemy.
   // 7 rather than 6: measured over hunts, one point of dagger damage was
   // worth more than ten points of evasion, because the Assassin's problem
@@ -104,8 +104,8 @@ export const SHORT_BOW: Weapon = {
   archetype: 'Ranger',
   baseHealth: 100,
   pitch:
-    'Arrows, from a distance. The snare sets itself while the fight runs, six seconds ' +
-    'whoever is swinging. The next arrow springs it, and your enemy loses two seconds, ' +
+    'Arrows, from a distance, and a snare that takes a few seconds to set. Once it is ' +
+    'set, the next arrow springs it, and the thing in front of you loses its next swing, ' +
     'heavy blow or not.',
   // Starts at range, so the first arrow is already nocked when the fight begins.
   // 10 rather than 9: on hunts the Ranger died in fight two, the way the
