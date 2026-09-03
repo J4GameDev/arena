@@ -57,7 +57,7 @@ export function createMonster(definition: MonsterDefinition): Combatant {
     attack: definition.attack,
 
     evasion: definition.evasion ?? 0,
-    flatDamageReduction: definition.armour ?? 0,
+    flatDamageReduction: definition.armor ?? 0,
     percentDamageReduction: 0,
     blockChance: 0,
     critResistance: 0,

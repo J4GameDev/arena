@@ -23,7 +23,7 @@ export type ResourceKind = 'rage' | 'focus';
  * Equipment positions. The weapon is not one of these — it sets the archetype
  * and is handled separately.
  *
- * Armour (head/torso/legs/feet/hands) is crafted from what you hunt and keeps
+ * Armor (head/torso/legs/feet/hands) is crafted from what you hunt and keeps
  * you alive. Trinkets (rings, necklace) come from the corruption and carry the
  * build-defining resource modifiers.
  */
@@ -36,7 +36,7 @@ export type Slot = 'head' | 'torso' | 'legs' | 'feet' | 'hands' | 'ring' | 'neck
  * are the minority on purpose: they make good chase items and bad common ones.
  */
 export type ModifierKind =
-  // --- Defensive: every armour slot ---
+  // --- Defensive: every armor slot ---
   /** Flat health added to the hero's maximum. */
   | 'maxHealth'
   /** Multiplier on maximum health. 0.1 means 10% more. */
@@ -176,7 +176,7 @@ export interface MonsterDefinition {
    * Flat damage removed from every hit this monster takes. Guts a fast weapon's
    * small hits and barely dents a slow weapon's big ones. Defaults to 0.
    */
-  readonly armour?: number;
+  readonly armor?: number;
   /** Chance to avoid a hit outright. Defaults to 0. */
   readonly evasion?: number;
   /** One line on what this monster is meant to punish. See pillar two. */
@@ -236,7 +236,7 @@ export type CombatEvent =
       readonly defender: string;
       /** Damage actually dealt, after the defender's reduction. */
       readonly damage: number;
-      /** Damage the defender's armour and resource absorbed. 0 if nothing was. */
+      /** Damage the defender's armor and resource absorbed. 0 if nothing was. */
       readonly prevented: number;
       readonly empowered: boolean;
       readonly critical: boolean;

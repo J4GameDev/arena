@@ -29,7 +29,7 @@ import { formatModifier, isBeneficial } from './format.ts';
 /**
  * How often a corrupted kill yields a weapon you do not already have.
  *
- * A weapon is a whole build pivot, so it has to be rarer than armour — but not
+ * A weapon is a whole build pivot, so it has to be rarer than armor — but not
  * so rare that a player never sees a second archetype exist.
  */
 const WEAPON_FIND_CHANCE = 0.25;
@@ -155,7 +155,7 @@ export function start(mount: HTMLElement): void {
           ${stat('Health', String(you.maxHealth))}
           ${stat('Damage', String(Math.round(you.attack.damage)))}
           ${stat('Attacks / sec', you.attack.attacksPerSecond.toFixed(2))}
-          ${stat('Armour', String(you.flatDamageReduction))}
+          ${stat('Armor', String(you.flatDamageReduction))}
           ${stat('Evasion', percent(you.evasion))}
           ${stat('Block', percent(you.blockChance))}
           ${stat('Crit', percent(you.critChance))}

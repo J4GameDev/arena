@@ -4,7 +4,7 @@ import type { Item, Modifier, ModifierKind } from '../sim/types.ts';
  * How an affix reads to a player.
  *
  * Internal names describe the mechanic; these describe the effect. "Flat damage
- * reduction" is what the code does, "Armour" is what the player understands, and
+ * reduction" is what the code does, "Armor" is what the player understands, and
  * pillar four says the player wins that argument.
  */
 interface Display {
@@ -18,7 +18,7 @@ interface Display {
 const DISPLAY: Readonly<Record<ModifierKind, Display>> = {
   maxHealth: { label: 'Health', percent: false },
   healthPercent: { label: 'Health', percent: true },
-  flatDamageReduction: { label: 'Armour', percent: false },
+  flatDamageReduction: { label: 'Armor', percent: false },
   percentDamageReduction: { label: 'Damage Reduction', percent: true },
   evasion: { label: 'Evasion', percent: true },
   critResistance: { label: 'Crit Resistance', percent: true },
@@ -56,7 +56,7 @@ export function formatModifier(modifier: Modifier): string {
   return `${sign}${shown}% ${display.label}`;
 }
 
-/** Whether an affix helps, so the UI can colour it without re-deriving the rule. */
+/** Whether an affix helps, so the UI can color it without re-deriving the rule. */
 export function isBeneficial(modifier: Modifier): boolean {
   const display = DISPLAY[modifier.kind];
   return display.lowerIsBetter === true ? modifier.value < 0 : modifier.value > 0;

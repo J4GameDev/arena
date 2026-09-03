@@ -32,7 +32,7 @@ describe('rollItem', () => {
     }
   });
 
-  it('keeps resource affixes off armour entirely', () => {
+  it('keeps resource affixes off armor entirely', () => {
     const rng = new Rng(3);
     const resourceAffixes: ModifierKind[] = [
       'resourceGain',
@@ -40,9 +40,9 @@ describe('rollItem', () => {
       'resourceRetention',
       'empowerMultiplier',
     ];
-    const armourSlots: Slot[] = ['head', 'torso', 'legs', 'feet', 'hands'];
+    const armorSlots: Slot[] = ['head', 'torso', 'legs', 'feet', 'hands'];
 
-    for (const slot of armourSlots) {
+    for (const slot of armorSlots) {
       for (let i = 0; i < 500; i += 1) {
         for (const modifier of rollItem(slot, rng).modifiers) {
           expect(resourceAffixes).not.toContain(modifier.kind);
@@ -51,11 +51,11 @@ describe('rollItem', () => {
     }
   });
 
-  it('keeps lifesteal and crit off armour, except crit resistance', () => {
+  it('keeps lifesteal and crit off armor, except crit resistance', () => {
     const rng = new Rng(4);
-    const armourSlots: Slot[] = ['head', 'torso', 'legs', 'feet', 'hands'];
+    const armorSlots: Slot[] = ['head', 'torso', 'legs', 'feet', 'hands'];
 
-    for (const slot of armourSlots) {
+    for (const slot of armorSlots) {
       for (let i = 0; i < 500; i += 1) {
         for (const modifier of rollItem(slot, rng).modifiers) {
           expect(['lifesteal', 'critChance', 'critMultiplier']).not.toContain(modifier.kind);
@@ -76,7 +76,7 @@ describe('rollItem', () => {
     }
   });
 
-  it('favours common affixes over rare ones without ever forcing them', () => {
+  it('favors common affixes over rare ones without ever forcing them', () => {
     const rng = new Rng(6);
     const counts = new Map<ModifierKind, number>();
     const RUNS = 4000;

@@ -261,8 +261,8 @@ button.ghost:hover {
  * them in. Pixel art, so it scales without blur.
  *
  * The painting is a backdrop, not the subject, so it sits on its own layer
- * pulled back by a quarter in brightness and colour. The figures on top keep
- * their full colour and get an outline, and the eye goes to the fight.
+ * pulled back by a quarter in brightness and color. The figures on top keep
+ * their full color and get an outline, and the eye goes to the fight.
  */
 .scene {
   /* Pixels per metre. Every figure is drawn to this one scale. */
@@ -319,16 +319,16 @@ button.ghost:hover {
 /*
  * A pad under every figure, the way a creature-battler stands its fighters on
  * a disc: it anchors the feet to one plane and stops the scene's own rocks
- * and roots from appearing to prop them up. Sized from the same metres the
+ * and roots from appearing to prop them up. Sized from the same meters the
  * sprite is drawn at, so a wolf gets a wolf-sized pad.
  */
 .figure::before {
   content: '';
   position: absolute;
   left: 50%;
-  bottom: calc(var(--canvas-metres, 2) * var(--ppm) * -0.04px);
-  width: calc(var(--canvas-metres, 2) * var(--ppm) * 0.85px);
-  height: calc(var(--canvas-metres, 2) * var(--ppm) * 0.2px);
+  bottom: calc(var(--canvas-meters, 2) * var(--ppm) * -0.04px);
+  width: calc(var(--canvas-meters, 2) * var(--ppm) * 0.85px);
+  height: calc(var(--canvas-meters, 2) * var(--ppm) * 0.2px);
   transform: translateX(-50%);
   border-radius: 50%;
   background: radial-gradient(
@@ -629,15 +629,15 @@ button.ghost:hover {
  * at whatever size it is drawn.
  */
 .scene .portrait {
-  --px: calc(var(--canvas-metres, 2) * var(--ppm) / 64 * 1px);
+  --px: calc(var(--canvas-meters, 2) * var(--ppm) / 64 * 1px);
   filter: drop-shadow(var(--px) 0 0 var(--ink)) drop-shadow(calc(-1 * var(--px)) 0 0 var(--ink))
     drop-shadow(0 var(--px) 0 var(--ink)) drop-shadow(0 calc(-1 * var(--px)) 0 var(--ink));
 }
 
-/* The whole 64px canvas stands for --canvas-metres of world; see view/art.ts. */
+/* The whole 64px canvas stands for --canvas-meters of world; see view/art.ts. */
 .scene .portrait {
-  width: calc(var(--canvas-metres, 2) * var(--ppm) * 1px);
-  height: calc(var(--canvas-metres, 2) * var(--ppm) * 1px);
+  width: calc(var(--canvas-meters, 2) * var(--ppm) * 1px);
+  height: calc(var(--canvas-meters, 2) * var(--ppm) * 1px);
 }
 
 .portrait.large {

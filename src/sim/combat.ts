@@ -138,7 +138,7 @@ function resolveAttack(
   //
   // The defender gains from the damage that was *swung at them*, not from what
   // got through. This matters: gaining from damage actually taken meant every
-  // defensive item slowed your own engine, and a fully armoured Berserker never
+  // defensive item slowed your own engine, and a fully armored Berserker never
   // filled Rage at all. Rage answers what is coming at you, not how much it hurt.
   gainResource(attacker, attacker.resource?.rule.gainPerHitLanded ?? 0, at, events);
   gainResource(defender, (defender.resource?.rule.gainPerDamageTaken ?? 0) * rawDamage, at, events);

@@ -8,11 +8,11 @@ import type { ModifierKind, Slot } from '../sim/types.ts';
  * 1. **No slot has a guaranteed primary.** Slots are weighted, never forced, so
  *    equipment never steers a player toward a build.
  * 2. **The zeros follow from a principle.** Lifesteal cannot roll on boots — not
- *    because it is unlikely, but because armour is not what does that. Armour is
+ *    because it is unlikely, but because armor is not what does that. Armor is
  *    defensive, weapons are offensive, and trinkets are offensive *and* the only
  *    direct source of resource affixes, because they are made of corruption.
  *
- * Hands are the one stated exception: they are the only armour touching the
+ * Hands are the one stated exception: they are the only armor touching the
  * weapon, so they may roll attack speed and damage. Initiative is feet-only.
  */
 
@@ -20,7 +20,7 @@ const WEIGHT_COMMON = 4;
 const WEIGHT_UNCOMMON = 2;
 const WEIGHT_RARE = 1;
 
-/** Defensive affixes, legal on every armour slot. */
+/** Defensive affixes, legal on every armor slot. */
 const ARMOUR: readonly ModifierKind[] = [
   'maxHealth',
   'healthPercent',
@@ -81,7 +81,7 @@ export const SLOT_POOLS: Readonly<Record<Slot, SlotPool>> = {
   },
   legs: {
     // Deliberately the same pool as the torso. They are the two largest pieces
-    // of armour and offering the same things is honest; size tells them apart.
+    // of armor and offering the same things is honest; size tells them apart.
     legal: ARMOUR,
     common: ['maxHealth', 'healthPercent', 'flatDamageReduction', 'percentDamageReduction'],
     uncommon: ['blockChance'],
@@ -96,7 +96,7 @@ export const SLOT_POOLS: Readonly<Record<Slot, SlotPool>> = {
     label: 'Boots',
   },
   hands: {
-    // The exception. Gauntlets are the only armour touching the weapon.
+    // The exception. Gauntlets are the only armor touching the weapon.
     legal: [...ARMOUR, 'attackSpeed', 'damage'],
     common: ['attackSpeed', 'damage'],
     uncommon: ['blockChance', 'flatDamageReduction'],

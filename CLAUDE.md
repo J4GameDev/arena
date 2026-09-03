@@ -48,7 +48,7 @@ v0.1 ships **two** archetypes, two-handed (Rage) and daggers (Focus), because th
 
 **A source of corruption exists somewhere, and it has been leaking outward for a long time.** Everything in this world is a function of distance to it.
 
-**Corruption escalates in kind, not just degree.** Near the bastion it is a detail — an animal with too many joints, fur the wrong colour, eyes that do not match. Further out the original creature gets harder to read. Near the source it stops being biological at all. This single gradient is the difficulty curve, the art direction, and the reward curve at once. Almost everything hangs off it.
+**Corruption escalates in kind, not just degree.** Near the bastion it is a detail — an animal with too many joints, fur the wrong color, eyes that do not match. Further out the original creature gets harder to read. Near the source it stops being biological at all. This single gradient is the difficulty curve, the art direction, and the reward curve at once. Almost everything hangs off it.
 
 **Something is behind it, and it does not know we exist.** We are incidental to whatever this is. It never speaks, never taunts, never notices. Treat that as a hard rule: no antagonist dialogue, no villain reveal, no monologue, ever. The world explains itself through what the player finds, or it does not explain itself.
 
@@ -64,7 +64,7 @@ v0.1 ships **two** archetypes, two-handed (Rage) and daggers (Focus), because th
 
 He also rhymes with the boss. The first thing you fight is a hunter; the hardest thing you fight is a hunter who went too far out. The opening and the gate are the same figure at two ends of the same road, and the player is invited to notice without being told.
 
-**Corrupted humans are the worst things out there**, because they were the most dangerous animal to begin with. They are hunters who went too far out and did not come back — which means the hardest enemies in the game are a preview of what happens to the player. Nobody says this out loud. The player works it out when one of them is carrying a weapon they recognise.
+**Corrupted humans are the worst things out there**, because they were the most dangerous animal to begin with. They are hunters who went too far out and did not come back — which means the hardest enemies in the game are a preview of what happens to the player. Nobody says this out loud. The player works it out when one of them is carrying a weapon they recognize.
 
 **Two loot sources, and the split is thematic rather than designed.** Animals yield materials — hide, bone, whatever grew through them. Corrupted hunters yield _gear_, because they are still carrying it, and since a weapon defines an archetype, killing one that swung a greataxe should drop a greataxe. (Currently a corrupted hunter has a 25% chance to leave a random weapon you do not yet own; the Strayed Hunter's own weapon is not modelled. The specific-weapon version is the intent.)
 
@@ -80,7 +80,7 @@ This is a deliberate reversal of an earlier call. The world is wildlife, frontie
 
 **The escalation rule — this generates every creature in the game.** Corruption changes in kind with distance from the source, not just in degree:
 
-- **Near the bastion** — corruption is a _detail_. A recognisable animal with one thing off: too many joints, mismatched eyes, fur the wrong colour. The horror is that you can still tell what it used to be.
+- **Near the bastion** — corruption is a _detail_. A recognizable animal with one thing off: too many joints, mismatched eyes, fur the wrong color. The horror is that you can still tell what it used to be.
 - **Mid range** — the original species gets harder to read. Proportions wrong, growth where it should not be, movement that does not match the body.
 - **Deep** — barely biological. The creature is a scaffold for something else.
 - **At the source** — not biological at all. Not in v0.1; nobody has seen it.
@@ -89,7 +89,7 @@ When designing any creature, first decide its band, then work outward from a rea
 
 **Band one is named "Strange"** — Strange Boar, Strange Elk. It says something is off without saying what. "Turned" was tried and rejected: it reads as undead, which over-commits the fiction before the player has seen anything.
 
-**Palette.** Band one is still a living place: daylight, green, a town that works. A hunter's job is bringing resources back, and if everything out there were already wrong there would be nothing safe to gather. So the creatures go strange before the land does — the environment near the walls stays natural and even bright, and bleakness is earned further out. As distance grows, colour goes wrong before shape does — a hue that does not occur in nature, arriving before the anatomy breaks.
+**Palette.** Band one is still a living place: daylight, green, a town that works. A hunter's job is bringing resources back, and if everything out there were already wrong there would be nothing safe to gather. So the creatures go strange before the land does — the environment near the walls stays natural and even bright, and bleakness is earned further out. As distance grows, color goes wrong before shape does — a hue that does not occur in nature, arriving before the anatomy breaks.
 
 **Sprites live in `public/sprites/<id>.png`**, looked up by id — `oswald.png` for a monster, `greataxe.png` for the hero wielding that weapon. 64x64, transparent, rendered at 96-128px with `image-rendering: pixelated`. A missing sprite removes itself rather than showing a broken image, so content can land before its art does.
 
@@ -97,15 +97,15 @@ When designing any creature, first decide its band, then work outward from a rea
 
 Sprite paths are passed _into_ the view, never stored on a Combatant. The simulation has no idea art exists and should keep it that way.
 
-**Scenes live in `public/scenes/<name>.png`**, 400x224, stretched to fill the fight panel. Every scene keeps its ground line in the lower third, because the figures stand on it: there is no card around a combatant, just the sprite in the place with its name and bars hanging above. `bastion.png` is a row of thatched cottages on a dirt track, with a well and an old oak, for the spar; `forest-edge.png` is a grey autumn clearing among pines with a fallen log, for everything in band one. Both were the owner's pick from a set of four — art is offered as options, never installed as a one-shot. The view picks by defeat style. Five earlier scenes were rejected on sight: a dusk treeline and a bare timber street as too bleak and lifeless for a safe band, a sunlit flower meadow as a fairytale, and two town squares that came back top-down. The scene model reaches for top-down whenever it hears "square" or "yard", so ask for a view "from ground level" and judge by what came back, same as a sprite. The target is a middle ground: a living place under real weather.
+**Scenes live in `public/scenes/<name>.png`**, 400x224, stretched to fill the fight panel. Every scene keeps its ground line in the lower third, because the figures stand on it: there is no card around a combatant, just the sprite in the place with its name and bars hanging above. `bastion.png` is a row of thatched cottages on a dirt track, with a well and an old oak, for the spar; `forest-edge.png` is a gray autumn clearing among pines with a fallen log, for everything in band one. Both were the owner's pick from a set of four — art is offered as options, never installed as a one-shot. The view picks by defeat style. Five earlier scenes were rejected on sight: a dusk treeline and a bare timber street as too bleak and lifeless for a safe band, a sunlit flower meadow as a fairytale, and two town squares that came back top-down. The scene model reaches for top-down whenever it hears "square" or "yard", so ask for a view "from ground level" and judge by what came back, same as a sprite. The target is a middle ground: a living place under real weather.
 
-**Readability in the scene.** Figures and text on a painting blend into it. The fix chosen from four mocked options: the painting sits on its own layer at three-quarter brightness and colour, every figure gets a dark outline one sprite-pixel wide, and each stands on a soft dark pad at the same baseline (sprites are shifted on disk so their feet sit on the bottom row). No plates behind the bars and no HUD strip — those were the rejected options. If it is still hard to read, the next levers are prompting scenes for an empty midground where the fighters stand, and drawing the figures larger.
+**Readability in the scene.** Figures and text on a painting blend into it. The fix chosen from four mocked options: the painting sits on its own layer at three-quarter brightness and color, every figure gets a dark outline one sprite-pixel wide, and each stands on a soft dark pad at the same baseline (sprites are shifted on disk so their feet sit on the bottom row). No plates behind the bars and no HUD strip — those were the rejected options. If it is still hard to read, the next levers are prompting scenes for an empty midground where the fighters stand, and drawing the figures larger.
 
 **Item icons live in `public/icons/<slot>.png`**, 32x32, one per slot. Every item in a slot shares a name, so it shares a picture. Weapons reuse their sprites.
 
-**64 pixels cannot carry a subtle detail.** A clouded eye, a missing ear, a patch of discoloured fur — each is one or two pixels at this size and the model mostly ignores them. What actually rendered on the first band-one animals was red eyes. Either the wrongness has to be large enough to read at 64px (a whole limb, a silhouette that is off, a colour that dominates) or the sprite has to be bigger. Do not describe a sprite by its prompt; describe it by what came back.
+**64 pixels cannot carry a subtle detail.** A clouded eye, a missing ear, a patch of discolored fur — each is one or two pixels at this size and the model mostly ignores them. What actually rendered on the first band-one animals was red eyes. Either the wrongness has to be large enough to read at 64px (a whole limb, a silhouette that is off, a color that dominates) or the sprite has to be bigger. Do not describe a sprite by its prompt; describe it by what came back.
 
-**Prompt shape that worked**, for consistency: subject and stance, then materials, then "muted earth tones of brown grey and dull green", then "soft natural lighting from upper left", then "plain and grounded", and always end with "no magic, no glow, no glowing effects" — pixel-art models reach for neon and rim-light unless told twice not to.
+**Prompt shape that worked**, for consistency: subject and stance, then materials, then "muted earth tones of brown gray and dull green", then "soft natural lighting from upper left", then "plain and grounded", and always end with "no magic, no glow, no glowing effects" — pixel-art models reach for neon and rim-light unless told twice not to.
 
 **Practical.** Art is pixel art via the **PixelLab MCP**. Keep the same palette family, lighting direction, and sprite dimensions within a category. Direction drifts fast when assets are generated one at a time, so look at what already exists before adding to it. Generations are a finite monthly budget — settle a look on cheap single sprites before committing to anything animated.
 
@@ -159,11 +159,11 @@ Corollaries:
 
 **Three categories, three jobs.**
 
-- **Armour** (head, torso, legs, feet, hands) — defensive only. It keeps you standing. A leather vest has no business making you drain blood.
+- **Armor** (head, torso, legs, feet, hands) — defensive only. It keeps you standing. A leather vest has no business making you drain blood.
 - **Weapons** — offensive. The weapon's archetype and resource rule are what the weapon _is_ and are never affixes; offensive affixes roll on top.
-- **Trinkets** (two rings, necklace) — offensive, and the **only** source of direct resource affixes. They are made of corruption, which is why they get to break the rules armour obeys.
+- **Trinkets** (two rings, necklace) — offensive, and the **only** source of direct resource affixes. They are made of corruption, which is why they get to break the rules armor obeys.
 
-**Two exceptions, both deliberate.** Hands may carry attack speed and damage despite being armour, because they are the only armour touching the weapon. Initiative is feet-only — one affix that comes from exactly one slot, which gives boots a reason to exist beyond weighting.
+**Two exceptions, both deliberate.** Hands may carry attack speed and damage despite being armor, because they are the only armor touching the weapon. Initiative is feet-only — one affix that comes from exactly one slot, which gives boots a reason to exist beyond weighting.
 
 **Direct versus indirect is the whole distinction.** Trinkets alone may carry affixes that _say_ "resource." Anything that affects a resource as a downstream consequence is normal and expected everywhere — attack speed accelerates Focus because Focus builds from hits landed, and that is one mechanic touching another, not a resource affix leaking onto gloves. The rule governs what an affix says, not what it ends up influencing.
 
@@ -171,7 +171,7 @@ Corollaries:
 
 **Weighting has real zeros, and they follow from the framework.** Lifesteal cannot appear on boots — not because it is unlikely, but because it is not what boots are. Zeros that come from a principle are ones a player accepts instantly; arbitrary ones just read as bad luck.
 
-**Parked:** corrupted armour and weapons that deliberately break these restraints. Tainted gear that grants what its category should not is a natural late-game hook and fits the clean-versus-tainted material split. Not a v0.1 concern, and the framework above is the baseline it would deviate _from_.
+**Parked:** corrupted armor and weapons that deliberately break these restraints. Tainted gear that grants what its category should not is a natural late-game hook and fits the clean-versus-tainted material split. Not a v0.1 concern, and the framework above is the baseline it would deviate _from_.
 
 ## Progression and tuning targets
 
@@ -179,7 +179,7 @@ Corollaries:
 
 **Gear is an edge, not a doubling.** A full set is worth roughly a third more power. Affix magnitudes are deliberately small — eight slots of three affixes add up fast, and an item that looks exciting alone will be broken in a set.
 
-**Regular enemies are the grind, and they are tuned as the grind.** Winnable bare by every build most of the time. Each one favours a build _slightly_ — a different kind of fight, not a different outcome — and none of them is a wall. A regular that a bare build loses nine times in ten is a gate wearing the wrong label. Only the gate is allowed to be impossible.
+**Regular enemies are the grind, and they are tuned as the grind.** Winnable bare by every build most of the time. Each one favors a build _slightly_ — a different kind of fight, not a different outcome — and none of them is a wall. A regular that a bare build loses nine times in ten is a gate wearing the wrong label. Only the gate is allowed to be impossible.
 
 **Bosses are gates, and they are tuned as gates.** The target for a band boss:
 
@@ -192,6 +192,8 @@ That spread is wide on purpose. Gear being a modest stat change _and_ the differ
 **Slow weapons have breakpoints, fast weapons do not.** The Berserker's win rate against the boss falls from 87% to 29% over twenty points of boss health, because twenty health can mean one more swing, which costs 1.5 seconds and another blow taken. The Assassin barely notices the same change. Keep this — it means greataxe builds care about damage thresholds in a way dagger builds never will. It also means retuning a boss's health is far more dangerous than it looks.
 
 ## Code conventions
+
+- **US spelling everywhere** — armor, color, gray, meter, favor — in code, comments, this document and on screen. The owner's call; the first sessions drifted British and were swept.
 
 The owner reads this code but does not write it. That makes **legibility of intent** the goal — not brevity, not cleverness, not idiomatic-TypeScript points. Someone should be able to open any file and follow what the game is doing.
 
@@ -265,7 +267,7 @@ Good ideas that are not v0.1. Written down so they stop taking up room.
 
 **The v0.1 scope is met, and it is not being called done.** Every item on the scope list exists. The owner's verdict: technically there, but a far cry from a point to celebrate — icons and better art come before the word "finished" gets used. Treat the state as _scope met, not shipped_. It is still worth a post, precisely because both halves are true.
 
-**Built and tested — 52 tests:** the combat simulation (attack-speed timeline, Rage and Focus, crit on both sides, block, evasion, lifesteal, initiative, resource retention), two archetypes both reachable in game, six monsters (a teacher, four band-one animals, a gate), eight equipment slots, 19 affix kinds, weighted affix pools and the item roller, run state and saving, the fight view, eight sprites, seven slot icons, and two scenes. Monster definitions can carry armour and evasion; the simulation already supported both, so exposing them was plumbing rather than mechanics. Three harnesses: `npm run fight`, `npm run balance`, `npm run outliers`.
+**Built and tested — 52 tests:** the combat simulation (attack-speed timeline, Rage and Focus, crit on both sides, block, evasion, lifesteal, initiative, resource retention), two archetypes both reachable in game, six monsters (a teacher, four band-one animals, a gate), eight equipment slots, 19 affix kinds, weighted affix pools and the item roller, run state and saving, the fight view, eight sprites, seven slot icons, and two scenes. Monster definitions can carry armor and evasion; the simulation already supported both, so exposing them was plumbing rather than mechanics. Three harnesses: `npm run fight`, `npm run balance`, `npm run outliers`.
 
 **Balance, against the gear the game actually drops.** `npm run balance` rolls real loadouts rather than equipping a fixed set, and reports geared results as a distribution. **Read p90, not the median** — a player keeps good drops and bins bad ones, so they converge on the top of the distribution. The median describes a loadout nobody keeps.
 
@@ -284,7 +286,7 @@ Good ideas that are not v0.1. Written down so they stop taking up room.
 | Assassin  | Strange Bear   | 95.1% | 15.9s    | 100%       | 100%       | 4                      |
 | Assassin  | Strayed Hunter | 2.5%  | 9.4s     | 34.7%      | **75.3%**  | 2                      |
 
-**The roster now has a fight for every build.** The Elk is the first enemy that favours the Assassin: it barely swings, so the Berserker's Rage never fires (fewest big hits **0**) while Focus fires five times. The Bear is the sharpest Assassin-punisher: 3 armour is a rounding error to a 22-damage greataxe and half of a 6-damage dagger. Both builds win it bare — 100% and 95% — but the Assassin takes half again as long. That is what a regular's edge should look like: a different fight, not a different outcome.
+**The roster now has a fight for every build.** The Elk is the first enemy that favors the Assassin: it barely swings, so the Berserker's Rage never fires (fewest big hits **0**) while Focus fires five times. The Bear is the sharpest Assassin-punisher: 3 armor is a rounding error to a 22-damage greataxe and half of a 6-damage dagger. Both builds win it bare — 100% and 95% — but the Assassin takes half again as long. That is what a regular's edge should look like: a different fight, not a different outcome.
 
 The gate target is p90 near 80%. Both archetypes are in the band, eight to nine points apart against a five-point target — p90 from sixty loadouts wobbles a point or two between runs, so read the gap as "a bit wide" rather than as a precise figure. Bare is correctly hopeless and the teaching guarantee still holds. This was reached with `MAGNITUDE_SCALE = 0.7` in `src/data/affixes.ts` — measured, not chosen; halving overshot to 64% and 39%. Retune that constant before touching individual ranges.
 

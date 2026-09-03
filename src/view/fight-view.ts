@@ -176,7 +176,7 @@ function sideMarkup(kind: 'hero' | 'foe', combatant: Combatant, figure: Figure):
         <img
           class="portrait"
           src="${escape(figure.sprite)}"
-          style="--canvas-metres: ${figure.canvasMetres}"
+          style="--canvas-meters: ${figure.canvasMeters}"
           alt=""
           onerror="this.remove()"
         />
