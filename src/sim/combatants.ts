@@ -23,7 +23,7 @@ export function createHero(name: string, weapon: Weapon, items: readonly Item[] 
 
     evasion: weapon.evasion,
     flatDamageReduction: 0,
-    percentDamageReduction: 0,
+    percentDamageReduction: weapon.damageReduction,
     blockChance: weapon.blockChance,
     critResistance: 0,
 

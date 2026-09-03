@@ -28,6 +28,7 @@ export const GREATAXE: Weapon = {
   maxDamageReduction: 0.4,
   evasion: 0, // the Berserker stands and takes it
   blockChance: 0,
+  damageReduction: 0,
   initiative: 0,
   snareSeconds: 0,
 };
@@ -59,6 +60,7 @@ export const TWIN_DAGGERS: Weapon = {
   // gap to the Berserker but spent too much of that budget.
   evasion: 0.15,
   blockChance: 0,
+  damageReduction: 0,
   initiative: 0,
   snareSeconds: 0,
 };
@@ -69,26 +71,33 @@ export const SWORD_AND_SHIELD: Weapon = {
   archetype: 'Warden',
   baseHealth: 100,
   pitch:
-    'A short sword and a round shield. Resolve fills from every blow you take or turn ' +
-    'aside, and spends on a shield bash. You are at your best when something is hitting ' +
-    'you often, and at your worst when nothing is.',
+    'A short sword and a round shield. The shield takes a tenth off every blow that ' +
+    'reaches you, no luck involved. Resolve fills from every blow you take and spends ' +
+    'on a shield bash that staggers the thing in front of you for a second. At your ' +
+    'best when something is hitting you often, at your worst when nothing is.',
   // The sword hits harder than it looks, because the shield is all the
   // defense there is. Measured against the gate: 12 damage gave a geared p90
   // of 17%, 14 gave 40%, 16 gave 73%. The gate is the fight Resolve never
   // fires in (one blow every three seconds), so damage carries it there.
   attack: { damage: 16, attacksPerSecond: 1.0, variance: 0.15 },
   resource: RESOLVE,
-  threshold: 5, // five blows taken or blocked
-  empowerMultiplier: 2.5,
+  threshold: 5, // five blows taken
+  // Reduced from x2.5 by the owner: the bash is a stagger now, not a haymaker.
+  empowerMultiplier: 1.5,
   maxDamageReduction: 0,
   evasion: 0,
-  // The shield: about a blow in three lands soft. Reliable and partial, like
-  // Rage's reduction, but present from the first swing rather than earned.
-  // 35% rather than 30% took the gate from 73% to 76%; 40% with less damage
-  // did not get there, so the shield is the finish, not the foundation.
-  blockChance: 0.35,
+  // No block roll. The first shield was a 35% chance to halve a blow, and
+  // against the gate it left the Warden at 68% geared and 9% bare. The owner
+  // asked for a steady share off every blow instead. Measured, geared p90 at
+  // the gate: 25% gave 98, 20% gave 96, 15% gave 91, 10% gave 84 — a steady
+  // share moves the boss from three hits to kill to four as soon as gear adds
+  // a little, so bare stays at zero and geared jumps. Ten percent is the one
+  // that fits the band and hunts level with the Berserker.
+  blockChance: 0,
+  damageReduction: 0.1,
   initiative: 0,
-  snareSeconds: 0,
+  // The bash staggers: the target's next swing comes a second late.
+  snareSeconds: 1,
 };
 
 export const SHORT_BOW: Weapon = {
@@ -113,6 +122,7 @@ export const SHORT_BOW: Weapon = {
   // percent: a baseline the boots and rings build on, not the whole budget.
   evasion: 0.1,
   blockChance: 0,
+  damageReduction: 0,
   initiative: 0.5,
   // The whole payoff. A snared enemy's next swing comes two seconds late:
   // a free arrow or two against most things, and a delayed heavy blow at
@@ -141,6 +151,7 @@ export const STAFF: Weapon = {
   maxDamageReduction: 0,
   evasion: 0,
   blockChance: 0,
+  damageReduction: 0,
   initiative: 0,
   snareSeconds: 0,
 };

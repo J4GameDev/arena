@@ -23,19 +23,24 @@ describe('Resolve', () => {
     }
   });
 
-  it('blocks a share of what comes in', () => {
-    let blocked = 0;
-    let taken = 0;
-    for (let seed = 0; seed < 20; seed += 1) {
-      for (const event of fight(SWORD_AND_SHIELD, STRANGE_WOLF, seed).events) {
-        if (event.type === 'attack' && event.defender === 'Hero') {
-          taken += 1;
-          if (event.blocked) blocked += 1;
-        }
-      }
+  it('turns a share of every blow aside, with no roll', () => {
+    // A tenth off a 39-damage swing: never blocked, always a little softer.
+    const result = fight(SWORD_AND_SHIELD, STRAYED_HUNTER, 2);
+    const taken = result.events.filter(
+      (event) => event.type === 'attack' && event.defender === 'Hero',
+    );
+    expect(taken.length).toBeGreaterThan(0);
+    for (const event of taken) {
+      if (event.type !== 'attack') continue;
+      expect(event.blocked).toBe(false);
+      expect(event.prevented).toBeGreaterThan(0);
     }
-    expect(blocked / taken).toBeGreaterThan(0.2);
-    expect(blocked / taken).toBeLessThan(0.4);
+  });
+
+  it('staggers the target for a second on the bash', () => {
+    const result = fight(SWORD_AND_SHIELD, STRANGE_WOLF, 4);
+    const bashes = result.events.filter((event) => event.type === 'attack' && event.snared);
+    expect(bashes.length).toBeGreaterThan(0);
   });
 });
 

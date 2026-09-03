@@ -183,8 +183,13 @@ export interface Weapon {
    * reliable but partial. 0 for archetypes that stand and take it.
    */
   readonly evasion: number;
-  /** Baseline block chance. The shield. 0 for everyone without one. */
+  /** Baseline block chance. 0 for everyone without one. */
   readonly blockChance: number;
+  /**
+   * Baseline share of every blow the weapon turns aside, 0 to 1. A shield
+   * held right: reliable and partial, present from the first swing, no roll.
+   */
+  readonly damageReduction: number;
   /** Baseline initiative: a fraction of the first swing already wound up. */
   readonly initiative: number;
   /** See ResourceState.snareSeconds. 0 for payoffs that only hit harder. */
