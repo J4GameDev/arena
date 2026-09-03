@@ -21,7 +21,7 @@ const WEIGHT_UNCOMMON = 2;
 const WEIGHT_RARE = 1;
 
 /** Defensive affixes, legal on every armor slot. */
-const ARMOUR: readonly ModifierKind[] = [
+const ARMOR: readonly ModifierKind[] = [
   'maxHealth',
   'healthPercent',
   'flatDamageReduction',
@@ -66,14 +66,14 @@ export interface SlotPool {
 
 export const SLOT_POOLS: Readonly<Record<Slot, SlotPool>> = {
   head: {
-    legal: ARMOUR,
+    legal: ARMOR,
     common: ['critResistance', 'percentDamageReduction'],
     uncommon: ['maxHealth', 'evasion'],
     magnitudeScale: 0.9,
     label: 'Hood',
   },
   torso: {
-    legal: ARMOUR,
+    legal: ARMOR,
     common: ['maxHealth', 'healthPercent', 'flatDamageReduction', 'percentDamageReduction'],
     uncommon: ['blockChance'],
     magnitudeScale: 1.2,
@@ -82,14 +82,14 @@ export const SLOT_POOLS: Readonly<Record<Slot, SlotPool>> = {
   legs: {
     // Deliberately the same pool as the torso. They are the two largest pieces
     // of armor and offering the same things is honest; size tells them apart.
-    legal: ARMOUR,
+    legal: ARMOR,
     common: ['maxHealth', 'healthPercent', 'flatDamageReduction', 'percentDamageReduction'],
     uncommon: ['blockChance'],
     magnitudeScale: 1,
     label: 'Leggings',
   },
   feet: {
-    legal: [...ARMOUR, 'initiative'],
+    legal: [...ARMOR, 'initiative'],
     common: ['evasion', 'initiative'],
     uncommon: ['maxHealth'],
     magnitudeScale: 0.9,
@@ -97,7 +97,7 @@ export const SLOT_POOLS: Readonly<Record<Slot, SlotPool>> = {
   },
   hands: {
     // The exception. Gauntlets are the only armor touching the weapon.
-    legal: [...ARMOUR, 'attackSpeed', 'damage'],
+    legal: [...ARMOR, 'attackSpeed', 'damage'],
     common: ['attackSpeed', 'damage'],
     uncommon: ['blockChance', 'flatDamageReduction'],
     magnitudeScale: 0.9,
