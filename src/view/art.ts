@@ -19,6 +19,29 @@ export const portraitFor = (id: string): string => `/portraits/${id}.png`;
 export const iconFor = (slot: string): string => `/icons/${slot}.png`;
 
 /**
+ * What each weapon puts in the hands. A greataxe fills both; daggers are one
+ * each; the Warden has a sword and a shield; a bow is held in the left with
+ * the right free to draw; a staff is held in the right.
+ */
+export interface Hands {
+  readonly left: string | null;
+  readonly right: string | null;
+}
+
+const HANDS: Readonly<Record<string, Hands>> = {
+  greataxe: { left: 'greataxe', right: 'greataxe' },
+  'twin-daggers': { left: 'dagger', right: 'dagger' },
+  'sword-and-shield': { left: 'shield', right: 'sword' },
+  'short-bow': { left: 'bow', right: null },
+  staff: { left: null, right: 'staff' },
+};
+
+export const handsFor = (weaponId: string): Hands => HANDS[weaponId] ?? { left: null, right: null };
+
+/** Weapon icons live in public/icons/weapons, one per thing a hand can hold. */
+export const weaponIconFor = (id: string): string => `/icons/weapons/${id}.png`;
+
+/**
  * The same picture as a dim gray silhouette, for an empty slot: "a hood goes
  * here". Derived from the slot icon rather than drawn, so the two always match.
  */

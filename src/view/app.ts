@@ -50,12 +50,14 @@ import { clearRun, loadRun, saveRun } from '../state/storage.ts';
 import {
   emptyIconFor,
   figureFor,
+  handsFor,
   heroFigureFor,
   heroSpriteFor,
   iconFor,
   portraitFor,
   sceneFor,
   spriteFor,
+  weaponIconFor,
 } from './art.ts';
 import { playFight } from './fight-view.ts';
 import { formatModifier, isBeneficial } from './format.ts';
@@ -88,7 +90,7 @@ const THE_YARD = chosenFight(
   OSWALD,
   'The yard',
   'Spar with Oswald. He hits hard enough to teach and no harder.',
-  'bastion',
+  'town',
 );
 
 const THE_ROAD_OUT = chosenFight(
@@ -119,29 +121,52 @@ const STORY: readonly string[] = [
   'Oswald taught you to set a snare when you were eight, and to keep quiet about it. He has been waiting by the rack since before you were up.',
 ];
 
-/** The camp is one screen with four tabs. Nothing is on display that was not asked for. */
-type Tab = 'gear' | 'out' | 'craft' | 'inventory';
+/**
+ * The town is the front door: the painting with the places you can go, and
+ * under it the tabs about you. A place opens a panel over the painting;
+ * closing it puts you back in the square. Nothing is on display that was
+ * not asked for.
+ */
+type Tab = 'gear' | 'stats' | 'inventory';
 
 const TABS: readonly { readonly id: Tab; readonly label: string }[] = [
   { id: 'gear', label: 'Gear' },
-  { id: 'out', label: 'Go out' },
-  { id: 'craft', label: 'Craft' },
+  { id: 'stats', label: 'Stats' },
   { id: 'inventory', label: 'Inventory' },
 ];
 
-/** The gear table's cells: the weapon, then every wearable position. */
-type GearCell = 'weapon' | EquipPosition;
+/** Somewhere in town you can walk to. The smithy is held back until it has a job. */
+type Place = 'tanner' | 'cookfire' | 'oswald' | 'gate';
+
+interface Spot {
+  readonly id: Place;
+  readonly label: string;
+  /** Where on the painting the spot sits, as percentages of its width and height. */
+  readonly x: number;
+  readonly y: number;
+}
+
+const SPOTS: readonly Spot[] = [
+  { id: 'tanner', label: 'Tanner', x: 14, y: 62 },
+  { id: 'cookfire', label: 'Cookfire', x: 38, y: 74 },
+  { id: 'oswald', label: 'Oswald', x: 78, y: 66 },
+  { id: 'gate', label: 'Hunt', x: 55, y: 55 },
+];
 
 /**
- * Laid out in the shape of a body, the way the old MMOs did it: head on top,
- * the weapon in the left hand, trinkets down the right, hands and feet at the
- * bottom. The order here is reading order; the stylesheet puts each cell in
- * its place by name.
+ * The gear table's cells: the two hands, then every wearable position. Laid
+ * out in the shape of a body, the way the old MMOs did it: head on top, the
+ * hands either side of the torso, trinkets beside the legs, feet at the
+ * bottom. The order here is reading order; the stylesheet places each cell
+ * by name.
  */
+type GearCell = 'leftHand' | 'rightHand' | EquipPosition;
+
 const GEAR_CELLS: readonly GearCell[] = [
   'head',
-  'weapon',
+  'rightHand',
   'torso',
+  'leftHand',
   'necklace',
   'ring1',
   'legs',
@@ -157,6 +182,7 @@ export function start(mount: HTMLElement): void {
   // Screen state, not run state: forgotten on reload, never saved.
   let tab: Tab = 'gear';
   let openCell: GearCell | null = null;
+  let place: Place | null = null;
   let intro: IntroStep = 'title';
   let beat = 0;
   let sex: Sex = 'male';
@@ -244,8 +270,7 @@ export function start(mount: HTMLElement): void {
     stage.append(outcome(hunt, you.name, packNow, run.sex));
     stage.querySelector('.continue')?.addEventListener('click', () => {
       busy = false;
-      // Coming home with a haul, the natural next look is at what you can make.
-      if (hunt.kept.meat > 0 || Object.keys(hunt.kept.materials).length > 0) tab = 'craft';
+      place = null;
       commit(next);
     });
 
@@ -384,10 +409,9 @@ export function start(mount: HTMLElement): void {
     const weapon = weaponById(run.weaponId);
 
     mount.innerHTML = `
-      <header class="top hero-bar">
-        <img class="portrait" src="${heroSpriteFor(run.weaponId, run.sex)}" alt="" onerror="this.remove()" />
+      <header class="top town-bar">
         <div class="hero-words">
-          <h1>The Bastion</h1>
+          <h1>The town</h1>
           <p class="sub">${escape(weapon.name)} · ${escape(weapon.archetype)}</p>
         </div>
         ${
@@ -399,17 +423,18 @@ export function start(mount: HTMLElement): void {
                </span>`
             : `<button class="ghost restart" data-restart type="button">Start over</button>`
         }
-        <ul class="stats compact">
-          ${stat('Health', String(you.maxHealth))}
-          ${stat('Damage', String(Math.round(you.attack.damage)))}
-          ${stat('Attacks / sec', you.attack.attacksPerSecond.toFixed(2))}
-          ${stat('Armor', String(you.flatDamageReduction))}
-          ${stat('Evasion', percent(you.evasion))}
-          ${stat('Block', percent(you.blockChance))}
-          ${stat('Crit', percent(you.critChance))}
-          ${stat('Lifesteal', percent(you.lifesteal))}
-        </ul>
       </header>
+
+      <section class="town" style="--scene: url('${sceneFor('town')}')">
+        <img class="townsfolk you" src="${heroSpriteFor(run.weaponId, run.sex)}" alt="" onerror="this.remove()" />
+        ${SPOTS.map(
+          (
+            spot,
+          ) => `<button class="spot ${spot.id === place ? 'open' : ''}" data-place="${spot.id}" type="button"
+            style="left: ${spot.x}%; top: ${spot.y}%">${spot.label}</button>`,
+        ).join('')}
+        ${place === null ? '' : `<div class="place-panel">${placePanel(place, run)}</div>`}
+      </section>
 
       <nav class="tabs">
         ${TABS.map(
@@ -418,16 +443,18 @@ export function start(mount: HTMLElement): void {
         ).join('')}
       </nav>
 
-      ${
-        tab === 'gear'
-          ? gearTab(run)
-          : tab === 'out'
-            ? outTab(run)
-            : tab === 'craft'
-              ? craftTab(run)
-              : inventoryTab(run)
-      }
+      ${tab === 'gear' ? gearTab(run) : tab === 'stats' ? statsTab(you) : inventoryTab(run)}
     `;
+
+    bind('[data-place]', (button) => {
+      const next = button.dataset['place'] as Place;
+      place = place === next ? null : next;
+      render();
+    });
+    bind('[data-close-place]', () => {
+      place = null;
+      render();
+    });
 
     bind('[data-tab]', (button) => {
       tab = button.dataset['tab'] as Tab;
@@ -484,7 +511,7 @@ export function start(mount: HTMLElement): void {
       if (item === undefined) return;
       // From the gear table, the item goes into the slot that is open.
       const position =
-        openCell !== null && openCell !== 'weapon' && slotOf(openCell) === item.slot
+        openCell !== null && !isHand(openCell) && slotOf(openCell) === item.slot
           ? openCell
           : positionFor(item, run);
       commit(equipItem(run, item, position));
@@ -508,6 +535,42 @@ export function start(mount: HTMLElement): void {
     `;
   }
 
+  function statsTab(you: Combatant): string {
+    return `
+      <section class="panel">
+        <h2>You</h2>
+        <ul class="stats">
+          ${stat('Health', String(you.maxHealth))}
+          ${stat('Damage', String(Math.round(you.attack.damage)))}
+          ${stat('Attacks / sec', you.attack.attacksPerSecond.toFixed(2))}
+          ${stat('Armor', String(you.flatDamageReduction))}
+          ${stat('Damage reduction', percent(you.percentDamageReduction))}
+          ${stat('Evasion', percent(you.evasion))}
+          ${stat('Block', percent(you.blockChance))}
+          ${stat('Crit', percent(you.critChance))}
+          ${stat('Lifesteal', percent(you.lifesteal))}
+          ${stat('Initiative', percent(you.initiative))}
+        </ul>
+      </section>
+    `;
+  }
+
+  /** What opens over the painting when you walk somewhere. */
+  function placePanel(which: Place, run: RunState): string {
+    const close =
+      '<button class="ghost close-place" data-close-place type="button">Back to the square</button>';
+    switch (which) {
+      case 'gate':
+        return `${outPanel(run)}${close}`;
+      case 'tanner':
+        return `${tannerPanel(run)}${close}`;
+      case 'cookfire':
+        return `${cookfirePanel(run)}${close}`;
+      case 'oswald':
+        return `${oswaldPanel(run)}${close}`;
+    }
+  }
+
   function bind(selector: string, handler: (button: HTMLButtonElement) => void): void {
     for (const button of mount.querySelectorAll<HTMLButtonElement>(selector)) {
       button.addEventListener('click', () => handler(button));
@@ -525,13 +588,28 @@ function positionFor(item: Item, run: RunState): EquipPosition {
 
 // --- Gear ---
 
+function isHand(cell: GearCell): cell is 'leftHand' | 'rightHand' {
+  return cell === 'leftHand' || cell === 'rightHand';
+}
+
 function gearCell(cell: GearCell, run: RunState, open: boolean): string {
-  if (cell === 'weapon') {
+  if (isHand(cell)) {
     const weapon = WEAPONS.find((candidate) => candidate.id === run.weaponId);
+    const held = cell === 'leftHand' ? handsFor(run.weaponId).left : handsFor(run.weaponId).right;
+    const label = cell === 'leftHand' ? 'Left hand' : 'Right hand';
+    if (held === null) {
+      return `
+        <button class="cell empty ${open ? 'open' : ''}" data-cell="${cell}" type="button" style="grid-area: ${cell}">
+          <span class="icon blank"></span>
+          <span class="cell-label">${label}</span>
+          <span class="cell-name">—</span>
+        </button>
+      `;
+    }
     return `
-      <button class="cell filled ${open ? 'open' : ''}" data-cell="weapon" type="button" style="grid-area: weapon">
-        ${icon(heroSpriteFor(run.weaponId, run.sex))}
-        <span class="cell-label">Weapon</span>
+      <button class="cell filled ${open ? 'open' : ''}" data-cell="${cell}" type="button" style="grid-area: ${cell}">
+        ${icon(weaponIconFor(held))}
+        <span class="cell-label">${label}</span>
         <span class="cell-name">${escape(weapon?.name ?? '')}</span>
       </button>
     `;
@@ -559,7 +637,7 @@ function gearCell(cell: GearCell, run: RunState, open: boolean): string {
 
 /** What you own for one slot: what is on, then what is in the pack. */
 function picker(cell: GearCell, run: RunState): string {
-  if (cell === 'weapon') {
+  if (isHand(cell)) {
     return `
       <div class="picker">
         <h3>Arms</h3>
@@ -644,12 +722,12 @@ function itemCard(item: Item, where: { readonly worn: EquipPosition | null }): s
   `;
 }
 
-// --- Go out ---
+// --- The gate ---
 
-function outTab(run: RunState): string {
+function outPanel(run: RunState): string {
   return `
     <section class="panel">
-      <h2>Go out</h2>
+      <h2>Hunt</h2>
       <p class="provisions">${provisionsLine(run)}</p>
       <div class="length">
         <span class="length-label">How far</span>
@@ -690,9 +768,9 @@ function provisionsLine(run: RunState): string {
   return `You carry ${run.rations} ${run.rations === 1 ? 'ration' : 'rations'}. You eat one whenever a fight leaves you under ${Math.round(EAT_BELOW * 100)}% health.`;
 }
 
-// --- Craft ---
+// --- The cookfire and the tanner ---
 
-function craftTab(run: RunState): string {
+function cookfirePanel(run: RunState): string {
   return `
     <section class="panel">
       <h2>Cookfire</h2>
@@ -705,7 +783,11 @@ function craftTab(run: RunState): string {
         </div>
       </div>
     </section>
+  `;
+}
 
+function tannerPanel(run: RunState): string {
+  return `
     <section class="panel">
       <h2>Tanner</h2>
       <div class="tanner">
@@ -738,6 +820,29 @@ function materialRow(materialId: MaterialId, run: RunState): string {
         }).join('')}
       </div>
     </div>
+  `;
+}
+
+// --- Oswald ---
+
+/** A line for where you are. He does not repeat himself much. */
+function oswaldPanel(run: RunState): string {
+  const kills = run.defeated.filter((id) => id !== OSWALD.id).length;
+  const line =
+    kills === 0
+      ? 'You have the pack. The forest is through the gate. Three fights is a morning; ten is a day you might not finish. Start with the morning.'
+      : run.defeated.includes(STRAYED_HUNTER.id)
+        ? 'You came back from him. Most do not. What is past him is worse, and it is where the hides are worth something.'
+        : kills < 8
+          ? 'Cook what you bring back before you go out again. Meat does not keep and neither do you.'
+          : 'The one on the road out is a man who went too far. When you can walk five fights and come home with all of it, you are ready for him. Not before.';
+
+  return `
+    <section class="panel meeting dialog">
+      <img class="face" src="${portraitFor(OSWALD.id)}" alt="" onerror="this.remove()" />
+      <p class="speaker-name">Oswald</p>
+      <p class="speech quote">${escape(`"${line}"`)}</p>
+    </section>
   `;
 }
 
@@ -822,7 +927,7 @@ function outcome(hunt: HuntResult, heroName: string, packGiven: boolean, sex: Se
         : ''
     }
     ${haulMarkup(hunt.kept, sex)}
-    <button class="continue" type="button">Back to the bastion</button>
+    <button class="continue" type="button">Back to town</button>
   `;
   return node;
 }

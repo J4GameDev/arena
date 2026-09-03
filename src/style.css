@@ -940,12 +940,18 @@ button.ghost:hover {
   display: grid;
   grid-template-columns: repeat(3, minmax(6.5rem, 8.5rem));
   grid-template-areas:
-    '.      head   .'
-    'weapon torso  necklace'
-    'ring1  legs   ring2'
-    'hands  feet   .';
+    '.         head  .'
+    'rightHand torso leftHand'
+    'ring1     legs  ring2'
+    'necklace  hands feet';
   gap: 0.6rem;
   justify-content: center;
+}
+
+.icon.blank {
+  display: block;
+  width: 48px;
+  height: 48px;
 }
 
 .cell {
@@ -1225,4 +1231,87 @@ button.ghost:hover {
   width: 128px;
   height: 128px;
   margin-bottom: 0.5rem;
+}
+
+/* --- The town --- */
+
+.town-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: start;
+}
+
+.town {
+  position: relative;
+  aspect-ratio: 400 / 224;
+  border: 1px solid var(--ink-edge);
+  background-color: var(--ink-raised);
+  overflow: hidden;
+}
+
+.town::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: var(--scene);
+  background-size: 100% 100%;
+  image-rendering: pixelated;
+}
+
+.town .townsfolk.you {
+  position: absolute;
+  left: 44%;
+  bottom: 6%;
+  width: 22%;
+  height: auto;
+  image-rendering: pixelated;
+  pointer-events: none;
+}
+
+.spot {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  background: rgba(15, 13, 11, 0.7);
+  color: var(--bone);
+  border: 1px solid var(--bone-faint);
+  padding: 0.3rem 0.7rem;
+  font-size: 0.8rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  text-shadow: 0 1px 0 rgba(0, 0, 0, 0.9);
+}
+
+.spot:hover:not(:disabled),
+.spot.open {
+  background: rgba(15, 13, 11, 0.9);
+  border-color: var(--gold);
+}
+
+.place-panel {
+  position: absolute;
+  inset: 4%;
+  overflow-y: auto;
+  background: rgba(15, 13, 11, 0.94);
+  border: 1px solid var(--ink-edge);
+  padding: 0.5rem;
+  display: grid;
+  gap: 0.75rem;
+  align-content: start;
+}
+
+.place-panel .panel {
+  border: none;
+  background: transparent;
+  padding: 0.6rem 0.75rem;
+}
+
+.place-panel .dialog {
+  margin: 0;
+  max-width: none;
+  min-height: 0;
+}
+
+.close-place {
+  justify-self: end;
+  margin: 0 0.75rem 0.25rem;
 }
