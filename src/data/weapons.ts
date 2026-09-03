@@ -16,8 +16,8 @@ export const GREATAXE: Weapon = {
   archetype: 'Berserker',
   baseHealth: 100,
   pitch:
-    'Slow, enormous swings. Rage fills from the blows aimed at you and hardens you as ' +
-    'it climbs, then spends itself on one devastating hit. You stand and take it.',
+    'Slow, heavy swings. Blows aimed at you fill Rage and harden you as it climbs. ' +
+    'Full, it spends itself on one swing at two and a half times the damage.',
   // Slow and enormous. Loses the opening exchange, wins the long one.
   attack: { damage: 22, attacksPerSecond: 0.65, variance: 0.2 },
   resource: RAGE,
@@ -39,8 +39,8 @@ export const TWIN_DAGGERS: Weapon = {
   archetype: 'Assassin',
   baseHealth: 100,
   pitch:
-    'Fast, light strikes. Focus fills from every hit you land and spends on a finisher. ' +
-    'You slip blows rather than absorb them, and you break easily when you do not.',
+    'Fast, light cuts. Every hit you land fills Focus, and the fifth spends it on a ' +
+    'finisher at double damage. You slip one blow in seven. The rest you take in full.',
   // Fast and small. Ramps to a payoff on its own schedule, ignoring the enemy.
   // 7 rather than 6: measured over hunts, one point of dagger damage was
   // worth more than ten points of evasion, because the Assassin's problem
@@ -71,10 +71,8 @@ export const SWORD_AND_SHIELD: Weapon = {
   archetype: 'Warden',
   baseHealth: 100,
   pitch:
-    'A short sword and a round shield. The shield takes a tenth off every blow that ' +
-    'reaches you, no luck involved. Resolve fills from every blow you take and spends ' +
-    'on a shield bash that staggers the thing in front of you for a second. At your ' +
-    'best when something is hitting you often, at your worst when nothing is.',
+    'The shield takes a tenth off every blow, no luck to it. Every blow you take fills ' +
+    'Resolve, and the fifth spends it on a bash that staggers your enemy for a second.',
   // The sword hits harder than it looks, because the shield is all the
   // defense there is. Measured against the gate: 12 damage gave a geared p90
   // of 17%, 14 gave 40%, 16 gave 73%. The gate is the fight Resolve never
@@ -106,9 +104,9 @@ export const SHORT_BOW: Weapon = {
   archetype: 'Ranger',
   baseHealth: 100,
   pitch:
-    'A bow, and the snares Oswald taught you. The trap sets itself while you fight, ' +
-    'whoever is swinging, and the next arrow springs it: the thing in front of you loses ' +
-    'its next swing. Slow to matter in a short fight. Decisive in a long one.',
+    'Arrows, from a distance. The snare sets itself while the fight runs, six seconds ' +
+    'whoever is swinging. The next arrow springs it, and your enemy loses two seconds, ' +
+    'heavy blow or not.',
   // Starts at range, so the first arrow is already nocked when the fight begins.
   // 10 rather than 9: on hunts the Ranger died in fight two, the way the
   // Assassin did before its fix, and the same lever applies — end fights
@@ -137,9 +135,9 @@ export const STAFF: Weapon = {
   archetype: 'Warlock',
   baseHealth: 100,
   pitch:
-    'A staff with something wrong set into the head of it. The crystal drinks the health ' +
-    'you lose and gives it back as a burst that hits like nothing else in your hands. You ' +
-    'are strongest when you are hurt, and the staff would like you hurt.',
+    'Something wrong is set in the head of it. Every point of health you lose fills the ' +
+    'crystal, and at thirty it gives it back as one burst at nearly four times the damage. ' +
+    'It wants you hurt.',
   // At 10 damage and a x3 burst the Warlock lost to the Mugger bare and had a
   // 2% gate; the burst has to be worth the blood it costs. Measured: 12 and
   // x4 gave 86% at the gate, x3.5 gave 74%, x3.75 gave 78%.
