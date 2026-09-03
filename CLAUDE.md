@@ -29,15 +29,15 @@ These are the tiebreakers. When a decision is ambiguous, the option that serves 
 
 **Resources are generation rules, not bars.** What makes an archetype feel different is _how its resource fills_, and each rule relates to the timeline differently. Five classes, five relationships with the timeline, all built on 3 Sep 2026:
 
-| Weapon           | Class     | Resource | Builds from                      | Payoff                                                                 |
-| ---------------- | --------- | -------- | -------------------------------- | ---------------------------------------------------------------------- |
-| Greataxe         | Berserker | Rage     | Damage swung at you, weighed     | One enormous swing; hardens as it fills                                |
-| Daggers          | Assassin  | Focus    | Hits you land                    | A finisher                                                             |
-| Sword and shield | Warden    | Resolve  | Blows you take or block, counted | A shield bash; a shield from the first swing                           |
-| Short bow        | Ranger    | Snare    | Time, whoever is swinging        | The trap springs: the target loses its next swing, heavy blow included |
-| Crystal staff    | Warlock   | Mana     | Health you actually lose         | A burst that hits like nothing else                                    |
+| Weapon           | Class     | Resource | Builds from                  | Payoff                                                                                          |
+| ---------------- | --------- | -------- | ---------------------------- | ----------------------------------------------------------------------------------------------- |
+| Greataxe         | Berserker | Rage     | Damage swung at you, weighed | One enormous swing; hardens as it fills                                                         |
+| Daggers          | Assassin  | Focus    | Hits you land                | A finisher                                                                                      |
+| Sword and shield | Warden    | Resolve  | Blows you take, counted      | A shield bash that staggers the target for a second; a shield that takes a tenth off every blow |
+| Short bow        | Ranger    | Snare    | Time, whoever is swinging    | The trap springs: the target loses its next swing, heavy blow included                          |
+| Crystal staff    | Warlock   | Mana     | Health you actually lose     | A burst that hits like nothing else                                                             |
 
-Rage and Resolve both come from being attacked and differ in kind on purpose: Rage weighs the hit and loves the gate's swings, Resolve counts them and loves the Wolf's chatter. Snare is the only meter that ignores the timeline, which is why the Ranger wants long fights and hates an ambush. Mana from lost health makes the Warlock the class most dangerous to itself — armor that stops a blow also starves the meter, the opposite of Rage. The Ranger began as a plain bow; the owner asked for traps, and the trap became the payoff: it does not add damage, it takes the enemy's turn away, and it works on the Strayed Hunter's heavy blow because a snare does not care how hard the thing in it was going to hit.
+Rage and Resolve both come from being attacked and differ in kind on purpose: Rage weighs the hit and loves the gate's swings, Resolve counts them and loves the Wolf's chatter. The Warden's shield is a steady share off every blow with no roll, by the owner's call after the first shield (a 35% chance to halve) left him at 68% geared at the gate: a steady share moves the boss from three hits to kill to four as soon as gear adds a little, so bare stays at zero and geared lands in the band. Bracing (blocked blows counting extra) and stronger blocks were both measured and rejected: they helped everywhere, not just at the gate. Snare is the only meter that ignores the timeline, which is why the Ranger wants long fights and hates an ambush. Mana from lost health makes the Warlock the class most dangerous to itself — armor that stops a blow also starves the meter, the opposite of Rage. The Ranger began as a plain bow; the owner asked for traps, and the trap became the payoff: it does not add damage, it takes the enemy's turn away, and it works on the Strayed Hunter's heavy blow because a snare does not care how hard the thing in it was going to hit.
 
 **The Warlock's magic is corruption, not magic.** The crystal in the staff is a piece of the corruption, held in the hand. That is why it is the one thing on the player's side that may glow, and why it takes from the one holding it. How a hunter comes to carry such a thing is fiction still to be written, after the class has been played.
 
@@ -299,7 +299,7 @@ Good ideas that are not v0.1. Written down so they stop taking up room.
 
 **The loop is the one the owner asked for.** Pick a weapon, spar with Oswald and take his pack, pick how far to go, go out, meet what the forest sends, eat when it goes badly, come home with hide and meat, cook, craft, go again. Progress saves to the browser. The old "pick an enemy" loop is gone.
 
-**Built and tested — 85 tests:** the combat simulation (attack-speed timeline, five meters — Rage, Focus, Resolve, Snare, Mana — crit on both sides, block, evasion, lifesteal, initiative, resource retention, the snare, several monsters at once), hunts (encounter tables, ambushes, carried health, rations, the fall tax), five archetypes all offered at the rack, nine monsters (a teacher, four band-one animals, two bandits, a gate), eight equipment slots, 19 affix kinds, weighted and tilted rolls, crafting, the cookfire, the Hunter's Pack, run state and saving, the fight view with several foes, ten sprites, seven slot icons, and two scenes. Four harnesses: `npm run fight`, `npm run balance`, `npm run hunts`, `npm run outliers`. And one content tool: `npm run shot` drives a headless Chromium against the live build, hunts until the fight you name comes up, freezes it a few blows in and saves the scene — every build is a shareable picture as well as a link.
+**Built and tested — 86 tests:** the combat simulation (attack-speed timeline, five meters — Rage, Focus, Resolve, Snare, Mana — crit on both sides, block, evasion, lifesteal, initiative, resource retention, the snare, several monsters at once), hunts (encounter tables, ambushes, carried health, rations, the fall tax), five archetypes all offered at the rack, nine monsters (a teacher, four band-one animals, two bandits, a gate), eight equipment slots, 19 affix kinds, weighted and tilted rolls, crafting, the cookfire, the Hunter's Pack, run state and saving, the fight view with several foes, ten sprites, seven slot icons, and two scenes. Four harnesses: `npm run fight`, `npm run balance`, `npm run hunts`, `npm run outliers`. And one content tool: `npm run shot` drives a headless Chromium against the live build, hunts until the fight you name comes up, freezes it a few blows in and saves the scene — every build is a shareable picture as well as a link.
 
 **Hunts, measured.** `npm run hunts` — 400 hunts per cell bare, 30 crafted sets of five tanner pieces plus three trinkets, everyone carrying six rations. "Home" is the share of hunts that get back to the walls. Read p90 for crafted, as ever.
 
@@ -311,9 +311,9 @@ Good ideas that are not v0.1. Written down so they stop taking up room.
 | Assassin  | 3      | 46%       | 80%         | **86%**     | fights 2–3              |
 | Assassin  | 5      | 16%       | 70%         | **80%**     | fights 2–4              |
 | Assassin  | 10     | 1%        | 46%         | **61%**     | spread over fights 2–9  |
-| Warden    | 3      | 69%       | 86%         | **91%**     | fights 2–3              |
-| Warden    | 5      | 43%       | 80%         | **88%**     | spread over fights 2–5  |
-| Warden    | 10     | 3%        | 59%         | **71%**     | spread over fights 2–10 |
+| Warden    | 3      | 59%       | 82%         | **86%**     | fights 2–3              |
+| Warden    | 5      | 27%       | 74%         | **81%**     | spread over fights 2–5  |
+| Warden    | 10     | 0%        | 49%         | **61%**     | spread over fights 2–10 |
 | Ranger    | 3      | 40%       | 72%         | **83%**     | fights 2–3              |
 | Ranger    | 5      | 13%       | 60%         | **72%**     | fights 2–5              |
 | Ranger    | 10     | 0%        | 33%         | **54%**     | spread over fights 2–9  |
@@ -321,7 +321,7 @@ Good ideas that are not v0.1. Written down so they stop taking up room.
 | Warlock   | 5      | 11%       | 63%         | **74%**     | fights 2–5              |
 | Warlock   | 10     | 0%        | 31%         | **47%**     | fights 2–8              |
 
-(All five at 400 hunts and 30 sets, after the Ranger and Warlock tuning.) **The Warden is the best hunter in the game** — the shield is worth more over five fights than over one — and the worst at the gate. **The Ranger and Warlock** were dying in fight two the way the Assassin used to, and got the same fix under the same rule (no bigger health pool): a point of damage each and, for the Ranger, ten percent evasion because it fights at range. They now hunt within a few points of the Assassin at three and five fights and trail at ten, where nothing they have absorbs a hit. Still to measure if it matters: whether the Warlock's burst should heal a share of what it deals, since the crystal drinks both ways.
+(All five at 400 hunts and 30 sets, after the Ranger, Warlock and Warden tuning.) **The Warden was the best hunter in the game** with the chancy shield; with a steady tenth off every blow he hunts level with the Berserker and slightly behind at ten fights, and the gate is no longer his wall. **The Ranger and Warlock** were dying in fight two the way the Assassin used to, and got the same fix under the same rule (no bigger health pool): a point of damage each and, for the Ranger, ten percent evasion because it fights at range. They now hunt within a few points of the Assassin at three and five fights and trail at ten, where nothing they have absorbs a hit. Still to measure if it matters: whether the Warlock's burst should heal a share of what it deals, since the crystal drinks both ways.
 
 **The Berserker meets the hunt targets.** Three fights bare gets home a little over half the time, five sometimes, ten never; crafted p90 is near-certain at three, most of the time at five, and two in three at ten. Those are the targets as written.
 
@@ -347,10 +347,10 @@ Good ideas that are not v0.1. Written down so they stop taking up room.
 | Assassin  | Bandit         | 100%  | 5.4s     | 100%       | 100%       | 1                      |
 | Assassin  | Mugger         | 99.9% | 8.7s     | 100%       | 100%       | 3                      |
 | Assassin  | Strayed Hunter | 5.1%  | 9.3s     | 57.3%      | **83.3%**  | 2                      |
-| Warden    | Strange Wolf   | 100%  | 5.9s     | 100%       | 100%       | 1                      |
+| Warden    | Strange Wolf   | 100%  | 6.9s     | 100%       | 100%       | 1                      |
 | Warden    | Strange Elk    | 100%  | 12.9s    | 100%       | 100%       | **0**                  |
-| Warden    | Mugger         | 99.6% | 9.1s     | 100%       | 100%       | 0                      |
-| Warden    | Strayed Hunter | 8.6%  | 10.2s    | 40.7%      | **68.0%**  | **0**                  |
+| Warden    | Mugger         | 99.9% | 9.1s     | 100%       | 100%       | 0                      |
+| Warden    | Strayed Hunter | 0.0%  | 8.7s     | 14.7%      | **76.0%**  | **0**                  |
 | Ranger    | Strange Elk    | 100%  | 15.8s    | 100%       | 100%       | 2                      |
 | Ranger    | Mugger         | 92.8% | 11.2s    | 100%       | 100%       | 1                      |
 | Ranger    | Strayed Hunter | 11.9% | 11.3s    | 56.7%      | **79.3%**  | 0                      |
@@ -360,7 +360,7 @@ Good ideas that are not v0.1. Written down so they stop taking up room.
 
 (The three new classes are shown against the fights that tell their story; every other regular is 100% bare for all three.) The Warden's Resolve never fires against the gate or the Elk — one blow every three seconds is not enough blows — and never fires bare against the gate at all; damage carries it there. The Warlock's Mana likewise starves against the Elk, which barely hurts it.
 
-**The five at the gate, p90: Berserker 80, Assassin 83, Warden 68, Ranger 79, Warlock 85.** The tuning passes are in the weapon file comments. Warden: 12 → 14 → 16 damage gave 17 → 40 → 73 on a quick run, 68 on the full one. Warlock: 10 → 12 damage and x3 → x4 → x3.5 → x3.75 gave 2 → 86 → 74 → 78; then 13 damage for hunts, by the owner, which took the gate to 85. Ranger: 10 damage and 10% evasion for hunts, by the owner, sent a bare Ranger past the gate one time in five; the owner then had three fixes simulated — snare 2s (78 / bare 11), damage back to 9 (79 / bare 10), both (73 / bare 2) — and chose the snare at two seconds, which cost nothing on hunts. The Ranger's bare 12% is the trap plus evasion, and is the highest bare number at the gate. **Open:** the Warden at the gate, twelve under the Berserker; the Warlock five over.
+**The five at the gate, p90: Berserker 80, Assassin 83, Warden 76, Ranger 79, Warlock 85.** The tuning passes are in the weapon file comments. Warden: 12 → 14 → 16 damage gave 17 → 40 → 73 on a quick run, 68 on the full one. Warlock: 10 → 12 damage and x3 → x4 → x3.5 → x3.75 gave 2 → 86 → 74 → 78; then 13 damage for hunts, by the owner, which took the gate to 85. Ranger: 10 damage and 10% evasion for hunts, by the owner, sent a bare Ranger past the gate one time in five; the owner then had three fixes simulated — snare 2s (78 / bare 11), damage back to 9 (79 / bare 10), both (73 / bare 2) — and chose the snare at two seconds, which cost nothing on hunts. The Ranger's bare 12% is the trap plus evasion, and is the highest bare number at the gate. The Warden's shield rework (a tenth off every blow, no roll; bash x1.5 with a one-second stagger) took him from 68 to 76 with bare at zero; shares of 15 / 20 / 25% gave 91 / 96 / 98 on a quick run, so ten is the one that fits. All five are now inside the five-point band except the Warlock, five over.
 
 The Elk still starves Rage (fewest big hits **0**) while Focus fires five times; the Bear is still the sharpest Assassin-punisher, now a longer fight rather than a lost one. `MAGNITUDE_SCALE = 0.7` in `src/data/affixes.ts` is unchanged; retune that constant before touching individual ranges.
 
@@ -368,10 +368,9 @@ The Elk still starves Rage (fewest big hits **0**) while Focus fires five times;
 
 **Next, in order:**
 
-1. **The Warden at the gate.** Twelve under the Berserker at p90. Resolve never fires there, so the lever is damage or the shield, and both were measured once (see the weapon file). Bring options before building.
-2. **Sprites for the three new classes**, four candidates each, the owner picks. Until then the Warden, Ranger and Warlock fight with no figure on the field — the image removes itself — and the weapon cell in Gear is blank for them.
-3. **Band-one sprites that actually read as strange.** At 64px the one-detail wrongness did not render; what came back was normal animals with red eyes. Acceptable for now. When revisited: lead the prompt with a wrongness big enough to survive 64px, or use a larger canvas.
-4. **Attack animation**, only after the sprites are settled. Designed for — the figures stand free in the scene — and not built.
+1. **Sprites for the three new classes**, four candidates each, the owner picks. Until then the Warden, Ranger and Warlock fight with no figure on the field — the image removes itself — and the weapon cell in Gear is blank for them.
+2. **Band-one sprites that actually read as strange.** At 64px the one-detail wrongness did not render; what came back was normal animals with red eyes. Acceptable for now. When revisited: lead the prompt with a wrongness big enough to survive 64px, or use a larger canvas.
+3. **Attack animation**, only after the sprites are settled. Designed for — the figures stand free in the scene — and not built.
 
 **Known and deliberately unfixed:**
 
