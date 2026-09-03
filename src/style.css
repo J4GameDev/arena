@@ -304,6 +304,35 @@ button.ghost:hover {
   position: relative;
 }
 
+/*
+ * A pad under every figure, the way a creature-battler stands its fighters on
+ * a disc: it anchors the feet to one plane and stops the scene's own rocks
+ * and roots from appearing to prop them up. Sized from the same metres the
+ * sprite is drawn at, so a wolf gets a wolf-sized pad.
+ */
+.figure::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  bottom: calc(var(--canvas-metres, 2) * var(--ppm) * -0.04px);
+  width: calc(var(--canvas-metres, 2) * var(--ppm) * 0.85px);
+  height: calc(var(--canvas-metres, 2) * var(--ppm) * 0.2px);
+  transform: translateX(-50%);
+  border-radius: 50%;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(15, 13, 11, 0.55) 0%,
+    rgba(15, 13, 11, 0.35) 55%,
+    rgba(15, 13, 11, 0) 100%
+  );
+  pointer-events: none;
+}
+
+.figure .portrait {
+  position: relative;
+  display: block;
+}
+
 .side.charged .meter-text {
   color: var(--gold);
 }
@@ -579,6 +608,11 @@ button.ghost:hover {
   justify-self: center;
   /* Grounds the figure so it does not float against a flat panel. */
   filter: drop-shadow(0 3px 0 rgba(0, 0, 0, 0.45));
+}
+
+/* In a scene the pad does the grounding; the offset shadow would fight it. */
+.scene .portrait {
+  filter: none;
 }
 
 /* The whole 64px canvas stands for --canvas-metres of world; see view/art.ts. */
