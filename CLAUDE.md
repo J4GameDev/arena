@@ -1,8 +1,8 @@
-# Arena — Project North Star
+# Farther — Project North Star
 
-> `arena` is a working title. Renaming touches `package.json`, `index.html`, this file, the Vercel project, and `.claude/launch.json`. **Leave the save key `arena.run` in `src/state/storage.ts` alone** — changing it silently wipes every player's progress. Do the rename whenever the real name shows up.
+> **The game is called Farther.** Named on 3 Sep 2026 for the premise: the farther out you go, the stranger and more corrupt it gets, and the more what you bring back is worth. Oswald says it out loud after the first spar. The repo, folder and Vercel project carry the name; the save key `arena.run` in `src/state/storage.ts` does **not** and must not — changing it silently wipes every player's progress.
 >
-> **Live:** https://arena-mu-coral.vercel.app — Vercel redeploys this automatically on every push to `main`.
+> **Live:** https://farther.vercel.app — Vercel redeploys this automatically on every push to `main`. (If that address ever fails, the project is under the J4GameDev Vercel account; check the dashboard for the current one.)
 >
 > **Project hub:** https://app.notion.com/p/3cebb4f99a0781978c30c4bcfe3a80f0 — Notion page holding the world summary, current state, and the content-idea backlog.
 
@@ -62,7 +62,9 @@ v0.1 ships **two** archetypes, two-handed (Rage) and daggers (Focus), because th
 
 **You choose a weapon once, at the very start, and every one after that has to be found.** That opening pick is the only identity the game hands out. Weapons come off people — a boar was never carrying a greataxe — so monsters record whether they were an animal or a person, and only people leave a weapon behind. Oswald leaves nothing: he yields rather than dies, and you do not loot your teacher.
 
-**The hero is anonymous by design.** No name, no class, no backstory — they are the weapon in their hand. That was a mechanical decision, and it happens to be exactly what a persistent shared world needs later. Do not write anything that makes the hero singular.
+**The hero is anonymous by design.** No name, no class, no backstory — they are the weapon in their hand. That is a mechanical decision and a fiction one: the player is one hunter of many, and the town does not revolve around them. Do not write anything that makes the hero singular.
+
+**This game is its own thing.** An early ambition to grow the world into a Realm-of-the-Mad-God-style shared game was dropped on 3 Sep 2026 by the owner. Nothing here is built to serve a later game; anything that would only make sense for one is out of scope.
 
 **Oswald** is the first character the player meets: an experienced hunter who spars with them, first to yield. He never tries to kill you, which is why he never crits and why his strikes land in a controlled rhythm — the tutorial's mechanics are explained by who he is rather than excused.
 

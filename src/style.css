@@ -989,3 +989,10 @@ button.ghost:hover {
 .stores strong {
   color: var(--gold);
 }
+
+.outcome .lesson {
+  color: var(--bone);
+  font-style: italic;
+  line-height: 1.5;
+  max-width: 34rem;
+}

@@ -220,7 +220,7 @@ export function start(mount: HTMLElement): void {
   function renderChoice(): void {
     mount.innerHTML = `
       <header class="top">
-        <h1>The Bastion</h1>
+        <h1>Farther</h1>
         <p class="sub">Pick up something and go out. You only get to choose once.</p>
       </header>
       <section class="panel">
@@ -637,9 +637,16 @@ function outcome(hunt: HuntResult, heroName: string, packGiven: boolean): HTMLEl
       ? 'Oswald steps back and nods. That will do.'
       : `${hunt.encounters.length} ${hunt.encounters.length === 1 ? 'fight' : 'fights'}, and you walked home from the last one.`;
 
+  // The premise, said once, by the one person who would say it. The game is
+  // named for this sentence.
+  const lesson = packGiven
+    ? `<p class="lesson">He looks past you, at the gate. &ldquo;The farther out you go, the stranger it gets. The animals first. Then the people. Farther still and I could not tell you. What you bring back is worth more out there. So are you. Go as far as you can walk home from, and not a step more.&rdquo;</p>`
+    : '';
+
   node.innerHTML = `
     <h2>${headline}</h2>
     <p>${line}</p>
+    ${lesson}
     <ol class="road">
       ${hunt.encounters.map((encounter) => `<li>${escape(encounterLine(encounter, heroName))}</li>`).join('')}
     </ol>
