@@ -192,11 +192,13 @@ export interface MonsterDefinition {
   /** Chance to avoid a hit outright. Defaults to 0. */
   readonly evasion?: number;
   /**
-   * Its attacks cannot be evaded. "You cannot sidestep a mountain." Turns a
-   * fight into a puzzle that disables the thing an evasive build relies on,
-   * and leaves a build with no evasion exactly where it was. Defaults to false.
+   * Every Nth swing is a heavy blow that cannot be evaded. 0 or absent means
+   * never. The rest of the monster's swings are dodged as normal, so an
+   * evasive build keeps its defining stat and has to eat one blow in N —
+   * a puzzle, not a wall. Making *all* of a boss's attacks unavoidable was
+   * built and rejected: it deleted a class mechanic to make a boss fit.
    */
-  readonly unavoidable?: boolean;
+  readonly heavyBlowEvery?: number;
   /** One line on what this monster is meant to punish. See pillar two. */
   readonly designRole: string;
   /** What this creature yields when it dies. Animals only; people carry gear. */
@@ -251,8 +253,10 @@ export interface Combatant {
   // --- Offence ---
   /** Chance a hit is critical. Heroes start at zero — crit is entirely gear. */
   readonly critChance: number;
-  /** This combatant's attacks ignore the defender's evasion entirely. */
-  readonly unavoidable: boolean;
+  /** Every Nth swing ignores the defender's evasion. 0 means never. */
+  readonly heavyBlowEvery: number;
+  /** Swings made so far this fight. Counts toward the heavy blow. */
+  swings: number;
   /** Damage multiplier on a critical hit. Stacks with the empower multiplier. */
   readonly critMultiplier: number;
   /** Fraction of damage dealt returned to this combatant as health. */
@@ -292,6 +296,8 @@ export type CombatEvent =
       readonly empowered: boolean;
       readonly critical: boolean;
       readonly blocked: boolean;
+      /** A heavy blow: could not have been evaded. */
+      readonly unavoidable: boolean;
       /** Health the attacker drained back. 0 without lifesteal. */
       readonly healed: number;
       readonly defenderHealth: number;

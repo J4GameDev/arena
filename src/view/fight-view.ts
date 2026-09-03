@@ -151,7 +151,9 @@ function apply(event: CombatEvent, sides: Map<string, Side>, log: HTMLOListEleme
           ? ' — a lucky blow'
           : event.blocked
             ? ' — turned aside'
-            : '';
+            : event.unavoidable
+              ? ' — nowhere to go'
+              : '';
       write(log, `${event.attacker} hits ${event.defender} for ${event.damage}${flourish}`);
       break;
     }

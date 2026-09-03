@@ -99,9 +99,13 @@ function resolveAttack(
   rng: Rng,
   events: CombatEvent[],
 ): void {
+  attacker.swings += 1;
+  const unavoidable =
+    attacker.heavyBlowEvery > 0 && attacker.swings % attacker.heavyBlowEvery === 0;
+
   // Short-circuits keep a defender with no evasion from consuming randomness,
   // so tuning one stat does not reshuffle every unrelated matchup.
-  if (!attacker.unavoidable && defender.evasion > 0 && rng.chance(defender.evasion)) {
+  if (!unavoidable && defender.evasion > 0 && rng.chance(defender.evasion)) {
     events.push({ type: 'evade', at, attacker: attacker.name, defender: defender.name });
     return;
   }
@@ -158,6 +162,7 @@ function resolveAttack(
     empowered,
     critical,
     blocked,
+    unavoidable,
     healed,
     defenderHealth: defender.health,
     defenderMaxHealth: defender.maxHealth,

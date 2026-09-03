@@ -108,18 +108,29 @@ describe('runFight', () => {
     expect(evadedSomewhere).toBe(true);
   });
 
-  it('never lets anyone evade an unavoidable attacker', () => {
-    // The Strayed Hunter cannot be sidestepped, however evasive the hero is.
+  it('lets the heavy blow through and everything else be evaded', () => {
+    // The Strayed Hunter's every third swing cannot be sidestepped; the rest can.
+    let evadedSomewhere = false;
     for (let seed = 0; seed < 30; seed += 1) {
       const result = runFight(
         createHero('Hero', TWIN_DAGGERS),
         [createMonster(STRAYED_HUNTER)],
         seed,
       );
-      expect(
-        result.events.some((event) => event.type === 'evade' && event.defender === 'Hero'),
-      ).toBe(false);
+      let swings = 0;
+      for (const event of result.events) {
+        if (event.type === 'evade' && event.attacker === 'Strayed Hunter') {
+          swings += 1;
+          evadedSomewhere = true;
+          expect(swings % 3).not.toBe(0);
+        }
+        if (event.type === 'attack' && event.attacker === 'Strayed Hunter') {
+          swings += 1;
+          expect(event.unavoidable).toBe(swings % 3 === 0);
+        }
+      }
     }
+    expect(evadedSomewhere).toBe(true);
   });
 
   it('never lets a non-evasive hero evade', () => {

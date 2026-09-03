@@ -161,12 +161,15 @@ export const STRAYED_HUNTER: MonsterDefinition = {
   maxHealth: 200,
   // Swollen and slow — far enough gone that the body has stopped being a
   // person's. Rare enormous blows dump Rage in chunks, which is what makes
-  // this fight favor the greataxe.
-  attack: { damage: 38, attacksPerSecond: 0.35, variance: 0.1 },
+  // this fight favor the greataxe. 39, not 38: one point here moved the
+  // Assassin's geared p90 from 91% to 83% and the Berserker's from 83% to
+  // 80%, which is the target for both. Two points sent both to 73%.
+  attack: { damage: 39, attacksPerSecond: 0.35, variance: 0.1 },
   critChance: 0.05,
-  // You cannot sidestep him. The one thing the Assassin relies on is the one
-  // thing this fight takes away; the Berserker, who never had it, is untouched.
-  unavoidable: true,
+  // Every third swing is an overhead blow with nowhere to go. The other two
+  // can be slipped as normal, so the Assassin keeps its evasion and still has
+  // to eat one in three; the Berserker, who never dodged, is untouched.
+  heavyBlowEvery: 3,
   defeat: 'dies',
   lineage: 'person',
   designRole:
