@@ -1,4 +1,8 @@
-import type { Item, Slot } from '../sim/types.ts';
+import { CRAFT_COST, MATERIALS } from '../data/materials.ts';
+import type { Haul, HuntLength } from '../sim/hunt.ts';
+import type { Rng } from '../sim/rng.ts';
+import { craftItem } from '../sim/roll.ts';
+import type { Item, MaterialId, Slot } from '../sim/types.ts';
 
 /**
  * Where an item actually sits. Distinct from Slot because there are two ring
@@ -35,6 +39,10 @@ export interface RunState {
   /** A position with no entry is empty. */
   readonly equipped: Partial<Record<EquipPosition, Item>>;
   readonly backpack: readonly Item[];
+  /** Hides brought back from hunts, by material. What the tanner works with. */
+  readonly materials: Readonly<Partial<Record<MaterialId, number>>>;
+  /** How far the player last chose to go. Remembered so the choice sticks. */
+  readonly huntLength: HuntLength;
   /** Monster ids the player has beaten at least once. */
   readonly defeated: readonly string[];
   /** Advances on every roll so drops never repeat across a session. */
@@ -47,8 +55,58 @@ export function newRun(weaponId: string): RunState {
     ownedWeaponIds: [weaponId],
     equipped: {},
     backpack: [],
+    materials: {},
+    huntLength: 3,
     defeated: [],
     dropSeed: 1,
+  };
+}
+
+export function setHuntLength(state: RunState, huntLength: HuntLength): RunState {
+  return { ...state, huntLength };
+}
+
+/** Everything a hunt brought home goes into the pack, the stores, and the arms. */
+export function addHaul(state: RunState, haul: Haul): RunState {
+  const materials = { ...state.materials };
+  for (const [id, count] of Object.entries(haul.materials)) {
+    materials[id as MaterialId] = (materials[id as MaterialId] ?? 0) + (count ?? 0);
+  }
+
+  let next: RunState = {
+    ...state,
+    materials,
+    backpack: [...state.backpack, ...haul.items],
+  };
+  for (const weaponId of haul.weaponIds) next = acquireWeapon(next, weaponId);
+  return next;
+}
+
+export function craftCost(slot: Slot): number | undefined {
+  return CRAFT_COST[slot];
+}
+
+export function canCraft(state: RunState, slot: Slot, materialId: MaterialId): boolean {
+  const cost = craftCost(slot);
+  return cost !== undefined && (state.materials[materialId] ?? 0) >= cost;
+}
+
+/**
+ * Spend hide, get armor. Throws rather than silently failing when the player
+ * cannot afford it: the view is responsible for not offering what it cannot
+ * deliver, and a crash is cheaper than a hood that never arrives.
+ */
+export function craft(state: RunState, slot: Slot, materialId: MaterialId, rng: Rng): RunState {
+  const cost = craftCost(slot);
+  if (cost === undefined) throw new Error(`${slot} cannot be crafted`);
+  const have = state.materials[materialId] ?? 0;
+  if (have < cost) throw new Error(`Need ${cost} ${materialId}, have ${have}`);
+
+  const item = craftItem(slot, MATERIALS[materialId], rng);
+  return {
+    ...state,
+    materials: { ...state.materials, [materialId]: have - cost },
+    backpack: [...state.backpack, item],
   };
 }
 

@@ -52,6 +52,7 @@ export const STRANGE_BOAR: MonsterDefinition = {
   critChance: 0.05,
   defeat: 'dies',
   lineage: 'animal',
+  material: 'boar-hide',
   designRole:
     'The first real hunt. Recognisably a boar with something wrong about it. An even ' +
     'fight for both builds: feeds Rage in decent chunks, dies before Focus ramps far.',
@@ -68,6 +69,7 @@ export const STRANGE_ELK: MonsterDefinition = {
   critChance: 0.02,
   defeat: 'dies',
   lineage: 'animal',
+  material: 'elk-hide',
   designRole:
     'The Berserker-punisher, and the first enemy that favors the Assassin. Huge health, ' +
     'almost no offence. Prey that has stopped being afraid: it does not flee and it ' +
@@ -84,6 +86,7 @@ export const STRANGE_WOLF: MonsterDefinition = {
   critChance: 0.08,
   defeat: 'dies',
   lineage: 'animal',
+  material: 'wolf-pelt',
   designRole:
     'Fast chip. A steady drip of small hits keeps Rage climbing so the Berserker cruises, ' +
     'and gets through the Assassin by sheer volume. Hunts alone, with no interest in a pack.',
@@ -104,10 +107,43 @@ export const STRANGE_BEAR: MonsterDefinition = {
   armor: 3,
   defeat: 'dies',
   lineage: 'animal',
+  material: 'bear-hide',
   designRole:
     'The Assassin-punisher, and the hardest regular hunt — but still a regular. Armor ' +
     'that barely dents the Berserker halves the Assassin, so the same fight is quick for ' +
     'one build and a long grind for the other. Different fight, same outcome.',
+};
+
+export const STRAYED_TRAPPER: MonsterDefinition = {
+  id: 'strayed-trapper',
+  name: 'Strayed Trapper',
+  maxHealth: 80,
+  // Knife work: many quick shallow cuts. Armor guts it, and it feeds Rage in
+  // a steady trickle rather than a dump.
+  attack: { damage: 7, attacksPerSecond: 1.5, variance: 0.2 },
+  critChance: 0.1,
+  defeat: 'dies',
+  lineage: 'person',
+  designRole:
+    'An uncommon person on the road, and the first one you can loot. Quick shallow cuts: ' +
+    'the Berserker shrugs them off, the Assassin trades blow for blow with something ' +
+    'as fast as it is. Drops finished gear rather than hide: it was made, not skinned.',
+};
+
+export const STRAYED_WOODSMAN: MonsterDefinition = {
+  id: 'strayed-woodsman',
+  name: 'Strayed Woodsman',
+  maxHealth: 140,
+  // A felling axe. Slow and heavy: every swing dumps a chunk of Rage and
+  // takes a chunk of an Assassin.
+  attack: { damage: 18, attacksPerSecond: 0.55, variance: 0.15 },
+  critChance: 0.05,
+  defeat: 'dies',
+  lineage: 'person',
+  designRole:
+    'The other uncommon person. A smaller Strayed Hunter: slow enormous swings that feed the ' +
+    'greataxe and threaten the daggers. A preview of the gate, from someone who was on the ' +
+    'same road and did not get as far.',
 };
 
 export const STRAYED_HUNTER: MonsterDefinition = {
@@ -135,5 +171,7 @@ export const MONSTERS: readonly MonsterDefinition[] = [
   STRANGE_ELK,
   STRANGE_WOLF,
   STRANGE_BEAR,
+  STRAYED_TRAPPER,
+  STRAYED_WOODSMAN,
   STRAYED_HUNTER,
 ];

@@ -16,6 +16,12 @@ export type DefeatStyle = 'dies' | 'yields';
  */
 export type Lineage = 'animal' | 'person';
 
+/**
+ * What an animal leaves for the tanner. Crafting is the main way to get armor:
+ * you choose what to hunt, and the hide you bring back tilts what you can make.
+ */
+export type MaterialId = 'boar-hide' | 'wolf-pelt' | 'elk-hide' | 'bear-hide';
+
 /** Which resource engine a weapon runs on. The weapon is the class. */
 export type ResourceKind = 'rage' | 'focus';
 
@@ -181,6 +187,36 @@ export interface MonsterDefinition {
   readonly evasion?: number;
   /** One line on what this monster is meant to punish. See pillar two. */
   readonly designRole: string;
+  /** What this creature yields when it dies. Animals only; people carry gear. */
+  readonly material?: MaterialId;
+}
+
+/** One line of an encounter table: who, and how often relative to the others. */
+export interface Spawn {
+  readonly monster: MonsterDefinition;
+  readonly weight: number;
+}
+
+/**
+ * A place to hunt. The player picks an area and a length, not an enemy, and
+ * the area decides what they meet. A new band is a new area with a new table.
+ */
+export interface Area {
+  readonly id: string;
+  readonly name: string;
+  /** Player-facing: what it is like out there. */
+  readonly description: string;
+  /** Scene id, drawn behind every fight in this area. */
+  readonly scene: string;
+  readonly animals: readonly Spawn[];
+  /** Uncommon. People drop finished gear and sometimes the weapon they carried. */
+  readonly people: readonly Spawn[];
+  /** Chance that an encounter is a person rather than an animal. */
+  readonly personChance: number;
+  /** Chance that an animal encounter is an ambush of several at once. */
+  readonly ambushChance: number;
+  /** Inclusive range of how many animals an ambush brings. */
+  readonly ambushSize: readonly [number, number];
 }
 
 export interface Combatant {

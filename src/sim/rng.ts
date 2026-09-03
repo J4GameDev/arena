@@ -37,6 +37,23 @@ export class Rng {
     return chosen;
   }
 
+  /** Pick from a non-empty array, each item as likely as its weight says. */
+  pickWeighted<T>(items: readonly T[], weightOf: (item: T) => number): T {
+    let total = 0;
+    for (const item of items) total += weightOf(item);
+
+    let roll = this.next() * total;
+    for (const item of items) {
+      roll -= weightOf(item);
+      if (roll < 0) return item;
+    }
+
+    // Only reachable through floating-point drift on the final item.
+    const last = items[items.length - 1];
+    if (last === undefined) throw new Error('Rng.pickWeighted called with an empty array');
+    return last;
+  }
+
   /**
    * Independent copy at the current position. Useful for speculative rolls
    * (previews, "what if" calculations) that must not disturb the real stream.
