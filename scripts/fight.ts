@@ -39,7 +39,7 @@ const monster = createMonster(monsterDefinition);
 console.log(`${weapon.name} (${weapon.archetype}) vs ${monsterDefinition.name} — seed ${seed}`);
 console.log(`  ${monsterDefinition.designRole}`);
 console.log('');
-console.log(formatFight(runFight(hero, monster, seed)));
+console.log(formatFight(runFight(hero, [monster], seed)));
 
 function parseArgs(argv: readonly string[]): Map<string, string> {
   const parsed = new Map<string, string>();

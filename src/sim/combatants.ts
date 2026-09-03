@@ -49,9 +49,13 @@ export function createHero(name: string, weapon: Weapon, items: readonly Item[] 
   return equip(bare, items);
 }
 
-export function createMonster(definition: MonsterDefinition): Combatant {
+/**
+ * `name` overrides the definition's name so that two wolves in one fight can
+ * be told apart — the simulation insists on distinct names.
+ */
+export function createMonster(definition: MonsterDefinition, name?: string): Combatant {
   return {
-    name: definition.name,
+    name: name ?? definition.name,
     maxHealth: definition.maxHealth,
     health: definition.maxHealth,
     attack: definition.attack,

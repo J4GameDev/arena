@@ -227,7 +227,8 @@ export type CombatEvent =
       readonly type: 'fight-start';
       readonly at: number;
       readonly hero: string;
-      readonly monster: string;
+      /** One name in a hunt's ordinary fight, two or three in an ambush. */
+      readonly monsters: readonly string[];
     }
   | {
       readonly type: 'attack';
@@ -269,8 +270,13 @@ export type CombatEvent =
   | { readonly type: 'timeout'; readonly at: number };
 
 export interface FightResult {
-  /** null means the fight timed out — neither side could finish it. */
+  /**
+   * The hero's name if they are standing at the end, otherwise the name of the
+   * first monster still up. null means the fight timed out.
+   */
   readonly winner: string | null;
   readonly events: readonly CombatEvent[];
   readonly durationSeconds: number;
+  /** What the hero walks away with. 0 if they did not walk away. */
+  readonly heroHealth: number;
 }

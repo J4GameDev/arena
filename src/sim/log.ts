@@ -24,7 +24,7 @@ function formatEvent(event: CombatEvent): string {
 
   switch (event.type) {
     case 'fight-start':
-      return `${at} FIGHT  ${event.hero} vs ${event.monster}`;
+      return `${at} FIGHT  ${event.hero} vs ${event.monsters.join(' and ')}`;
 
     case 'attack': {
       const tags = [

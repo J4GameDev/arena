@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { STRANGE_BOAR, STRAYED_HUNTER } from '../src/data/monsters';
+import { STRANGE_BOAR, STRANGE_WOLF, STRAYED_HUNTER } from '../src/data/monsters';
 import { GREATAXE, TWIN_DAGGERS } from '../src/data/weapons';
 import { runFight } from '../src/sim/combat';
 import { createHero, createMonster } from '../src/sim/combatants';
@@ -9,8 +9,8 @@ const boar = () => createMonster(STRANGE_BOAR);
 
 describe('runFight', () => {
   it('is deterministic for a given seed', () => {
-    const first = runFight(hero(), boar(), 1234);
-    const second = runFight(hero(), boar(), 1234);
+    const first = runFight(hero(), [boar()], 1234);
+    const second = runFight(hero(), [boar()], 1234);
 
     expect(first.events).toEqual(second.events);
     expect(first.winner).toBe(second.winner);
@@ -18,8 +18,8 @@ describe('runFight', () => {
   });
 
   it('produces different fights for different seeds', () => {
-    const a = runFight(hero(), boar(), 1);
-    const b = runFight(hero(), boar(), 2);
+    const a = runFight(hero(), [boar()], 1);
+    const b = runFight(hero(), [boar()], 2);
 
     expect(a.events).not.toEqual(b.events);
   });
@@ -28,7 +28,7 @@ describe('runFight', () => {
     const heroTemplate = hero();
     const monsterTemplate = boar();
 
-    runFight(heroTemplate, monsterTemplate, 99);
+    runFight(heroTemplate, [monsterTemplate], 99);
 
     expect(heroTemplate.health).toBe(heroTemplate.maxHealth);
     expect(monsterTemplate.health).toBe(monsterTemplate.maxHealth);
@@ -37,7 +37,7 @@ describe('runFight', () => {
 
   it('always terminates with a winner or an explicit draw', () => {
     for (let seed = 0; seed < 50; seed += 1) {
-      const result = runFight(hero(), boar(), seed);
+      const result = runFight(hero(), [boar()], seed);
       const ended = result.events.some(
         (event) => event.type === 'defeat' || event.type === 'timeout',
       );
@@ -47,7 +47,7 @@ describe('runFight', () => {
 
   it('empowers an attack once the resource reaches its threshold', () => {
     // The Strayed Hunter hits hard enough to fill Rage several times over.
-    const result = runFight(createHero('Hero', GREATAXE), createMonster(STRAYED_HUNTER), 5);
+    const result = runFight(createHero('Hero', GREATAXE), [createMonster(STRAYED_HUNTER)], 5);
 
     const empoweredAttacks = result.events.filter(
       (event) => event.type === 'attack' && event.empowered,
@@ -57,7 +57,7 @@ describe('runFight', () => {
   });
 
   it('never lets a resource exceed its threshold', () => {
-    const result = runFight(createHero('Hero', TWIN_DAGGERS), createMonster(STRAYED_HUNTER), 3);
+    const result = runFight(createHero('Hero', TWIN_DAGGERS), [createMonster(STRAYED_HUNTER)], 3);
 
     for (const event of result.events) {
       if (event.type === 'resource') {
@@ -67,7 +67,7 @@ describe('runFight', () => {
   });
 
   it('absorbs damage once Rage has started building', () => {
-    const result = runFight(createHero('Hero', GREATAXE), createMonster(STRAYED_HUNTER), 5);
+    const result = runFight(createHero('Hero', GREATAXE), [createMonster(STRAYED_HUNTER)], 5);
 
     const absorbedSomething = result.events.some(
       (event) => event.type === 'attack' && event.defender === 'Hero' && event.prevented > 0,
@@ -77,7 +77,7 @@ describe('runFight', () => {
   });
 
   it('absorbs nothing for an archetype with no damage reduction', () => {
-    const result = runFight(createHero('Hero', TWIN_DAGGERS), createMonster(STRAYED_HUNTER), 5);
+    const result = runFight(createHero('Hero', TWIN_DAGGERS), [createMonster(STRAYED_HUNTER)], 5);
 
     for (const event of result.events) {
       if (event.type === 'attack' && event.defender === 'Hero') {
@@ -87,7 +87,7 @@ describe('runFight', () => {
   });
 
   it('always lets at least 1 damage through, however full the meter', () => {
-    const result = runFight(createHero('Hero', GREATAXE), createMonster(STRAYED_HUNTER), 11);
+    const result = runFight(createHero('Hero', GREATAXE), [createMonster(STRAYED_HUNTER)], 11);
 
     for (const event of result.events) {
       if (event.type === 'attack') {
@@ -100,7 +100,7 @@ describe('runFight', () => {
     // Scan seeds rather than trusting one: any change to what consumes
     // randomness shifts the stream, and a magic seed would break for no reason.
     const evadedSomewhere = Array.from({ length: 30 }, (_unused, seed) =>
-      runFight(createHero('Hero', TWIN_DAGGERS), createMonster(STRAYED_HUNTER), seed),
+      runFight(createHero('Hero', TWIN_DAGGERS), [createMonster(STRAYED_HUNTER)], seed),
     ).some((result) =>
       result.events.some((event) => event.type === 'evade' && event.defender === 'Hero'),
     );
@@ -110,19 +110,93 @@ describe('runFight', () => {
 
   it('never lets a non-evasive hero evade', () => {
     for (let seed = 0; seed < 20; seed += 1) {
-      const result = runFight(createHero('Hero', GREATAXE), createMonster(STRAYED_HUNTER), seed);
+      const result = runFight(createHero('Hero', GREATAXE), [createMonster(STRAYED_HUNTER)], seed);
       expect(result.events.some((event) => event.type === 'evade')).toBe(false);
     }
   });
 
   it('never reports negative health', () => {
     for (let seed = 0; seed < 20; seed += 1) {
-      const result = runFight(createHero('Hero', TWIN_DAGGERS), boar(), seed);
+      const result = runFight(createHero('Hero', TWIN_DAGGERS), [boar()], seed);
       for (const event of result.events) {
         if (event.type === 'attack') {
           expect(event.defenderHealth).toBeGreaterThanOrEqual(0);
         }
       }
     }
+  });
+});
+
+describe('runFight against several monsters', () => {
+  const pack = () => [
+    createMonster(STRANGE_WOLF, 'Wolf 1'),
+    createMonster(STRANGE_WOLF, 'Wolf 2'),
+    createMonster(STRANGE_WOLF, 'Wolf 3'),
+  ];
+
+  it('refuses two monsters with the same name', () => {
+    expect(() => runFight(hero(), [boar(), boar()], 1)).toThrow(/distinct name/);
+  });
+
+  it('refuses an empty fight', () => {
+    expect(() => runFight(hero(), [], 1)).toThrow(/at least one/);
+  });
+
+  it('has every monster swing at the hero, not only the first', () => {
+    const result = runFight(hero(), pack(), 7);
+    const attackers = new Set(
+      result.events.flatMap((event) =>
+        event.type === 'attack' && event.defender === 'Hero' ? [event.attacker] : [],
+      ),
+    );
+    expect(attackers.size).toBe(3);
+  });
+
+  it('has the hero finish one monster before turning to the next', () => {
+    const result = runFight(hero(), pack(), 7);
+    const defeats: string[] = [];
+    for (const event of result.events) {
+      if (event.type === 'attack' && event.attacker === 'Hero') {
+        // The hero only ever hits the first wolf that has not been defeated.
+        const expected = ['Wolf 1', 'Wolf 2', 'Wolf 3'].find((name) => !defeats.includes(name));
+        expect(event.defender).toBe(expected);
+      }
+      if (event.type === 'defeat' && event.who !== 'Hero') defeats.push(event.who);
+    }
+  });
+
+  it('ends only when every monster is down or the hero is', () => {
+    for (let seed = 0; seed < 20; seed += 1) {
+      const result = runFight(hero(), pack(), seed);
+      const downed = result.events.filter((event) => event.type === 'defeat').length;
+      if (result.winner === 'Hero') expect(downed).toBe(3);
+      else expect(result.events.some((e) => e.type === 'defeat' && e.who === 'Hero')).toBe(true);
+    }
+  });
+
+  it('feeds Rage faster than a single wolf does', () => {
+    const firstFill = (monsters: ReturnType<typeof pack>): number => {
+      const result = runFight(hero(), monsters, 3);
+      for (const event of result.events) {
+        if (event.type === 'resource' && event.current >= event.threshold) return event.at;
+      }
+      return Number.POSITIVE_INFINITY;
+    };
+    expect(firstFill(pack())).toBeLessThan(firstFill([createMonster(STRANGE_WOLF, 'Wolf 1')]));
+  });
+
+  it('reports the health the hero walks away with', () => {
+    const result = runFight(hero(), [boar()], 1);
+    const lastHit = [...result.events]
+      .reverse()
+      .find((event) => event.type === 'attack' && event.defender === 'Hero');
+    expect(lastHit?.type === 'attack' ? lastHit.defenderHealth : undefined).toBe(result.heroHealth);
+  });
+
+  it('starts from the health the hero was handed, not full', () => {
+    const wounded = { ...hero(), health: 5 };
+    const result = runFight(wounded, [boar()], 1);
+    expect(result.winner).not.toBe('Hero');
+    expect(result.heroHealth).toBe(0);
   });
 });

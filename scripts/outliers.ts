@@ -67,7 +67,7 @@ function sample(weapon: Weapon): Sampled[] {
 
     for (let seed = 0; seed < FIGHTS; seed += 1) {
       const hero = createHero(weapon.archetype, weapon, items);
-      if (runFight(hero, createMonster(STRAYED_HUNTER), seed).winner === hero.name) wins += 1;
+      if (runFight(hero, [createMonster(STRAYED_HUNTER)], seed).winner === hero.name) wins += 1;
     }
 
     sampled.push({ items, winRate: (wins / FIGHTS) * 100 });

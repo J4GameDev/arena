@@ -17,7 +17,7 @@ const hunter = () => createMonster(STRAYED_HUNTER);
 describe('crit', () => {
   it('never happens without gear, because heroes start at zero crit chance', () => {
     for (let seed = 0; seed < 30; seed += 1) {
-      const result = runFight(createHero('Hero', GREATAXE), boar(), seed);
+      const result = runFight(createHero('Hero', GREATAXE), [boar()], seed);
       const heroCrits = result.events.filter(
         (event) => event.type === 'attack' && event.attacker === 'Hero' && event.critical,
       );
@@ -27,7 +27,7 @@ describe('crit', () => {
 
   it('always happens at 100% crit chance', () => {
     const hero = createHero('Hero', GREATAXE, [trinket('critChance', 1)]);
-    const result = runFight(hero, boar(), 4);
+    const result = runFight(hero, [boar()], 4);
 
     const heroAttacks = result.events.filter(
       (event) => event.type === 'attack' && event.attacker === 'Hero',
@@ -41,7 +41,7 @@ describe('crit', () => {
 
   it('stacks with an empowered hit rather than replacing it', () => {
     const hero = createHero('Hero', GREATAXE, [trinket('critChance', 1)]);
-    const result = runFight(hero, hunter(), 7);
+    const result = runFight(hero, [hunter()], 7);
 
     const both = result.events.some(
       (event) =>
@@ -56,7 +56,7 @@ describe('crit', () => {
     const hero = createHero('Hero', GREATAXE, [trinket('critResistance', 0.05)]);
 
     for (let seed = 0; seed < 40; seed += 1) {
-      const result = runFight(hero, hunter(), seed);
+      const result = runFight(hero, [hunter()], seed);
       const critsTaken = result.events.filter(
         (event) => event.type === 'attack' && event.defender === 'Hero' && event.critical,
       );
@@ -73,7 +73,7 @@ describe('crit', () => {
 describe('block', () => {
   it('reduces a hit rather than avoiding it', () => {
     const hero = createHero('Hero', GREATAXE, [trinket('blockChance', 1)]);
-    const result = runFight(hero, boar(), 3);
+    const result = runFight(hero, [boar()], 3);
 
     const blockedHits = result.events.filter(
       (event) => event.type === 'attack' && event.defender === 'Hero' && event.blocked,
@@ -99,7 +99,7 @@ describe('block', () => {
 describe('lifesteal', () => {
   it('returns health to the attacker and never overheals', () => {
     const hero = createHero('Hero', TWIN_DAGGERS, [trinket('lifesteal', 0.5)]);
-    const result = runFight(hero, hunter(), 2);
+    const result = runFight(hero, [hunter()], 2);
 
     const drained = result.events.filter(
       (event) => event.type === 'attack' && event.attacker === 'Hero' && event.healed > 0,
@@ -118,8 +118,8 @@ describe('lifesteal', () => {
 
 describe('initiative', () => {
   it('makes the hero swing sooner', () => {
-    const slow = runFight(createHero('Hero', GREATAXE), boar(), 1);
-    const quick = runFight(createHero('Hero', GREATAXE, [trinket('initiative', 0.5)]), boar(), 1);
+    const slow = runFight(createHero('Hero', GREATAXE), [boar()], 1);
+    const quick = runFight(createHero('Hero', GREATAXE, [trinket('initiative', 0.5)]), [boar()], 1);
 
     const firstHeroSwing = (events: typeof slow.events): number => {
       for (const event of events) {
@@ -135,7 +135,7 @@ describe('initiative', () => {
 describe('resource retention', () => {
   it('keeps part of the meter instead of emptying it', () => {
     const hero = createHero('Hero', GREATAXE, [trinket('resourceRetention', 0.5)]);
-    const result = runFight(hero, hunter(), 5);
+    const result = runFight(hero, [hunter()], 5);
 
     let sawEmpower = false;
     for (let i = 0; i < result.events.length; i += 1) {

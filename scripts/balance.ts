@@ -79,7 +79,7 @@ function bareSample(weapon: Weapon, monster: MonsterDefinition): BareSample {
 
   for (let seed = 0; seed < BARE_FIGHTS; seed += 1) {
     const hero = createHero(weapon.archetype, weapon);
-    const result = runFight(hero, createMonster(monster), seed);
+    const result = runFight(hero, [createMonster(monster)], seed);
     if (result.winner === hero.name) wins += 1;
     seconds += result.durationSeconds;
 
@@ -110,7 +110,7 @@ function gearedRates(weapon: Weapon, monster: MonsterDefinition): number[] {
 
     for (let seed = 0; seed < FIGHTS; seed += 1) {
       const hero = createHero(weapon.archetype, weapon, items);
-      if (runFight(hero, createMonster(monster), seed).winner === hero.name) wins += 1;
+      if (runFight(hero, [createMonster(monster)], seed).winner === hero.name) wins += 1;
     }
 
     rates.push((wins / FIGHTS) * 100);

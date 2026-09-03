@@ -14,51 +14,81 @@ export const BLOCK_REDUCTION = 0.5;
 export const MAX_PERCENT_REDUCTION = 0.8;
 
 /**
- * Resolve a whole fight.
+ * Resolve a whole fight: one hero against one or more monsters.
  *
  * Pure: the same combatants and seed always produce the same events, and the
  * combatants passed in are never mutated. That is what makes it possible to run
  * ten thousand fights to check balance, and to test a fight by its event list.
+ *
+ * The hero's *current* health is respected, not reset — a hunt chains fights
+ * and carries the wounds forward. The resource meter is whatever the template
+ * says it is; a hunt hands in an empty one.
+ *
+ * With several monsters, every one of them is on its own attack timer and all
+ * of them swing at the hero. The hero swings at the first monster still
+ * standing, and only turns to the next when it falls. An ambush is therefore
+ * far more than the sum of its parts for a Rage build (everything swung at you
+ * feeds the meter) and exactly the sum of its parts for a Focus build.
  */
 export function runFight(
   heroTemplate: Combatant,
-  monsterTemplate: Combatant,
+  monsterTemplates: readonly Combatant[],
   seed: number,
 ): FightResult {
+  if (monsterTemplates.length === 0) throw new Error('runFight needs at least one monster');
+
   const rng = new Rng(seed);
   const hero = copyOf(heroTemplate);
-  const monster = copyOf(monsterTemplate);
+  const monsters = monsterTemplates.map(copyOf);
+
+  // Event lines refer to combatants by name, so two wolves need two names.
+  // The caller owns naming; the simulation only refuses to guess.
+  const names = new Set([hero.name, ...monsters.map((monster) => monster.name)]);
+  if (names.size !== monsters.length + 1) {
+    throw new Error('Every combatant in a fight needs a distinct name');
+  }
 
   const events: CombatEvent[] = [
-    { type: 'fight-start', at: 0, hero: hero.name, monster: monster.name },
+    { type: 'fight-start', at: 0, hero: hero.name, monsters: monsters.map((m) => m.name) },
   ];
 
   // Initiative eats into the opening wind-up, so it decides who swings first.
-  hero.nextAttackAt = secondsPerAttack(hero) * (1 - clamp(hero.initiative, 0, 0.9));
-  monster.nextAttackAt = secondsPerAttack(monster) * (1 - clamp(monster.initiative, 0, 0.9));
+  for (const combatant of [hero, ...monsters]) {
+    combatant.nextAttackAt =
+      secondsPerAttack(combatant) * (1 - clamp(combatant.initiative, 0, 0.9));
+  }
+
+  const standing = (): Combatant[] => monsters.filter((monster) => monster.health > 0);
 
   let clock = 0;
-  while (hero.health > 0 && monster.health > 0 && clock < FIGHT_TIMEOUT_SECONDS) {
-    // Ties go to the hero. Arbitrary, but fixed — a coin flip here would make
-    // fights non-reproducible for no design benefit.
-    const heroSwings = hero.nextAttackAt <= monster.nextAttackAt;
-    const attacker = heroSwings ? hero : monster;
-    const defender = heroSwings ? monster : hero;
+  while (hero.health > 0 && standing().length > 0 && clock < FIGHT_TIMEOUT_SECONDS) {
+    // Whoever is due first swings. Ties go to the hero, then to monsters in
+    // the order they arrived. Arbitrary, but fixed — a coin flip here would
+    // make fights non-reproducible for no design benefit.
+    let attacker: Combatant = hero;
+    for (const monster of standing()) {
+      if (monster.nextAttackAt < attacker.nextAttackAt) attacker = monster;
+    }
+
+    const target = attacker === hero ? standing()[0] : hero;
+    if (target === undefined) break;
 
     clock = attacker.nextAttackAt;
-    resolveAttack(attacker, defender, clock, rng, events);
+    resolveAttack(attacker, target, clock, rng, events);
     attacker.nextAttackAt = clock + secondsPerAttack(attacker);
   }
 
-  if (hero.health > 0 && monster.health > 0) {
+  const survivors = standing();
+  if (hero.health > 0 && survivors.length > 0) {
     events.push({ type: 'timeout', at: clock });
-    return { winner: null, events, durationSeconds: clock };
+    return { winner: null, events, durationSeconds: clock, heroHealth: hero.health };
   }
 
   return {
-    winner: hero.health > 0 ? hero.name : monster.name,
+    winner: hero.health > 0 ? hero.name : (survivors[0]?.name ?? null),
     events,
     durationSeconds: clock,
+    heroHealth: hero.health,
   };
 }
 

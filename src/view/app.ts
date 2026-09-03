@@ -62,7 +62,7 @@ export function start(mount: HTMLElement): void {
     const you = heroFrom(run);
     const foe = createMonster(definition);
     const rng = new Rng(run.dropSeed);
-    const result = runFight(you, foe, rng.int(1, 1_000_000));
+    const result = runFight(you, [foe], rng.int(1, 1_000_000));
 
     mount.innerHTML = '';
     const stage = document.createElement('section');
