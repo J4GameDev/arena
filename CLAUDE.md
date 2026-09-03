@@ -66,6 +66,8 @@ v0.1 ships **two** archetypes, two-handed (Rage) and daggers (Focus), because th
 
 **This game is its own thing.** An early ambition to grow the world into a Realm-of-the-Mad-God-style shared game was dropped on 3 Sep 2026 by the owner. Nothing here is built to serve a later game; anything that would only make sense for one is out of scope.
 
+**The opening is four beats and no speech.** A title card — the game is called _Farther_ — then three short lines about the world (something leaked in long ago and nobody has seen it; far from it the land is still green and nearer the animals stop being animals; you are a hunter and the job is to go out and come back), each one a click, skippable. Then Oswald, in his own few words, hands over the only choice the game makes for you: the weapon. Choosing sends the player straight into the yard to spar with him, and the Hunter's Pack lands at the end of it. There is no camp until you have shown him you can hold the thing. Copy for the opening stays sparse: the world explains itself through what the player finds, or it does not explain itself.
+
 **Oswald** is the first character the player meets: an experienced hunter who spars with them, first to yield. He never tries to kill you, which is why he never crits and why his strikes land in a controlled rhythm — the tutorial's mechanics are explained by who he is rather than excused.
 
 He also rhymes with the boss. The first thing you fight is a hunter; the hardest thing you fight is a hunter who went too far out. The opening and the gate are the same figure at two ends of the same road, and the player is invited to notice without being told.

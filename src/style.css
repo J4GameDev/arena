@@ -1006,3 +1006,125 @@ button.ghost:hover {
   line-height: 1.5;
   max-width: 34rem;
 }
+
+/* --- The opening --- */
+
+.title-screen {
+  min-height: 70vh;
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: 1rem;
+  text-align: center;
+}
+
+.title {
+  margin: 0;
+  font-size: clamp(3rem, 10vw, 5.5rem);
+  font-weight: 400;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--bone);
+}
+
+.tagline {
+  margin: 0 0 1.5rem;
+  color: var(--bone-dim);
+  font-style: italic;
+}
+
+.begin {
+  font-size: 1rem;
+  padding: 0.6rem 2.2rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.story {
+  min-height: 60vh;
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: 1.5rem;
+  text-align: center;
+  max-width: 34rem;
+  margin: 0 auto;
+}
+
+.story-line {
+  margin: 0;
+  font-size: 1.25rem;
+  line-height: 1.6;
+  color: var(--bone);
+  animation: settle 600ms ease-out;
+}
+
+.story-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.story-count {
+  margin: 0;
+  font-size: 0.75rem;
+  letter-spacing: 0.12em;
+  color: var(--bone-faint);
+}
+
+@keyframes settle {
+  from {
+    opacity: 0;
+    transform: translateY(0.4rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .story-line {
+    animation: none;
+  }
+}
+
+.meeting {
+  display: grid;
+  gap: 1.25rem;
+}
+
+.speaker {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 1.25rem;
+  align-items: center;
+}
+
+.speaker .portrait {
+  justify-self: start;
+}
+
+.speaker-name {
+  margin: 0 0 0.4rem;
+  font-size: 0.7rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--bone-faint);
+}
+
+.speech {
+  margin: 0;
+  color: var(--bone-dim);
+  line-height: 1.5;
+}
+
+.speech.quote {
+  margin-top: 0.5rem;
+  color: var(--bone);
+}
+
+@media (max-width: 34rem) {
+  .speaker {
+    grid-template-columns: 1fr;
+  }
+}

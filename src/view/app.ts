@@ -88,6 +88,20 @@ const THE_ROAD_OUT = chosenFight(
   'forest-edge',
 );
 
+/**
+ * The opening, before there is a run to save: a title, a few lines about the
+ * world, and Oswald handing over the choice. Sparse on purpose — the world
+ * explains itself through what the player finds, or it does not explain
+ * itself. Nothing here is a speech.
+ */
+type IntroStep = 'title' | 'story' | 'choice';
+
+const STORY: readonly string[] = [
+  'Something has been leaking into the world for a long time. Nobody has seen it. Nobody has to.',
+  'Far from it the land is still green and the animals are still animals. Nearer, they stop being. This town is one of the last with a wall between the two.',
+  'You are a hunter. You go out, you bring back what the town needs, and you come back before the road goes wrong. That is the whole job.',
+];
+
 /** The camp is one screen with four tabs. Nothing is on display that was not asked for. */
 type Tab = 'gear' | 'out' | 'craft' | 'inventory';
 
@@ -126,6 +140,8 @@ export function start(mount: HTMLElement): void {
   // Screen state, not run state: forgotten on reload, never saved.
   let tab: Tab = 'gear';
   let openCell: GearCell | null = null;
+  let intro: IntroStep = 'title';
+  let beat = 0;
 
   const commit = (next: RunState): void => {
     state = next;
@@ -217,14 +233,59 @@ export function start(mount: HTMLElement): void {
     saveRun(state);
   }
 
-  function renderChoice(): void {
+  function renderIntro(): void {
+    if (intro === 'title') {
+      mount.innerHTML = `
+        <section class="title-screen">
+          <h1 class="title">Farther</h1>
+          <p class="tagline">Out past the walls, and back before dark.</p>
+          <button class="begin" data-begin type="button">Begin</button>
+        </section>
+      `;
+      bind('[data-begin]', () => {
+        intro = 'story';
+        beat = 0;
+        render();
+      });
+      return;
+    }
+
+    if (intro === 'story') {
+      const line = STORY[beat] ?? '';
+      const last = beat >= STORY.length - 1;
+      mount.innerHTML = `
+        <section class="story">
+          <p class="story-line">${escape(line)}</p>
+          <div class="story-actions">
+            <button data-next type="button">${last ? 'Go on' : 'Next'}</button>
+            ${last ? '' : '<button class="ghost" data-skip type="button">Skip</button>'}
+          </div>
+          <p class="story-count">${beat + 1} / ${STORY.length}</p>
+        </section>
+      `;
+      bind('[data-next]', () => {
+        if (last) intro = 'choice';
+        else beat += 1;
+        render();
+      });
+      bind('[data-skip]', () => {
+        intro = 'choice';
+        render();
+      });
+      return;
+    }
+
+    // Oswald hands over the only choice the game makes for you.
     mount.innerHTML = `
-      <header class="top">
-        <h1>Farther</h1>
-        <p class="sub">Pick up something and go out. You only get to choose once.</p>
-      </header>
-      <section class="panel">
-        <h2>Take a weapon</h2>
+      <section class="panel meeting">
+        <div class="speaker">
+          <img class="portrait" src="${spriteFor(OSWALD.id)}" alt="" onerror="this.remove()" />
+          <div>
+            <p class="speaker-name">Oswald</p>
+            <p class="speech">An old hunter looks you over, and does not seem impressed or unimpressed.</p>
+            <p class="speech quote">${escape(`"You'll want something in your hands before you go out there. Take one. You won't get to choose twice. Then we'll see what you can do with it."`)}</p>
+          </div>
+        </div>
         <div class="choices">
           ${WEAPONS.map(
             (weapon) => `
@@ -239,15 +300,19 @@ export function start(mount: HTMLElement): void {
       </section>
     `;
 
-    for (const button of mount.querySelectorAll<HTMLButtonElement>('.choice')) {
-      button.addEventListener('click', () => commit(newRun(button.dataset['weapon'] ?? '')));
-    }
+    bind('.choice', (button) => {
+      const run = newRun(button.dataset['weapon'] ?? '');
+      state = run;
+      saveRun(run);
+      // No camp yet. The first thing you do with a weapon is show him.
+      void goOut(run, THE_YARD, 1);
+    });
   }
 
   function render(): void {
     const run = state;
     if (run === null) {
-      renderChoice();
+      renderIntro();
       return;
     }
 
