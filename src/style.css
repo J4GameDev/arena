@@ -304,25 +304,32 @@ button.ghost:hover {
   left: 8%;
 }
 
-/* Foes line up on the right. One stands where the hero's mirror would; an
-   ambush packs two or three shoulder to shoulder, each a little narrower. */
+/*
+ * Foes line up on the right in a box that mirrors the hero's exactly: same
+ * width, same distance from its edge, figure centered in it. One foe stands
+ * where the hero's reflection would; an ambush widens the box and packs two
+ * or three shoulder to shoulder, each a little narrower.
+ */
 .foes {
   position: absolute;
-  right: 6%;
+  right: 8%;
   bottom: 9%;
+  width: 34%;
   display: flex;
+  justify-content: center;
   align-items: flex-end;
   gap: 1rem;
 }
 
 .side.foe {
   position: static;
-  width: auto;
-  min-width: 9rem;
+  width: 100%;
+  min-width: 0;
 }
 
-.scene.ambush .side.foe {
-  min-width: 0;
+.scene.ambush .foes {
+  right: 4%;
+  width: 52%;
 }
 
 .scene.ambush .plate {
