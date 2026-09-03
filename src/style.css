@@ -297,8 +297,43 @@ button.ghost:hover {
   left: 8%;
 }
 
+/* Foes line up on the right. One stands where the hero's mirror would; an
+   ambush packs two or three shoulder to shoulder, each a little narrower. */
+.foes {
+  position: absolute;
+  right: 6%;
+  bottom: 9%;
+  display: flex;
+  align-items: flex-end;
+  gap: 1rem;
+}
+
 .side.foe {
-  right: 8%;
+  position: static;
+  width: auto;
+  min-width: 9rem;
+}
+
+.scene.ambush .side.foe {
+  min-width: 0;
+}
+
+.scene.ambush .plate {
+  max-width: 8rem;
+}
+
+.scene.ambush .side-name {
+  font-size: 0.9rem;
+}
+
+.caption {
+  margin: 0;
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.8rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--bone-faint);
 }
 
 /* Text sits straight on the painting, so it needs an edge to read against. */
@@ -649,4 +684,133 @@ button.ghost:hover {
 
 .side.foe .portrait {
   transform: scaleX(-1);
+}
+
+/* --- Going out --- */
+
+.length {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.9rem;
+}
+
+.length-label {
+  font-size: 0.7rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--bone-faint);
+  margin-right: 0.25rem;
+}
+
+.length-choice {
+  background: transparent;
+  color: var(--bone-dim);
+  border-color: var(--ink-edge);
+}
+
+.length-choice.selected {
+  background: var(--bone-dim);
+  color: var(--ink);
+  border-color: var(--bone-dim);
+}
+
+.length-note {
+  flex-basis: 100%;
+  font-size: 0.8rem;
+  color: var(--bone-faint);
+  font-style: italic;
+}
+
+.hunt-desc {
+  font-size: 0.85rem;
+  color: var(--bone-dim);
+  line-height: 1.4;
+}
+
+.skip-hunt {
+  justify-self: end;
+}
+
+/* --- Tanner --- */
+
+.tanner {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.material {
+  border: 1px solid var(--ink-edge);
+  background: #131010;
+  padding: 0.7rem 0.75rem 0.8rem;
+  display: grid;
+  gap: 0.6rem;
+}
+
+.material.none {
+  opacity: 0.6;
+}
+
+.material-head {
+  display: grid;
+  gap: 0.2rem;
+}
+
+.material-head p {
+  margin: 0;
+}
+
+.material .count {
+  color: var(--gold);
+  font-size: 0.9rem;
+}
+
+.craft-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.craft {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.3rem 0.6rem 0.3rem 0.4rem;
+}
+
+.icon.small {
+  width: 24px;
+  height: 24px;
+}
+
+.craft .cost {
+  font-size: 0.75rem;
+  opacity: 0.7;
+}
+
+/* --- Coming home --- */
+
+.road {
+  margin: 0;
+  padding-left: 1.2rem;
+  color: var(--bone-dim);
+  font-size: 0.9rem;
+  display: grid;
+  gap: 0.2rem;
+}
+
+.haul {
+  display: grid;
+  gap: 0.6rem;
+  width: 100%;
+}
+
+.haul-line {
+  margin: 0;
+  color: var(--bone);
+}
+
+.haul-line strong {
+  color: var(--gold);
 }

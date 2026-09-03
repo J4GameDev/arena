@@ -1,20 +1,32 @@
-import { MONSTERS } from '../data/monsters.ts';
+import { AREAS } from '../data/areas.ts';
+import { CRAFTABLE_SLOTS, MATERIAL_LIST } from '../data/materials.ts';
+import { MONSTERS, OSWALD, STRAYED_HUNTER } from '../data/monsters.ts';
 import { WEAPONS } from '../data/weapons.ts';
-import { runFight } from '../sim/combat.ts';
-import { createHero, createMonster } from '../sim/combatants.ts';
+import { createHero } from '../sim/combatants.ts';
+import { HUNT_LENGTHS, runHunt, type Haul, type HuntLength, type HuntResult } from '../sim/hunt.ts';
 import { Rng } from '../sim/rng.ts';
-import { rollDrop } from '../sim/roll.ts';
-import type { Combatant, Item, Modifier, MonsterDefinition, Weapon } from '../sim/types.ts';
+import type {
+  Area,
+  Combatant,
+  Item,
+  MaterialId,
+  Modifier,
+  MonsterDefinition,
+  Weapon,
+} from '../sim/types.ts';
 import {
-  acquireWeapon,
-  addToBackpack,
+  addHaul,
   advanceDropSeed,
+  canCraft,
+  craft,
+  craftCost,
   discardItem,
   equipItem,
   equippedItems,
   EQUIP_POSITIONS,
   newRun,
   recordDefeat,
+  setHuntLength,
   slotOf,
   unequipItem,
   wieldWeapon,
@@ -27,12 +39,42 @@ import { playFight } from './fight-view.ts';
 import { formatModifier, isBeneficial } from './format.ts';
 
 /**
- * How often a corrupted kill yields a weapon you do not already have.
- *
- * A weapon is a whole build pivot, so it has to be rarer than armor — but not
- * so rare that a player never sees a second archetype exist.
+ * A fight you choose rather than stumble into, wrapped as a one-encounter
+ * area so it plays through the same code as a hunt. The spar and the gate
+ * are the only two: everything else is out in an area's table.
  */
-const WEAPON_FIND_CHANCE = 0.25;
+function chosenFight(
+  monster: MonsterDefinition,
+  name: string,
+  description: string,
+  scene: string,
+): Area {
+  return {
+    id: monster.id,
+    name,
+    description,
+    scene,
+    animals: [{ monster, weight: 1 }],
+    people: [],
+    personChance: 0,
+    ambushChance: 0,
+    ambushSize: [1, 1],
+  };
+}
+
+const THE_YARD = chosenFight(
+  OSWALD,
+  'The yard',
+  'Spar with Oswald. He hits hard enough to teach and no harder.',
+  'bastion',
+);
+
+const THE_ROAD_OUT = chosenFight(
+  STRAYED_HUNTER,
+  'The road out',
+  'Past the forest, where a hunter went too far and came back wrong. One fight, and it is not fair.',
+  'forest-edge',
+);
 
 export function start(mount: HTMLElement): void {
   let state: RunState | null = loadRun();
@@ -55,47 +97,64 @@ export function start(mount: HTMLElement): void {
     return createHero(weapon.archetype, weapon, equippedItems(run));
   }
 
-  async function hunt(run: RunState, definition: MonsterDefinition): Promise<void> {
+  async function goOut(run: RunState, area: Area, length: number): Promise<void> {
     if (busy) return;
     busy = true;
 
     const you = heroFrom(run);
-    const foe = createMonster(definition);
     const rng = new Rng(run.dropSeed);
-    const result = runFight(you, [foe], rng.int(1, 1_000_000));
+    const unowned = WEAPONS.filter((w) => !run.ownedWeaponIds.includes(w.id)).map((w) => w.id);
+    const hunt = runHunt(you, area, length, rng.int(1, 2_000_000_000), unowned);
 
     mount.innerHTML = '';
     const stage = document.createElement('section');
     stage.className = 'stage';
+    const arena = document.createElement('div');
+    stage.append(arena);
     mount.append(stage);
 
-    await playFight(stage, you, foe, result, {
-      hero: figureFor(run.weaponId),
-      foe: figureFor(definition.id),
-      scene: sceneFor(definition),
-    });
-
-    const won = result.winner === you.name;
-    let next = advanceDropSeed(run);
-    let drop: Item | null = null;
-    let weaponFound: Weapon | null = null;
-
-    // Oswald yields rather than dies, and you do not loot your teacher.
-    if (won && definition.defeat === 'dies') {
-      drop = rollDrop(rng);
-      next = addToBackpack(next, drop);
-
-      // Only people leave weapons. A boar was never carrying a greataxe — the
-      // corrupted hunters are still holding what they went out with.
-      const unowned = WEAPONS.filter((candidate) => !next.ownedWeaponIds.includes(candidate.id));
-      if (definition.lineage === 'person' && unowned.length > 0 && rng.chance(WEAPON_FIND_CHANCE)) {
-        weaponFound = rng.pick(unowned);
-        next = acquireWeapon(next, weaponFound.id);
-      }
+    // One button outside the fight that ends the whole trip early.
+    let skipAll = false;
+    if (hunt.encounters.length > 1) {
+      const skipHunt = document.createElement('button');
+      skipHunt.className = 'ghost skip-hunt';
+      skipHunt.type = 'button';
+      skipHunt.textContent = 'Skip the rest';
+      skipHunt.addEventListener('click', () => {
+        skipAll = true;
+        skipHunt.disabled = true;
+      });
+      stage.append(skipHunt);
     }
-    if (won) next = recordDefeat(next, definition.id);
 
-    stage.append(outcome(definition, won, drop, weaponFound));
+    let health = you.health;
+    for (const [i, encounter] of hunt.encounters.entries()) {
+      await playFight(
+        arena,
+        { ...you, health },
+        encounter.combatants,
+        encounter.result,
+        {
+          hero: figureFor(run.weaponId),
+          foes: encounter.monsters.map((monster) => figureFor(monster.id)),
+          scene: sceneFor(area.scene),
+        },
+        {
+          place: area.name,
+          note: length > 1 ? `${i + 1} of ${length}` : '',
+        },
+        () => skipAll,
+      );
+      health = encounter.result.heroHealth;
+    }
+
+    let next = addHaul(advanceDropSeed(run), hunt.kept);
+    for (const encounter of hunt.encounters) {
+      if (encounter.result.winner !== you.name) continue;
+      for (const monster of encounter.monsters) next = recordDefeat(next, monster.id);
+    }
+
+    stage.append(outcome(hunt, you.name));
     stage.querySelector('.continue')?.addEventListener('click', () => {
       busy = false;
       commit(next);
@@ -123,7 +182,7 @@ export function start(mount: HTMLElement): void {
             </button>`,
           ).join('')}
         </div>
-        <p class="aside">Anything else you carry, you will have to find out there.</p>
+        <p class="aside">Anything else you carry, you will have to make or find out there.</p>
       </section>
     `;
 
@@ -184,16 +243,28 @@ export function start(mount: HTMLElement): void {
       </section>
 
       <section class="panel">
-        <h2>Hunt</h2>
-        <div class="hunts">
-          ${MONSTERS.map(
-            (monster) => `<button class="hunt" data-monster="${monster.id}" type="button">
-              <span class="hunt-name">${escape(monster.name)}</span>
-              <span class="hunt-note">${
-                run.defeated.includes(monster.id) ? 'defeated before' : 'never faced'
-              }</span>
-            </button>`,
+        <h2>Go out</h2>
+        <div class="length">
+          <span class="length-label">How far</span>
+          ${HUNT_LENGTHS.map(
+            (
+              length,
+            ) => `<button class="length-choice ${length === run.huntLength ? 'selected' : ''}"
+              data-length="${length}" type="button">${length} fights</button>`,
           ).join('')}
+          <span class="length-note">Your wounds go with you. Fall and half of what you carry stays out there.</span>
+        </div>
+        <div class="hunts">
+          ${AREAS.map((area) => areaCard(area, `${run.huntLength} fights`, run)).join('')}
+          ${areaCard(THE_YARD, 'One fight', run)}
+          ${areaCard(THE_ROAD_OUT, 'One fight', run)}
+        </div>
+      </section>
+
+      <section class="panel">
+        <h2>Tanner</h2>
+        <div class="tanner">
+          ${MATERIAL_LIST.map((material) => materialRow(material.id, run)).join('')}
         </div>
       </section>
 
@@ -201,15 +272,28 @@ export function start(mount: HTMLElement): void {
         <h2>Pack <span class="count">${run.backpack.length}</span></h2>
         ${
           run.backpack.length === 0
-            ? '<p class="empty">Nothing yet. Hunt something.</p>'
+            ? '<p class="empty">Nothing yet. Make something, or take it off someone.</p>'
             : `<div class="items">${run.backpack.map(itemCard).join('')}</div>`
         }
       </section>
     `;
 
-    bind('.hunt', (button) => {
-      const definition = MONSTERS.find((m) => m.id === button.dataset['monster']);
-      if (definition !== undefined) void hunt(run, definition);
+    bind('[data-length]', (button) => {
+      const length = Number(button.dataset['length']) as HuntLength;
+      commit(setHuntLength(run, length));
+    });
+    bind('[data-hunt]', (button) => {
+      const id = button.dataset['hunt'];
+      const area = [...AREAS, THE_YARD, THE_ROAD_OUT].find((candidate) => candidate.id === id);
+      if (area === undefined) return;
+      const length = AREAS.includes(area) ? run.huntLength : 1;
+      void goOut(run, area, length);
+    });
+    bind('[data-craft]', (button) => {
+      const slot = button.dataset['craft'] as (typeof CRAFTABLE_SLOTS)[number];
+      const material = button.dataset['material'] as MaterialId;
+      if (!canCraft(run, slot, material)) return;
+      commit(advanceDropSeed(craft(run, slot, material, new Rng(run.dropSeed))));
     });
     bind('[data-equip]', (button) => {
       const item = run.backpack.find((candidate) => candidate.id === button.dataset['equip']);
@@ -235,6 +319,49 @@ export function start(mount: HTMLElement): void {
 function positionFor(item: Item, run: RunState): EquipPosition {
   if (item.slot !== 'ring') return item.slot;
   return run.equipped.ring1 === undefined ? 'ring1' : 'ring2';
+}
+
+function areaCard(area: Area, lengthNote: string, run: RunState): string {
+  const faced = area.animals
+    .concat(area.people)
+    .map((spawn) => spawn.monster)
+    .filter((monster) => run.defeated.includes(monster.id)).length;
+  const known = area.animals.length + area.people.length;
+
+  return `
+    <button class="hunt" data-hunt="${area.id}" type="button">
+      <span class="hunt-name">${escape(area.name)}</span>
+      <span class="hunt-desc">${escape(area.description)}</span>
+      <span class="hunt-note">${escape(lengthNote)} · ${faced === 0 ? 'nothing faced yet' : `${faced} of ${known} kinds faced`}</span>
+    </button>
+  `;
+}
+
+function materialRow(materialId: MaterialId, run: RunState): string {
+  const material = MATERIAL_LIST.find((candidate) => candidate.id === materialId);
+  if (material === undefined) return '';
+  const have = run.materials[materialId] ?? 0;
+  const source = MONSTERS.find((monster) => monster.material === materialId);
+
+  return `
+    <div class="material ${have === 0 ? 'none' : ''}">
+      <div class="material-head">
+        <p class="item-name">${escape(material.name)} <span class="count">×${have}</span></p>
+        <p class="pitch">${escape(material.note)}${source === undefined ? '' : ` From the ${escape(source.name)}.`}</p>
+      </div>
+      <div class="craft-actions">
+        ${CRAFTABLE_SLOTS.map((slot) => {
+          const cost = craftCost(slot) ?? 0;
+          const affordable = canCraft(run, slot, materialId);
+          return `<button class="craft" data-craft="${slot}" data-material="${materialId}"
+            type="button" ${affordable ? '' : 'disabled'}>
+            <img class="icon small" src="${iconFor(slot)}" alt="" onerror="this.remove()" />
+            <span>${label(slot)}</span><span class="cost">${cost}</span>
+          </button>`;
+        }).join('')}
+      </div>
+    </div>
+  `;
 }
 
 function weaponCard(weapon: Weapon, inHand: boolean): string {
@@ -301,52 +428,86 @@ function itemCard(item: Item): string {
   `;
 }
 
-function outcome(
-  definition: MonsterDefinition,
-  won: boolean,
-  drop: Item | null,
-  weaponFound: Weapon | null,
-): HTMLElement {
+function outcome(hunt: HuntResult, heroName: string): HTMLElement {
   const node = document.createElement('div');
   node.className = 'outcome';
 
-  const headline = won ? (definition.defeat === 'yields' ? 'He calls it' : 'You held') : 'You fell';
+  const last = hunt.encounters[hunt.encounters.length - 1];
+  const spar = last?.monsters.every((monster) => monster.defeat === 'yields') ?? false;
 
-  const line = won
-    ? definition.defeat === 'yields'
-      ? `${escape(definition.name)} steps back and nods. That will do.`
-      : `${escape(definition.name)} is done.`
-    : `${escape(definition.name)} was too much.`;
+  const headline = !hunt.survived ? 'You fell' : spar ? 'He calls it' : 'You came back';
+  const line = !hunt.survived
+    ? `${escape(last?.monsters[0]?.name ?? 'It')} was too much. You woke up inside the walls with half of what you carried.`
+    : spar
+      ? 'Oswald steps back and nods. That will do.'
+      : `${hunt.encounters.length} ${hunt.encounters.length === 1 ? 'fight' : 'fights'}, and you walked home from the last one.`;
 
   node.innerHTML = `
     <h2>${headline}</h2>
     <p>${line}</p>
-    ${
-      weaponFound === null
-        ? ''
-        : `<div class="item found weapon">
-             <p class="slot-name">Taken from the body</p>
-             <div class="item-head">
-               ${icon(spriteFor(weaponFound.id))}
-               <p class="item-name">${escape(weaponFound.name)}</p>
-             </div>
-             <p class="pitch">${escape(weaponFound.pitch)}</p>
-           </div>`
-    }
-    ${
-      drop === null
-        ? '<p class="empty">Nothing to carry back.</p>'
-        : `<div class="item found">
-             <div class="item-head">
-               ${icon(iconFor(drop.slot))}
-               <p class="item-name">${escape(drop.name)}</p>
-             </div>
-             <ul class="affixes">${drop.modifiers.map(affixLine).join('')}</ul>
-           </div>`
-    }
+    <ol class="road">
+      ${hunt.encounters.map((encounter) => `<li>${escape(encounterLine(encounter, heroName))}</li>`).join('')}
+    </ol>
+    ${haulMarkup(hunt.kept)}
     <button class="continue" type="button">Back to the bastion</button>
   `;
   return node;
+}
+
+function encounterLine(encounter: HuntResult['encounters'][number], heroName: string): string {
+  const names = encounter.monsters.map((monster) => monster.name);
+  const who =
+    encounter.kind === 'ambush'
+      ? `Ambushed by ${names.length}: ${names.join(', ')}`
+      : (names[0] ?? '');
+  const won = encounter.result.winner === heroName;
+  const yielded = encounter.monsters.every((monster) => monster.defeat === 'yields');
+  return `${who} — ${won ? (yielded ? 'yielded' : 'killed') : encounter.result.winner === null ? 'a standoff' : 'you fell'}`;
+}
+
+function haulMarkup(haul: Haul): string {
+  const materials = Object.entries(haul.materials).filter(([, count]) => (count ?? 0) > 0);
+  const weapons = haul.weaponIds
+    .map((id) => WEAPONS.find((weapon) => weapon.id === id))
+    .filter((weapon): weapon is Weapon => weapon !== undefined);
+
+  if (materials.length === 0 && haul.items.length === 0 && weapons.length === 0) {
+    return '<p class="empty">Nothing to carry back.</p>';
+  }
+
+  return `
+    <div class="haul">
+      ${materials
+        .map(([id, count]) => {
+          const material = MATERIAL_LIST.find((candidate) => candidate.id === id);
+          return `<p class="haul-line">${escape(material?.name ?? id)} <strong>×${count}</strong></p>`;
+        })
+        .join('')}
+      ${weapons
+        .map(
+          (weapon) => `<div class="item found weapon">
+             <p class="slot-name">Taken from the body</p>
+             <div class="item-head">
+               ${icon(spriteFor(weapon.id))}
+               <p class="item-name">${escape(weapon.name)}</p>
+             </div>
+             <p class="pitch">${escape(weapon.pitch)}</p>
+           </div>`,
+        )
+        .join('')}
+      ${haul.items
+        .map(
+          (item) => `<div class="item found">
+             <div class="item-head">
+               ${icon(iconFor(item.slot))}
+               <p class="item-name">${escape(item.name)}</p>
+             </div>
+             <ul class="affixes">${item.modifiers.map(affixLine).join('')}</ul>
+           </div>`,
+        )
+        .join('')}
+    </div>
+  `;
 }
 
 function affixLine(modifier: Modifier): string {
@@ -367,8 +528,8 @@ function percent(value: number): string {
   return `${Math.round(value * 100)}%`;
 }
 
-function label(position: EquipPosition): string {
-  const slot = slotOf(position);
+function label(position: EquipPosition | string): string {
+  const slot = slotOf(position as EquipPosition);
   return slot.charAt(0).toUpperCase() + slot.slice(1);
 }
 

@@ -1,5 +1,3 @@
-import type { MonsterDefinition } from '../sim/types.ts';
-
 /**
  * Where art lives and how big it is drawn. The simulation never imports this.
  */
@@ -10,13 +8,8 @@ export const spriteFor = (id: string): string => `/sprites/${id}.png`;
 /** One icon per slot: every item in a slot shares a name, so it shares a picture. */
 export const iconFor = (slot: string): string => `/icons/${slot}.png`;
 
-/**
- * Where a fight happens. The spar is inside the walls; everything else is out
- * past them. Decided here, in the view, because the simulation has no idea
- * that places exist.
- */
-export const sceneFor = (definition: MonsterDefinition): string =>
-  `/scenes/${definition.defeat === 'yields' ? 'bastion' : 'forest-edge'}.png`;
+/** Scenes live in public/scenes. An area names its own; a chosen fight names one too. */
+export const sceneFor = (sceneId: string): string => `/scenes/${sceneId}.png`;
 
 /**
  * How tall each figure really is, so sizes make sense side by side.

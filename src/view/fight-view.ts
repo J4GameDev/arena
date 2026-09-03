@@ -32,33 +32,52 @@ interface Side {
  */
 export interface FightArt {
   readonly hero: Figure;
-  readonly foe: Figure;
+  /** One per monster, in the same order. */
+  readonly foes: readonly Figure[];
   /** Backdrop for the whole exchange. Where you are, not who you are. */
   readonly scene: string;
 }
 
+/** Text shown above the fight: "Forest Edge · 2 of 5", or nothing. */
+export interface FightCaption {
+  readonly place: string;
+  readonly note: string;
+}
+
+/**
+ * Something outside the fight that can end it early: a "skip the whole hunt"
+ * button. Checked every tick; when it reports true, playback jumps to the end.
+ */
+export type SkipSignal = () => boolean;
+
 export function playFight(
   mount: HTMLElement,
   hero: Combatant,
-  monster: Combatant,
+  monsters: readonly Combatant[],
   result: FightResult,
   art: FightArt,
+  caption: FightCaption,
+  skipAll: SkipSignal = () => false,
 ): Promise<void> {
   mount.innerHTML = `
     <div class="fight">
-      <div class="scene" style="--scene: url('${escape(art.scene)}')">
+      <p class="caption"><span>${escape(caption.place)}</span><span>${escape(caption.note)}</span></p>
+      <div class="scene ${monsters.length > 1 ? 'ambush' : ''}" style="--scene: url('${escape(art.scene)}')">
         ${sideMarkup('hero', hero, art.hero)}
-        ${sideMarkup('foe', monster, art.foe)}
+        <div class="foes">
+          ${monsters.map((monster, i) => sideMarkup('foe', monster, art.foes[i] ?? art.foes[0] ?? art.hero)).join('')}
+        </div>
       </div>
       <ol class="log" aria-live="polite"></ol>
-      <button class="skip" type="button">Skip</button>
+      <button class="skip" type="button">Skip fight</button>
     </div>
   `;
 
-  const sides = new Map<string, Side>([
-    [hero.name, readSide(mount, 'hero', hero)],
-    [monster.name, readSide(mount, 'foe', monster)],
-  ]);
+  const sides = new Map<string, Side>([[hero.name, readSide(mount, '.side.hero', hero)]]);
+  mount.querySelectorAll<HTMLElement>('.side.foe').forEach((root, i) => {
+    const monster = monsters[i];
+    if (monster !== undefined) sides.set(monster.name, readSideFrom(root, monster));
+  });
   const log = must<HTMLOListElement>(mount, '.log');
   const skip = must<HTMLButtonElement>(mount, '.skip');
 
@@ -82,6 +101,11 @@ export function playFight(
     // which froze fights permanently the moment a player switched tabs. A timer
     // is throttled when hidden but never stops, so the fight always finishes.
     const timer = setInterval(() => {
+      if (skipAll()) {
+        applyThrough(Number.POSITIVE_INFINITY);
+        finish();
+        return;
+      }
       const clock = ((performance.now() - startedAt) / 1000) * PLAYBACK_SPEED;
       applyThrough(clock);
       if (index >= result.events.length) finish();
@@ -186,8 +210,11 @@ function sideMarkup(kind: 'hero' | 'foe', combatant: Combatant, figure: Figure):
   `;
 }
 
-function readSide(mount: HTMLElement, kind: 'hero' | 'foe', combatant: Combatant): Side {
-  const root = must<HTMLElement>(mount, `.side.${kind}`);
+function readSide(mount: HTMLElement, selector: string, combatant: Combatant): Side {
+  return readSideFrom(must<HTMLElement>(mount, selector), combatant);
+}
+
+function readSideFrom(root: HTMLElement, combatant: Combatant): Side {
   return {
     root,
     healthFill: must<HTMLElement>(root, '.health .fill'),
