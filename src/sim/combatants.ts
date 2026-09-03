@@ -31,6 +31,7 @@ export function createHero(name: string, weapon: Weapon, items: readonly Item[] 
     critMultiplier: BASE_CRIT_MULTIPLIER,
     lifesteal: 0,
     initiative: 0,
+    unavoidable: false,
 
     defeat: 'dies',
 
@@ -69,6 +70,7 @@ export function createMonster(definition: MonsterDefinition, name?: string): Com
     critMultiplier: BASE_CRIT_MULTIPLIER,
     lifesteal: 0,
     initiative: 0,
+    unavoidable: definition.unavoidable ?? false,
 
     defeat: definition.defeat,
 

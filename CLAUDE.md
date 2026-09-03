@@ -40,7 +40,11 @@ At threshold a resource spends itself automatically on an empowered attack. This
 
 **Other slots modify the economy, not the numbers.** A ring that makes the meter fill faster; a charm that keeps part of it instead of emptying on the payoff. The moment accessories become flat stat sticks, pillar one has quietly failed.
 
-**Leave headroom on the weapon for the items to matter.** A weapon's baseline for anything an accessory can also grant should be low. The Assassin's 10% evasion is deliberate: at 25% the weapon had already spent the entire budget and evasion accessories would have had nothing left to give. A stat the build cannot meaningfully move is not part of the build.
+**Leave headroom on the weapon for the items to matter.** A weapon's baseline for anything an accessory can also grant should be low. The Assassin's 15% evasion is deliberate: at 25% the weapon had already spent the entire budget and evasion accessories would have had nothing left to give. (It was 10% until hunts existed; see the tuning notes.) A stat the build cannot meaningfully move is not part of the build.
+
+**The weapon owns the hero's health, and the Assassin's is not higher.** Base health lives on the weapon, both at 100. When the Assassin turned out to die in fight two of a hunt, more health was measured and rejected by the owner: an agile build does not get a bigger pool. The trade this weapon _is_ is damage for fragility, so the daggers got a point of damage (6 to 7) and five points of evasion (10% to 15%) instead. One point of dagger damage was worth more than ten points of evasion over a hunt, because the Assassin's problem is how long it stands in front of things.
+
+**Unavoidable attacks exist, and the gate has them.** A monster can be marked so that its swings ignore evasion entirely — "you cannot sidestep a mountain." It is a puzzle that disables the one thing an evasive build relies on and leaves a build without evasion exactly where it was. The Strayed Hunter is the first: the daggers' extra damage had pushed the Assassin past the gate target, and every other lever (armor, health) hit the Berserker's swing breakpoints harder than it hit the Assassin.
 
 v0.1 ships **two** archetypes, two-handed (Rage) and daggers (Focus), because they are opposites on the timeline. Two is the minimum that demonstrates the pillar; one demonstrates nothing.
 
@@ -269,7 +273,6 @@ Good ideas that are not v0.1. Written down so they stop taking up room.
 - **Bandit variants and the road after the gate.** More kinds of bandit for band one, and corrupted hunters appearing in the tables once the Strayed Hunter is beaten.
 - **Specific weapons off specific people.** A Strayed Hunter who swung a greataxe leaves a greataxe.
 - **Resolve and Mana archetypes** — sword-and-shield and staff, once Rage and Focus are proven.
-- **Unavoidable attacks.** A monster property that ignores evasion entirely — "you cannot sidestep a mountain." Turns a boss into a puzzle that disables the thing you were relying on. A fit for the Strayed Hunter if it ever needs sharpening against the Assassin.
 - **Conditional affixes.** Effects with a trigger — gain resource on evade, bonus damage while the meter is full, the first hit of a fight empowered. Agreed as a later pass after the flat affixes were proven; these are what players build _around_ rather than merely accumulate.
 - **Levels and class abilities.** Both will move every balance number, which is why gear is tuned to roughly-right rather than precisely. Levels need a job that gear does not already do, and abilities need to come from the weapon rather than a skill tree, or pillar one quietly dies.
 
@@ -279,22 +282,22 @@ Good ideas that are not v0.1. Written down so they stop taking up room.
 
 **Built and tested — 77 tests:** the combat simulation (attack-speed timeline, Rage and Focus, crit on both sides, block, evasion, lifesteal, initiative, resource retention, several monsters at once), hunts (encounter tables, ambushes, carried health, rations, the fall tax), two archetypes both reachable in game, nine monsters (a teacher, four band-one animals, two bandits, a gate), eight equipment slots, 19 affix kinds, weighted and tilted rolls, crafting, the cookfire, the Hunter's Pack, run state and saving, the fight view with several foes, ten sprites, seven slot icons, and two scenes. Four harnesses: `npm run fight`, `npm run balance`, `npm run hunts`, `npm run outliers`.
 
-**Hunts, measured.** `npm run hunts` — 300 hunts per cell bare, 20 crafted sets of five tanner pieces plus three trinkets, everyone carrying six rations. "Home" is the share of hunts that get back to the walls. Read p90 for crafted, as ever.
+**Hunts, measured.** `npm run hunts` — 400 hunts per cell bare, 30 crafted sets of five tanner pieces plus three trinkets, everyone carrying six rations. "Home" is the share of hunts that get back to the walls. Read p90 for crafted, as ever.
 
-| Weapon    | Length | Bare home | Crafted p50 | Crafted p90 | Where bare falls                |
-| --------- | ------ | --------- | ----------- | ----------- | ------------------------------- |
-| Berserker | 3      | 55%       | 84%         | **89%**     | mostly fight 3                  |
-| Berserker | 5      | 18%       | 76%         | **85%**     | fights 3–5                      |
-| Berserker | 10     | 0%        | 51%         | **69%**     | spread over fights 3–9          |
-| Assassin  | 3      | 22%       | 75%         | **83%**     | mostly fight 2                  |
-| Assassin  | 5      | 3%        | 61%         | **73%**     | fights 2–3                      |
-| Assassin  | 10     | 0%        | 29%         | **55%**     | fights 2–3, almost never past 5 |
+| Weapon    | Length | Bare home | Crafted p50 | Crafted p90 | Where bare falls       |
+| --------- | ------ | --------- | ----------- | ----------- | ---------------------- |
+| Berserker | 3      | 57%       | 83%         | **87%**     | mostly fight 3         |
+| Berserker | 5      | 19%       | 75%         | **84%**     | fights 3–5             |
+| Berserker | 10     | 0%        | 49%         | **66%**     | spread over fights 3–9 |
+| Assassin  | 3      | 45%       | 79%         | **85%**     | fights 2–3             |
+| Assassin  | 5      | 18%       | 70%         | **78%**     | fights 2–4             |
+| Assassin  | 10     | 0%        | 46%         | **60%**     | spread over fights 2–9 |
 
 **The Berserker meets the hunt targets.** Three fights bare gets home a little over half the time, five sometimes, ten never; crafted p90 is near-certain at three, most of the time at five, and two in three at ten. Those are the targets as written.
 
-**The Assassin does not, and the reason is health, not damage.** It dies in fight two. Same hundred health as the Berserker, no damage reduction, and ten percent evasion is not a defence across five fights. The single-fight table never showed this because a single fight ends before the second wound lands. **Open, and the next tuning pass:** the levers are base health per archetype (the daggers could simply come with more of it), the ration's forty points, or the pack's six rations. Base health is the honest one — the others paper over it for both builds at once. **Do not touch monster numbers for this**; the regulars are still correctly tuned as regulars in the single-fight table below.
+**The Assassin now meets them too, after a tuning pass.** It was dying in fight two: same hundred health, no damage reduction, ten percent evasion. Measured levers, bare at 3 / 5 / 10 and crafted p90 at 3 / 5 / 10: health 130 gave 39 / 7 / 0 and 91 / 84 / 67 and was rejected on principle; evasion 20% alone 33 / 7 / 0 and 88 / 80 / 63; damage 7 alone 38 / 13 / 0 and 87 / 81 / 63; Focus carrying between fights 24 / 5 / 0 and 83 / 76 / 56, reverted as not worth its code. **Chosen: damage 7 and evasion 15%**, the table above. Crafted, the two builds are now within a few points at every length; bare, the Assassin trails by about ten at three fights, which is the fragile-but-deadly shape intended.
 
-**Single fights, for reference.** `npm run balance`, 2000 bare fights and 60 rolled loadouts x 150 fights per matchup. Every regular is winnable bare by both builds; the bandits slot in as regulars; the gate is unchanged.
+**Single fights, for reference.** `npm run balance`, 2000 bare fights and 60 rolled loadouts x 150 fights per matchup, after the daggers change and the unavoidable gate. Every regular is winnable bare by both builds; the bandits slot in as regulars.
 
 | Weapon    | Monster        | Bare  | Bare avg | Geared p50 | Geared p90 | Big hits bare (fewest) |
 | --------- | -------------- | ----- | -------- | ---------- | ---------- | ---------------------- |
@@ -305,23 +308,24 @@ Good ideas that are not v0.1. Written down so they stop taking up room.
 | Berserker | Strange Bear   | 100%  | 10.9s    | 100%       | 100%       | 0                      |
 | Berserker | Bandit         | 100%  | 6.2s     | 100%       | 100%       | 0                      |
 | Berserker | Mugger         | 100%  | 8.2s     | 100%       | 100%       | 1                      |
-| Berserker | Strayed Hunter | 0.7%  | 8.7s     | 59.3%      | **84.0%**  | 1                      |
-| Assassin  | Oswald         | 100%  | 8.0s     | 100%       | 100%       | 2                      |
-| Assassin  | Strange Boar   | 98.5% | 7.5s     | 100%       | 100%       | 2                      |
-| Assassin  | Strange Elk    | 100%  | 15.6s    | 100%       | 100%       | **5**                  |
-| Assassin  | Strange Wolf   | 100%  | 8.0s     | 100%       | 100%       | 2                      |
-| Assassin  | Strange Bear   | 95.1% | 15.9s    | 100%       | 100%       | 4                      |
-| Assassin  | Bandit         | 100%  | 5.9s     | 100%       | 100%       | 2                      |
-| Assassin  | Mugger         | 93.2% | 10.2s    | 100%       | 100%       | 3                      |
-| Assassin  | Strayed Hunter | 2.5%  | 9.4s     | 34.7%      | **75.3%**  | 2                      |
+| Berserker | Strayed Hunter | 0.7%  | 8.7s     | 58.0%      | **78.7%**  | 1                      |
+| Assassin  | Oswald         | 100%  | 7.1s     | 100%       | 100%       | 2                      |
+| Assassin  | Strange Boar   | 100%  | 6.4s     | 100%       | 100%       | 2                      |
+| Assassin  | Strange Elk    | 100%  | 13.4s    | 100%       | 100%       | **5**                  |
+| Assassin  | Strange Wolf   | 100%  | 7.1s     | 100%       | 100%       | 2                      |
+| Assassin  | Strange Bear   | 100%  | 12.8s    | 100%       | 100%       | 4                      |
+| Assassin  | Bandit         | 100%  | 5.4s     | 100%       | 100%       | 1                      |
+| Assassin  | Mugger         | 99.9% | 8.7s     | 100%       | 100%       | 3                      |
+| Assassin  | Strayed Hunter | 0.0%  | 8.5s     | 59.3%      | **86.7%**  | 2                      |
 
-The Elk still starves Rage (fewest big hits **0**) while Focus fires five times; the Bear is still the sharpest Assassin-punisher; the gate is still eight to nine points apart at p90 against a five-point target, reached with `MAGNITUDE_SCALE = 0.7` in `src/data/affixes.ts`. Retune that constant before touching individual ranges. The archetype gap at the median (59% against 35%) is consistency, not ceiling: the Assassin is more gear-dependent, which suits it.
+The Elk still starves Rage (fewest big hits **0**) while Focus fires five times; the Bear is still the sharpest Assassin-punisher, now a longer fight rather than a lost one. `MAGNITUDE_SCALE = 0.7` in `src/data/affixes.ts` is unchanged; retune that constant before touching individual ranges.
+
+**The gate, after the daggers change.** Seven damage sent the Assassin to p90 93% and bare 10% against a target of 80% and near zero. Measured levers on the Strayed Hunter: armor 1 / 2 / 3 gave the Berserker 71 / 55 / 38 and the Assassin 87 / 62 / 42; health 210 / 220 gave the Berserker 63 / 43 and the Assassin 84 / 82. Both punish the greataxe's swing breakpoints far harder than the daggers, so neither is a lever for this. **Chosen: unavoidable swings**, which touch only evasion. Result: Berserker 79%, Assassin 87%, bare both near zero. The gap is eight points with the Assassin ahead — the mirror of before, still "a bit wide", and the Berserker's side of it is deliberately left alone: the open Rage-at-death decision is the Berserker's gate lever, and tuning around it before it is made would be tuning twice.
 
 **Next, in order:**
 
-1. **The Assassin in hunts.** See above. Measure, then write the number in.
-2. **Band-one sprites that actually read as strange.** At 64px the one-detail wrongness did not render; what came back was normal animals with red eyes. Acceptable for now. When revisited: lead the prompt with a wrongness big enough to survive 64px, or use a larger canvas.
-3. **A third weapon**, before any animation. The owner's order: settle the character sprites and add classes first, then animate. Attack animation is designed for — the figures stand free in the scene — and not built.
+1. **Band-one sprites that actually read as strange.** At 64px the one-detail wrongness did not render; what came back was normal animals with red eyes. Acceptable for now. When revisited: lead the prompt with a wrongness big enough to survive 64px, or use a larger canvas.
+2. **A third weapon**, before any animation. The owner's order: settle the character sprites and add classes first, then animate. Attack animation is designed for — the figures stand free in the scene — and not built.
 
 **Known and deliberately unfixed:**
 

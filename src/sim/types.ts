@@ -191,6 +191,12 @@ export interface MonsterDefinition {
   readonly armor?: number;
   /** Chance to avoid a hit outright. Defaults to 0. */
   readonly evasion?: number;
+  /**
+   * Its attacks cannot be evaded. "You cannot sidestep a mountain." Turns a
+   * fight into a puzzle that disables the thing an evasive build relies on,
+   * and leaves a build with no evasion exactly where it was. Defaults to false.
+   */
+  readonly unavoidable?: boolean;
   /** One line on what this monster is meant to punish. See pillar two. */
   readonly designRole: string;
   /** What this creature yields when it dies. Animals only; people carry gear. */
@@ -245,6 +251,8 @@ export interface Combatant {
   // --- Offence ---
   /** Chance a hit is critical. Heroes start at zero — crit is entirely gear. */
   readonly critChance: number;
+  /** This combatant's attacks ignore the defender's evasion entirely. */
+  readonly unavoidable: boolean;
   /** Damage multiplier on a critical hit. Stacks with the empower multiplier. */
   readonly critMultiplier: number;
   /** Fraction of damage dealt returned to this combatant as health. */

@@ -100,12 +100,26 @@ describe('runFight', () => {
     // Scan seeds rather than trusting one: any change to what consumes
     // randomness shifts the stream, and a magic seed would break for no reason.
     const evadedSomewhere = Array.from({ length: 30 }, (_unused, seed) =>
-      runFight(createHero('Hero', TWIN_DAGGERS), [createMonster(STRAYED_HUNTER)], seed),
+      runFight(createHero('Hero', TWIN_DAGGERS), [boar()], seed),
     ).some((result) =>
       result.events.some((event) => event.type === 'evade' && event.defender === 'Hero'),
     );
 
     expect(evadedSomewhere).toBe(true);
+  });
+
+  it('never lets anyone evade an unavoidable attacker', () => {
+    // The Strayed Hunter cannot be sidestepped, however evasive the hero is.
+    for (let seed = 0; seed < 30; seed += 1) {
+      const result = runFight(
+        createHero('Hero', TWIN_DAGGERS),
+        [createMonster(STRAYED_HUNTER)],
+        seed,
+      );
+      expect(
+        result.events.some((event) => event.type === 'evade' && event.defender === 'Hero'),
+      ).toBe(false);
+    }
   });
 
   it('never lets a non-evasive hero evade', () => {

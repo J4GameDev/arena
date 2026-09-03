@@ -101,7 +101,7 @@ function resolveAttack(
 ): void {
   // Short-circuits keep a defender with no evasion from consuming randomness,
   // so tuning one stat does not reshuffle every unrelated matchup.
-  if (defender.evasion > 0 && rng.chance(defender.evasion)) {
+  if (!attacker.unavoidable && defender.evasion > 0 && rng.chance(defender.evasion)) {
     events.push({ type: 'evade', at, attacker: attacker.name, defender: defender.name });
     return;
   }

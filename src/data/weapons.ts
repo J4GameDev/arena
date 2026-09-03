@@ -38,7 +38,11 @@ export const TWIN_DAGGERS: Weapon = {
     'Fast, light strikes. Focus fills from every hit you land and spends on a finisher. ' +
     'You slip blows rather than absorb them, and you break easily when you do not.',
   // Fast and small. Ramps to a payoff on its own schedule, ignoring the enemy.
-  attack: { damage: 6, attacksPerSecond: 2.0, variance: 0.15 },
+  // 7 rather than 6: measured over hunts, one point of dagger damage was
+  // worth more than ten points of evasion, because the Assassin's problem
+  // is how long it stands in front of things. Damage for fragility is the
+  // trade this weapon is.
+  attack: { damage: 7, attacksPerSecond: 2.0, variance: 0.15 },
   resource: FOCUS,
   threshold: 100, // five landed hits
   empowerMultiplier: 2.0,
@@ -47,8 +51,10 @@ export const TWIN_DAGGERS: Weapon = {
   //
   // Deliberately low. This is a *baseline* that evasion accessories build on
   // top of — at 25% the weapon had already spent the whole budget and those
-  // items would have had nothing left to give.
-  evasion: 0.1,
+  // items would have had nothing left to give. Raised from 10% to 15% for
+  // hunts, where a bare Assassin was dying in fight two; 20% closed the last
+  // gap to the Berserker but spent too much of that budget.
+  evasion: 0.15,
 };
 
 export const WEAPONS: readonly Weapon[] = [GREATAXE, TWIN_DAGGERS];

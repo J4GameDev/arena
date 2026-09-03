@@ -61,7 +61,7 @@ export const STRANGE_BOAR: MonsterDefinition = {
 export const STRANGE_ELK: MonsterDefinition = {
   id: 'strange-elk',
   name: 'Strange Elk',
-  maxHealth: 220,
+  maxHealth: 200,
   // Barely swings. That is the whole point: Rage fills from damage aimed at
   // you, so an enemy that will not attack leaves the Berserker's meter empty
   // while the Assassin's Focus ramps freely off its own hits.
@@ -164,6 +164,9 @@ export const STRAYED_HUNTER: MonsterDefinition = {
   // this fight favor the greataxe.
   attack: { damage: 38, attacksPerSecond: 0.35, variance: 0.1 },
   critChance: 0.05,
+  // You cannot sidestep him. The one thing the Assassin relies on is the one
+  // thing this fight takes away; the Berserker, who never had it, is untouched.
+  unavoidable: true,
   defeat: 'dies',
   lineage: 'person',
   designRole:
