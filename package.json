@@ -17,10 +17,12 @@
     "fight": "node scripts/fight.ts",
     "balance": "node scripts/balance.ts",
     "outliers": "node scripts/outliers.ts",
-    "hunts": "node scripts/hunts.ts"
+    "hunts": "node scripts/hunts.ts",
+    "shot": "node scripts/shot.ts"
   },
   "devDependencies": {
     "@types/node": "^26.4.0",
+    "playwright": "^1.62.1",
     "prettier": "^3.9.6",
     "typescript": "~6.0.2",
     "vite": "^8.2.2",

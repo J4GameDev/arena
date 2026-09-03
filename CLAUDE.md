@@ -151,7 +151,8 @@ src/
   view/    Presentation. All DOM and CSS, including the battle scene.
   state/   Run state, persistence, save/load.
 tests/     Vitest. Primarily targets sim/.
-scripts/   Balance harness, hunt harness, outlier hunter, single-fight runner.
+scripts/   Balance harness, hunt harness, outlier hunter, single-fight runner, screenshot tool.
+content/   Screenshots for posts, made by `npm run shot`. Not committed.
 public/    Static assets served as-is. Sprites live in public/sprites/.
 ```
 
@@ -286,7 +287,7 @@ Good ideas that are not v0.1. Written down so they stop taking up room.
 
 **The loop is the one the owner asked for.** Pick a weapon, spar with Oswald and take his pack, pick how far to go, go out, meet what the forest sends, eat when it goes badly, come home with hide and meat, cook, craft, go again. Progress saves to the browser. The old "pick an enemy" loop is gone.
 
-**Built and tested — 77 tests:** the combat simulation (attack-speed timeline, Rage and Focus, crit on both sides, block, evasion, lifesteal, initiative, resource retention, several monsters at once), hunts (encounter tables, ambushes, carried health, rations, the fall tax), two archetypes both reachable in game, nine monsters (a teacher, four band-one animals, two bandits, a gate), eight equipment slots, 19 affix kinds, weighted and tilted rolls, crafting, the cookfire, the Hunter's Pack, run state and saving, the fight view with several foes, ten sprites, seven slot icons, and two scenes. Four harnesses: `npm run fight`, `npm run balance`, `npm run hunts`, `npm run outliers`.
+**Built and tested — 77 tests:** the combat simulation (attack-speed timeline, Rage and Focus, crit on both sides, block, evasion, lifesteal, initiative, resource retention, several monsters at once), hunts (encounter tables, ambushes, carried health, rations, the fall tax), two archetypes both reachable in game, nine monsters (a teacher, four band-one animals, two bandits, a gate), eight equipment slots, 19 affix kinds, weighted and tilted rolls, crafting, the cookfire, the Hunter's Pack, run state and saving, the fight view with several foes, ten sprites, seven slot icons, and two scenes. Four harnesses: `npm run fight`, `npm run balance`, `npm run hunts`, `npm run outliers`. And one content tool: `npm run shot` drives a headless Chromium against the live build, hunts until the fight you name comes up, freezes it a few blows in and saves the scene — every build is a shareable picture as well as a link.
 
 **Hunts, measured.** `npm run hunts` — 400 hunts per cell bare, 30 crafted sets of five tanner pieces plus three trinkets, everyone carrying six rations. "Home" is the share of hunts that get back to the walls. Read p90 for crafted, as ever.
 

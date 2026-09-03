@@ -22,3 +22,6 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Screenshots and clips for posts. Made on demand with npm run shot; not part of the build.
+content/
