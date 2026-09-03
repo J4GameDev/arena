@@ -274,11 +274,11 @@ export function start(mount: HTMLElement): void {
           <p class="speaker-name">Who you are</p>
           <div class="choices">
             <button class="choice body-choice" data-sex="male" type="button">
-              <img class="portrait" src="${heroSpriteFor('greataxe', 'male')}" alt="" onerror="this.remove()" />
+              <img class="portrait" src="${spriteFor('base-male')}" alt="" onerror="this.remove()" />
               <span class="choice-name">A man</span>
             </button>
             <button class="choice body-choice" data-sex="female" type="button">
-              <img class="portrait" src="${heroSpriteFor('greataxe', 'female')}" alt="" onerror="this.remove()" />
+              <img class="portrait" src="${spriteFor('base-female')}" alt="" onerror="this.remove()" />
               <span class="choice-name">A woman</span>
             </button>
           </div>
