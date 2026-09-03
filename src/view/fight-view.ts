@@ -207,8 +207,7 @@ function sideMarkup(kind: 'hero' | 'foe', combatant: Combatant, figure: Figure):
           src="${escape(figure.sprite)}"
           style="--canvas-meters: ${figure.canvasMeters}"
           alt=""
-          data-fallback="${escape(figure.fallback ?? '')}"
-          onerror="if (this.dataset.fallback) { this.src = this.dataset.fallback; this.dataset.fallback = ''; } else { this.remove(); }"
+          onerror="this.remove()"
         />
         <div class="floaters"></div>
       </div>

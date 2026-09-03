@@ -5,11 +5,7 @@
 /** Sprites live in public/sprites and are looked up by id. */
 export const spriteFor = (id: string): string => `/sprites/${id}.png`;
 
-/**
- * The hero's sprite: one per class and body, `greataxe-female.png`. Until a
- * body's sprite exists the view falls back to the class's old sprite, so a
- * missing picture never leaves the field empty.
- */
+/** The hero's sprite: one per class and body, `greataxe-female.png`. */
 export const heroSpriteFor = (weaponId: string, sex: string): string =>
   `/sprites/${weaponId}-${sex}.png`;
 
@@ -90,8 +86,6 @@ const UNMEASURED: FigureHeight = { meters: 1.8, figurePx: 56 };
 export interface Figure {
   readonly sprite: string;
   readonly canvasMeters: number;
-  /** Shown instead if `sprite` is missing. The class's old picture, for the hero. */
-  readonly fallback?: string;
 }
 
 export function figureFor(id: string): Figure {
@@ -106,6 +100,5 @@ export function heroFigureFor(weaponId: string, sex: string): Figure {
   return {
     sprite: heroSpriteFor(weaponId, sex),
     canvasMeters: (height.meters * 64) / figurePx,
-    fallback: spriteFor(weaponId),
   };
 }

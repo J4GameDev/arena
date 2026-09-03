@@ -241,7 +241,7 @@ export function start(mount: HTMLElement): void {
     const packNow = area === THE_YARD && hunt.survived && !run.packGiven;
     if (packNow) next = grantHuntersPack(next);
 
-    stage.append(outcome(hunt, you.name, packNow));
+    stage.append(outcome(hunt, you.name, packNow, run.sex));
     stage.querySelector('.continue')?.addEventListener('click', () => {
       busy = false;
       // Coming home with a haul, the natural next look is at what you can make.
@@ -385,7 +385,7 @@ export function start(mount: HTMLElement): void {
 
     mount.innerHTML = `
       <header class="top hero-bar">
-        <img class="portrait" src="${heroSpriteFor(run.weaponId, run.sex)}" alt="" onerror="this.onerror=null;this.src='${spriteFor(run.weaponId)}'" />
+        <img class="portrait" src="${heroSpriteFor(run.weaponId, run.sex)}" alt="" onerror="this.remove()" />
         <div class="hero-words">
           <h1>The Bastion</h1>
           <p class="sub">${escape(weapon.name)} · ${escape(weapon.archetype)}</p>
@@ -529,7 +529,7 @@ function gearCell(cell: GearCell, run: RunState, open: boolean): string {
     const weapon = WEAPONS.find((candidate) => candidate.id === run.weaponId);
     return `
       <button class="cell filled ${open ? 'open' : ''}" data-cell="weapon" type="button" style="grid-area: weapon">
-        ${icon(spriteFor(run.weaponId))}
+        ${icon(heroSpriteFor(run.weaponId, run.sex))}
         <span class="cell-label">Weapon</span>
         <span class="cell-name">${escape(weapon?.name ?? '')}</span>
       </button>
@@ -566,7 +566,7 @@ function picker(cell: GearCell, run: RunState): string {
           ${run.ownedWeaponIds
             .map((id) => WEAPONS.find((candidate) => candidate.id === id))
             .filter((weapon): weapon is Weapon => weapon !== undefined)
-            .map((weapon) => weaponCard(weapon, weapon.id === run.weaponId))
+            .map((weapon) => weaponCard(weapon, weapon.id === run.weaponId, run.sex))
             .join('')}
         </div>
         ${run.ownedWeaponIds.length === 1 ? '<p class="aside">Other weapons have to be taken off someone.</p>' : ''}
@@ -597,11 +597,11 @@ function picker(cell: GearCell, run: RunState): string {
   `;
 }
 
-function weaponCard(weapon: Weapon, inHand: boolean): string {
+function weaponCard(weapon: Weapon, inHand: boolean, sex: Sex): string {
   return `
     <div class="item ${inHand ? 'in-hand' : ''}">
       <div class="item-head">
-        ${icon(spriteFor(weapon.id))}
+        ${icon(heroSpriteFor(weapon.id, sex))}
         <div>
           <p class="item-name">${escape(weapon.name)}</p>
           <p class="slot-name">${escape(weapon.archetype)}</p>
@@ -780,7 +780,7 @@ function inventoryTab(run: RunState): string {
 
 // --- Coming home ---
 
-function outcome(hunt: HuntResult, heroName: string, packGiven: boolean): HTMLElement {
+function outcome(hunt: HuntResult, heroName: string, packGiven: boolean, sex: Sex): HTMLElement {
   const node = document.createElement('div');
   node.className = 'outcome';
 
@@ -821,7 +821,7 @@ function outcome(hunt: HuntResult, heroName: string, packGiven: boolean): HTMLEl
            </div>`
         : ''
     }
-    ${haulMarkup(hunt.kept)}
+    ${haulMarkup(hunt.kept, sex)}
     <button class="continue" type="button">Back to the bastion</button>
   `;
   return node;
@@ -838,7 +838,7 @@ function encounterLine(encounter: HuntResult['encounters'][number], heroName: st
   return `${who} — ${won ? (yielded ? 'yielded' : 'killed') : encounter.result.winner === null ? 'a standoff' : 'you fell'}`;
 }
 
-function haulMarkup(haul: Haul): string {
+function haulMarkup(haul: Haul, sex: Sex): string {
   const materials = Object.entries(haul.materials).filter(([, count]) => (count ?? 0) > 0);
   const weapons = haul.weaponIds
     .map((id) => WEAPONS.find((weapon) => weapon.id === id))
@@ -867,7 +867,7 @@ function haulMarkup(haul: Haul): string {
           (weapon) => `<div class="item found weapon">
              <p class="slot-name">Taken from the body</p>
              <div class="item-head">
-               ${icon(spriteFor(weapon.id))}
+               ${icon(heroSpriteFor(weapon.id, sex))}
                <p class="item-name">${escape(weapon.name)}</p>
              </div>
              <p class="pitch">${escape(weapon.pitch)}</p>
