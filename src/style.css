@@ -259,6 +259,10 @@ button.ghost:hover {
  * The scene is a 400x224 painting stretched to the panel. Figures stand on
  * its ground line, which every scene keeps in the lower third; nothing boxes
  * them in. Pixel art, so it scales without blur.
+ *
+ * The painting is a backdrop, not the subject, so it sits on its own layer
+ * pulled back by a quarter in brightness and colour. The figures on top keep
+ * their full colour and get an outline, and the eye goes to the fight.
  */
 .scene {
   /* Pixels per metre. Every figure is drawn to this one scale. */
@@ -267,9 +271,17 @@ button.ghost:hover {
   aspect-ratio: 400 / 224;
   border: 1px solid var(--ink-edge);
   background-color: var(--ink-raised);
+  overflow: hidden;
+}
+
+.scene::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: var(--scene);
   background-size: 100% 100%;
   image-rendering: pixelated;
-  overflow: hidden;
+  filter: brightness(0.75) saturate(0.7);
 }
 
 .side {
@@ -610,9 +622,16 @@ button.ghost:hover {
   filter: drop-shadow(0 3px 0 rgba(0, 0, 0, 0.45));
 }
 
-/* In a scene the pad does the grounding; the offset shadow would fight it. */
+/*
+ * In a scene the pad does the grounding, and the figure gets a dark outline
+ * one sprite-pixel wide instead of a drop shadow. Four hard-edged shadows,
+ * one per direction, each offset by exactly one of the sprite's own pixels
+ * at whatever size it is drawn.
+ */
 .scene .portrait {
-  filter: none;
+  --px: calc(var(--canvas-metres, 2) * var(--ppm) / 64 * 1px);
+  filter: drop-shadow(var(--px) 0 0 var(--ink)) drop-shadow(calc(-1 * var(--px)) 0 0 var(--ink))
+    drop-shadow(0 var(--px) 0 var(--ink)) drop-shadow(0 calc(-1 * var(--px)) 0 var(--ink));
 }
 
 /* The whole 64px canvas stands for --canvas-metres of world; see view/art.ts. */

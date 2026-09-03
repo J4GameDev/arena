@@ -46,7 +46,7 @@ export function playFight(
 ): Promise<void> {
   mount.innerHTML = `
     <div class="fight">
-      <div class="scene" style="background-image: url('${escape(art.scene)}')">
+      <div class="scene" style="--scene: url('${escape(art.scene)}')">
         ${sideMarkup('hero', hero, art.hero)}
         ${sideMarkup('foe', monster, art.foe)}
       </div>
