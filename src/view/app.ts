@@ -103,7 +103,7 @@ const THE_ROAD_OUT = chosenFight(
 type IntroStep = 'title' | 'story' | 'choice';
 
 const STORY: readonly string[] = [
-  'You were born inside this wall. Split logs, taller than two men. As a child you counted them; there are four hundred and twelve. This morning, for the first time, the gate is open for you.',
+  'You were born inside this wall. Split logs, taller than two men, older than anyone who remembers them going up. You have never been past it. This morning, for the first time, the gate is open for you.',
   'The town smells the way it always has: woodsmoke, wet hide, somebody boiling bones. The same faces at the same doors. A few of them look at you differently today. A few look away.',
   'Past the wall the woods are still green. The elk still come down to the river at dusk. The hunters say that lately some of them look up when they hear you, and do not run. The hunters have been saying less, lately.',
   'Oswald taught you to set a snare when you were eight, and to keep quiet about it. He has been waiting by the rack since before you were up.',
@@ -290,7 +290,7 @@ export function start(mount: HTMLElement): void {
           <div>
             <p class="speaker-name">Oswald</p>
             <p class="speech">He looks the way he always has: gray in the beard, the scar through one eyebrow, hands that never seem to be doing nothing. Today he looks at you a little longer than usual.</p>
-            <p class="speech quote">${escape(`"Of age, then. Half this town told you not to. They told me the same about you, and I said what I always say: better you learn it from me than from the woods." He nods at the rack. "Pick one. Whichever feels like yours. That's the one you'll be carrying from here on, so don't be quick about it. Then come out to the yard and show me what I taught you."`)}</p>
+            <p class="speech quote">${escape(`"So. Today." He does not look up from the snare he is mending. "Plenty of people told you not to. I know, because they told me too. I'll tell you what I told them: better you learn this from me than from the woods." He nods at the rack. "Pick one. Whichever sits right in your hands. You'll carry it from here on, so take your time. Then meet me in the yard and show me what I taught you."`)}</p>
           </div>
         </div>
         <div class="choices">
