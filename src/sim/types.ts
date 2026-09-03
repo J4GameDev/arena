@@ -23,7 +23,7 @@ export type Lineage = 'animal' | 'person';
 export type MaterialId = 'boar-hide' | 'wolf-pelt' | 'elk-hide' | 'bear-hide';
 
 /** Which resource engine a weapon runs on. The weapon is the class. */
-export type ResourceKind = 'rage' | 'focus';
+export type ResourceKind = 'rage' | 'focus' | 'resolve' | 'snare' | 'mana';
 
 /**
  * Equipment positions. The weapon is not one of these — it sets the archetype
@@ -112,10 +112,16 @@ export interface Item {
  */
 export interface ResourceRule {
   readonly kind: ResourceKind;
-  /** Resource gained per point of damage taken. Rage lives here. */
+  /** Per point of damage *swung at you*, before your defences. Rage. */
   readonly gainPerDamageTaken: number;
-  /** Resource gained per landed hit, regardless of damage. Focus lives here. */
+  /** Per hit you land, regardless of damage. Focus. */
   readonly gainPerHitLanded: number;
+  /** Per blow you take or block, counted, not weighed. Resolve. */
+  readonly gainPerHitTaken: number;
+  /** Per second of the fight clock, whoever is swinging. Snare. */
+  readonly gainPerSecond: number;
+  /** Per point of health you actually lose, after your defences. Mana. */
+  readonly gainPerHealthLost: number;
 }
 
 export interface ResourceState {
@@ -136,6 +142,13 @@ export interface ResourceState {
    * before the payoff, then resets to fragile. 0 for archetypes without it.
    */
   readonly maxDamageReduction: number;
+  /**
+   * Seconds the payoff pushes the target's next swing back. 0 for payoffs
+   * that only hit harder. The Ranger's trap lives here: it works on any
+   * swing, the gate's heavy blow included, because a snare does not care
+   * how hard the thing in it was going to hit.
+   */
+  readonly snareSeconds: number;
 }
 
 export interface AttackProfile {
@@ -170,6 +183,12 @@ export interface Weapon {
    * reliable but partial. 0 for archetypes that stand and take it.
    */
   readonly evasion: number;
+  /** Baseline block chance. The shield. 0 for everyone without one. */
+  readonly blockChance: number;
+  /** Baseline initiative: a fraction of the first swing already wound up. */
+  readonly initiative: number;
+  /** See ResourceState.snareSeconds. 0 for payoffs that only hit harder. */
+  readonly snareSeconds: number;
 }
 
 export interface MonsterDefinition {
@@ -298,6 +317,8 @@ export type CombatEvent =
       readonly blocked: boolean;
       /** A heavy blow: could not have been evaded. */
       readonly unavoidable: boolean;
+      /** The defender's next swing was pushed back. The Ranger's trap. */
+      readonly snared: boolean;
       /** Health the attacker drained back. 0 without lifesteal. */
       readonly healed: number;
       readonly defenderHealth: number;

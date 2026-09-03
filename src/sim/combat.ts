@@ -61,6 +61,7 @@ export function runFight(
   const standing = (): Combatant[] => monsters.filter((monster) => monster.health > 0);
 
   let clock = 0;
+  let previous = 0;
   while (hero.health > 0 && standing().length > 0 && clock < FIGHT_TIMEOUT_SECONDS) {
     // Whoever is due first swings. Ties go to the hero, then to monsters in
     // the order they arrived. Arbitrary, but fixed — a coin flip here would
@@ -74,6 +75,16 @@ export function runFight(
     if (target === undefined) break;
 
     clock = attacker.nextAttackAt;
+
+    // A meter that fills with time fills between swings, whoever's they are.
+    gainResource(
+      hero,
+      (hero.resource?.rule.gainPerSecond ?? 0) * Math.max(0, clock - previous),
+      clock,
+      events,
+    );
+    previous = clock;
+
     resolveAttack(attacker, target, clock, rng, events);
     attacker.nextAttackAt = clock + secondsPerAttack(attacker);
   }
@@ -146,6 +157,11 @@ function resolveAttack(
 
   defender.health = Math.max(0, defender.health - dealt);
 
+  // The trap springs on the payoff: whatever the target was about to do, it
+  // does later. Works on a heavy blow too — the snare does not care.
+  const snared = empowered && resource !== null && resource.snareSeconds > 0;
+  if (snared && resource !== null) defender.nextAttackAt += resource.snareSeconds;
+
   const healed =
     attacker.lifesteal > 0
       ? Math.min(Math.round(dealt * attacker.lifesteal), attacker.maxHealth - attacker.health)
@@ -163,6 +179,7 @@ function resolveAttack(
     critical,
     blocked,
     unavoidable,
+    snared,
     healed,
     defenderHealth: defender.health,
     defenderMaxHealth: defender.maxHealth,
@@ -177,6 +194,9 @@ function resolveAttack(
   // filled Rage at all. Rage answers what is coming at you, not how much it hurt.
   gainResource(attacker, attacker.resource?.rule.gainPerHitLanded ?? 0, at, events);
   gainResource(defender, (defender.resource?.rule.gainPerDamageTaken ?? 0) * rawDamage, at, events);
+  // Resolve counts the blow; Mana weighs what actually got through.
+  gainResource(defender, defender.resource?.rule.gainPerHitTaken ?? 0, at, events);
+  gainResource(defender, (defender.resource?.rule.gainPerHealthLost ?? 0) * dealt, at, events);
 
   if (defender.health <= 0) {
     events.push({ type: 'defeat', at, who: defender.name, style: defender.defeat });

@@ -24,13 +24,13 @@ export function createHero(name: string, weapon: Weapon, items: readonly Item[] 
     evasion: weapon.evasion,
     flatDamageReduction: 0,
     percentDamageReduction: 0,
-    blockChance: 0,
+    blockChance: weapon.blockChance,
     critResistance: 0,
 
     critChance: 0,
     critMultiplier: BASE_CRIT_MULTIPLIER,
     lifesteal: 0,
-    initiative: 0,
+    initiative: weapon.initiative,
     heavyBlowEvery: 0,
     swings: 0,
 
@@ -43,6 +43,7 @@ export function createHero(name: string, weapon: Weapon, items: readonly Item[] 
       empowerMultiplier: weapon.empowerMultiplier,
       maxDamageReduction: weapon.maxDamageReduction,
       retention: 0,
+      snareSeconds: weapon.snareSeconds,
     },
     nextAttackAt: 0,
   };

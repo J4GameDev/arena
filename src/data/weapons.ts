@@ -1,5 +1,5 @@
 import type { Weapon } from '../sim/types.ts';
-import { FOCUS, RAGE } from './resources.ts';
+import { FOCUS, MANA, RAGE, RESOLVE, SNARE } from './resources.ts';
 
 /**
  * A weapon is an archetype, not a stat stick. Picking up a different weapon
@@ -27,6 +27,9 @@ export const GREATAXE: Weapon = {
   // what stops a full meter from being wasted by the greataxe's slow swing.
   maxDamageReduction: 0.4,
   evasion: 0, // the Berserker stands and takes it
+  blockChance: 0,
+  initiative: 0,
+  snareSeconds: 0,
 };
 
 export const TWIN_DAGGERS: Weapon = {
@@ -55,6 +58,82 @@ export const TWIN_DAGGERS: Weapon = {
   // hunts, where a bare Assassin was dying in fight two; 20% closed the last
   // gap to the Berserker but spent too much of that budget.
   evasion: 0.15,
+  blockChance: 0,
+  initiative: 0,
+  snareSeconds: 0,
 };
 
-export const WEAPONS: readonly Weapon[] = [GREATAXE, TWIN_DAGGERS];
+export const SWORD_AND_SHIELD: Weapon = {
+  id: 'sword-and-shield',
+  name: 'Sword and Shield',
+  archetype: 'Warden',
+  baseHealth: 100,
+  pitch:
+    'A short sword and a round shield. Resolve fills from every blow you take or turn ' +
+    'aside, and spends on a shield bash. You are at your best when something is hitting ' +
+    'you often, and at your worst when nothing is.',
+  // Middling everything, plus the shield. The sword is not the point.
+  attack: { damage: 12, attacksPerSecond: 1.0, variance: 0.15 },
+  resource: RESOLVE,
+  threshold: 6, // six blows taken or blocked
+  empowerMultiplier: 2.5,
+  maxDamageReduction: 0,
+  evasion: 0,
+  // The shield: a blow in three lands soft. Reliable and partial, like Rage's
+  // reduction, but present from the first swing rather than earned.
+  blockChance: 0.3,
+  initiative: 0,
+  snareSeconds: 0,
+};
+
+export const SHORT_BOW: Weapon = {
+  id: 'short-bow',
+  name: 'Short Bow',
+  archetype: 'Ranger',
+  baseHealth: 100,
+  pitch:
+    'A bow, and the snares Oswald taught you. The trap sets itself while you fight, ' +
+    'whoever is swinging, and the next arrow springs it: the thing in front of you loses ' +
+    'its next swing. Slow to matter in a short fight. Decisive in a long one.',
+  // Starts at range, so the first arrow is already nocked when the fight begins.
+  attack: { damage: 9, attacksPerSecond: 1.2, variance: 0.2 },
+  resource: SNARE,
+  threshold: 60, // six seconds
+  empowerMultiplier: 1.5,
+  maxDamageReduction: 0,
+  evasion: 0,
+  blockChance: 0,
+  initiative: 0.5,
+  // The whole payoff. A snared enemy's next swing comes three seconds late,
+  // which is two free arrows against most things and one whole missed heavy
+  // blow against the gate.
+  snareSeconds: 3,
+};
+
+export const STAFF: Weapon = {
+  id: 'staff',
+  name: 'Crystal Staff',
+  archetype: 'Warlock',
+  baseHealth: 100,
+  pitch:
+    'A staff with something wrong set into the head of it. The crystal drinks the health ' +
+    'you lose and gives it back as a burst that hits like nothing else in your hands. You ' +
+    'are strongest when you are hurt, and the staff would like you hurt.',
+  attack: { damage: 10, attacksPerSecond: 0.9, variance: 0.25 },
+  resource: MANA,
+  threshold: 60, // forty health actually lost
+  empowerMultiplier: 3.0,
+  maxDamageReduction: 0,
+  evasion: 0,
+  blockChance: 0,
+  initiative: 0,
+  snareSeconds: 0,
+};
+
+export const WEAPONS: readonly Weapon[] = [
+  GREATAXE,
+  TWIN_DAGGERS,
+  SWORD_AND_SHIELD,
+  SHORT_BOW,
+  STAFF,
+];

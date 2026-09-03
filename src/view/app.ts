@@ -311,7 +311,7 @@ export function start(mount: HTMLElement): void {
     mount.innerHTML = `
       <section class="rack">
         <p class="speaker-name">The rack</p>
-        <p class="speech">Two things on it worth taking. Everything else is snares and rope.</p>
+        <p class="speech">Five things on it worth taking. Everything else is rope.</p>
         <div class="choices">
           ${WEAPONS.map(
             (weapon) => `

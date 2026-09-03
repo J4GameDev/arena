@@ -483,6 +483,12 @@ button.ghost:hover {
   color: var(--moss);
 }
 
+.floater.snared {
+  color: var(--moss);
+  font-size: 1rem;
+  font-style: italic;
+}
+
 @keyframes rise {
   from {
     opacity: 1;

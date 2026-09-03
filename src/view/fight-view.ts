@@ -138,6 +138,7 @@ function apply(event: CombatEvent, sides: Map<string, Side>, log: HTMLOListEleme
           event.blocked ? 'blocked' : null,
         ].filter((tag) => tag !== null);
         float(defender, `-${event.damage}`, tags);
+        if (event.snared) float(defender, 'snared', ['snared']);
       }
 
       const attacker = sides.get(event.attacker);
@@ -145,15 +146,17 @@ function apply(event: CombatEvent, sides: Map<string, Side>, log: HTMLOListEleme
         float(attacker, `+${event.healed}`, ['heal']);
       }
 
-      const flourish = event.empowered
-        ? ' — unleashed'
-        : event.critical
-          ? ' — a lucky blow'
-          : event.blocked
-            ? ' — turned aside'
-            : event.unavoidable
-              ? ' — nowhere to go'
-              : '';
+      const flourish = event.snared
+        ? ' — and the trap springs'
+        : event.empowered
+          ? ' — unleashed'
+          : event.critical
+            ? ' — a lucky blow'
+            : event.blocked
+              ? ' — turned aside'
+              : event.unavoidable
+                ? ' — nowhere to go'
+                : '';
       write(log, `${event.attacker} hits ${event.defender} for ${event.damage}${flourish}`);
       break;
     }

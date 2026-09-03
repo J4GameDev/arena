@@ -32,6 +32,7 @@ function formatEvent(event: CombatEvent): string {
         event.critical ? 'CRIT' : null,
         event.blocked ? 'BLOCKED' : null,
         event.unavoidable ? 'HEAVY' : null,
+        event.snared ? 'SNARED' : null,
       ].filter((tag) => tag !== null);
 
       const banner = tags.length > 0 ? `${tags.join(' ')} ` : '';

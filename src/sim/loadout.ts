@@ -65,6 +65,9 @@ export function equip(base: Combatant, items: readonly Item[]): Combatant {
               gainPerDamageTaken:
                 base.resource.rule.gainPerDamageTaken * (1 + total('resourceGain')),
               gainPerHitLanded: base.resource.rule.gainPerHitLanded * (1 + total('resourceGain')),
+              gainPerHitTaken: base.resource.rule.gainPerHitTaken * (1 + total('resourceGain')),
+              gainPerSecond: base.resource.rule.gainPerSecond * (1 + total('resourceGain')),
+              gainPerHealthLost: base.resource.rule.gainPerHealthLost * (1 + total('resourceGain')),
             },
             threshold: Math.max(
               1,
