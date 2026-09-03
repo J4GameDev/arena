@@ -265,8 +265,15 @@ button.ghost:hover {
  * their full color and get an outline, and the eye goes to the fight.
  */
 .scene {
-  /* Pixels per metre. Every figure is drawn to this one scale. */
-  --ppm: 60;
+  /*
+   * Pixels per meter, as a share of the scene's own width so the figures grow
+   * and shrink with the painting. At a 530px-wide scene this is the 60px per
+   * meter the look was judged at; in a full browser window the scene is
+   * nearly twice as wide and the figures follow. Drawn at a fixed pixel size
+   * they looked right in a narrow pane and tiny in a wide one.
+   */
+  container-type: inline-size;
+  --ppm: 11.25cqw;
   position: relative;
   aspect-ratio: 400 / 224;
   border: 1px solid var(--ink-edge);
@@ -361,9 +368,9 @@ button.ghost:hover {
   content: '';
   position: absolute;
   left: 50%;
-  bottom: calc(var(--canvas-meters, 2) * var(--ppm) * -0.04px);
-  width: calc(var(--canvas-meters, 2) * var(--ppm) * 0.85px);
-  height: calc(var(--canvas-meters, 2) * var(--ppm) * 0.2px);
+  bottom: calc(var(--canvas-meters, 2) * var(--ppm) * -0.04);
+  width: calc(var(--canvas-meters, 2) * var(--ppm) * 0.85);
+  height: calc(var(--canvas-meters, 2) * var(--ppm) * 0.2);
   transform: translateX(-50%);
   border-radius: 50%;
   background: radial-gradient(
@@ -544,10 +551,6 @@ button.ghost:hover {
 }
 
 @media (max-width: 34rem) {
-  .scene {
-    --ppm: 38;
-  }
-
   .side-name {
     font-size: 0.95rem;
   }
@@ -664,15 +667,15 @@ button.ghost:hover {
  * at whatever size it is drawn.
  */
 .scene .portrait {
-  --px: calc(var(--canvas-meters, 2) * var(--ppm) / 64 * 1px);
+  --px: calc(var(--canvas-meters, 2) * var(--ppm) / 64);
   filter: drop-shadow(var(--px) 0 0 var(--ink)) drop-shadow(calc(-1 * var(--px)) 0 0 var(--ink))
     drop-shadow(0 var(--px) 0 var(--ink)) drop-shadow(0 calc(-1 * var(--px)) 0 var(--ink));
 }
 
 /* The whole 64px canvas stands for --canvas-meters of world; see view/art.ts. */
 .scene .portrait {
-  width: calc(var(--canvas-meters, 2) * var(--ppm) * 1px);
-  height: calc(var(--canvas-meters, 2) * var(--ppm) * 1px);
+  width: calc(var(--canvas-meters, 2) * var(--ppm));
+  height: calc(var(--canvas-meters, 2) * var(--ppm));
 }
 
 .portrait.large {
