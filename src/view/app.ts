@@ -89,17 +89,21 @@ const THE_ROAD_OUT = chosenFight(
 );
 
 /**
- * The opening, before there is a run to save: a title, a few lines about the
- * world, and Oswald handing over the choice. Sparse on purpose — the world
- * explains itself through what the player finds, or it does not explain
- * itself. Nothing here is a speech.
+ * The opening, before there is a run to save: a title, a short walk in
+ * through the gate, and Oswald handing over the choice.
+ *
+ * It is a scene, not a briefing. The player arrives somewhere and is shown
+ * it — the wall, the smell of the place, the woods, the man walking over —
+ * and is told nothing the world cannot show them later. Nobody explains
+ * the corruption. Somebody boils bones. Nothing here is a speech.
  */
 type IntroStep = 'title' | 'story' | 'choice';
 
 const STORY: readonly string[] = [
-  'Something has been leaking into the world for a long time. Nobody has seen it. Nobody has to.',
-  'Far from it the land is still green and the animals are still animals. Nearer, they stop being. This town is one of the last with a wall between the two.',
-  'You are a hunter. You go out, you bring back what the town needs, and you come back before the road goes wrong. That is the whole job.',
+  'The road ends at a wall of split logs, taller than two men. The gate is already closing behind you. Nobody asks where you came from. Out here that is a kindness.',
+  'Inside, the town smells of woodsmoke and wet hide. Somebody is boiling bones. Chickens. A child watching you from a doorway until a hand pulls her back in.',
+  'Past the wall the woods are still green. The elk still come down to the river at dusk. It is only that lately, some of them look up when they hear you, and do not run.',
+  'There are hunters here. Fewer every season. One of them has noticed you, and is walking over.',
 ];
 
 /** The camp is one screen with four tabs. Nothing is on display that was not asked for. */
@@ -238,7 +242,7 @@ export function start(mount: HTMLElement): void {
       mount.innerHTML = `
         <section class="title-screen">
           <h1 class="title">Farther</h1>
-          <p class="tagline">Out past the walls, and back before dark.</p>
+          <p class="tagline">There is still green out there. Bring some of it home.</p>
           <button class="begin" data-begin type="button">Begin</button>
         </section>
       `;
@@ -282,8 +286,8 @@ export function start(mount: HTMLElement): void {
           <img class="portrait" src="${spriteFor(OSWALD.id)}" alt="" onerror="this.remove()" />
           <div>
             <p class="speaker-name">Oswald</p>
-            <p class="speech">An old hunter looks you over, and does not seem impressed or unimpressed.</p>
-            <p class="speech quote">${escape(`"You'll want something in your hands before you go out there. Take one. You won't get to choose twice. Then we'll see what you can do with it."`)}</p>
+            <p class="speech">He is older than you expected and has both his hands, which is rarer here than it should be. He looks at you the way he would look at weather.</p>
+            <p class="speech quote">${escape(`"Oswald. You'll do. We need hands more than we need names. Take one of these, whichever sits right. You won't get to choose twice. Then come out to the yard and show me you can swing it."`)}</p>
           </div>
         </div>
         <div class="choices">
@@ -296,7 +300,7 @@ export function start(mount: HTMLElement): void {
             </button>`,
           ).join('')}
         </div>
-        <p class="aside">Anything else you carry, you will have to make or find out there.</p>
+        <p class="aside">Whatever else you end up carrying, you will have made it, or taken it off someone.</p>
       </section>
     `;
 
