@@ -87,11 +87,15 @@ When designing any creature, first decide its band, then work outward from a rea
 
 **Band one is named "Strange"** — Strange Boar, Strange Elk. It says something is off without saying what. "Turned" was tried and rejected: it reads as undead, which over-commits the fiction before the player has seen anything.
 
-**Palette.** Muted and natural near the bastion. As distance grows, colour goes wrong before shape does — a hue that does not occur in nature, arriving before the anatomy breaks.
+**Palette.** Band one is still a living place: daylight, green, a town that works. A hunter's job is bringing resources back, and if everything out there were already wrong there would be nothing safe to gather. So the creatures go strange before the land does — the environment near the walls stays natural and even bright, and bleakness is earned further out. As distance grows, colour goes wrong before shape does — a hue that does not occur in nature, arriving before the anatomy breaks.
 
 **Sprites live in `public/sprites/<id>.png`**, looked up by id — `oswald.png` for a monster, `greataxe.png` for the hero wielding that weapon. 64x64, transparent, rendered at 96-128px with `image-rendering: pixelated`. A missing sprite removes itself rather than showing a broken image, so content can land before its art does.
 
 Sprite paths are passed _into_ the view, never stored on a Combatant. The simulation has no idea art exists and should keep it that way.
+
+**Scenes live in `public/scenes/<name>.png`**, 400x224, stretched to fill the fight panel. Every scene keeps its ground line in the lower third, because the figures stand on it: there is no card around a combatant, just the sprite in the place with its name and bars hanging above. `bastion.png` is a sunlit timber street inside the walls, for the spar; `forest-edge.png` is a meadow path into mixed woodland, for everything in band one. The view picks by defeat style. Two earlier scenes were rejected on sight — a dusk treeline as too bleak for a safe band, and a training yard as the wrong place for Oswald — so a scene has to be judged by what came back, same as a sprite.
+
+**Item icons live in `public/icons/<slot>.png`**, 32x32, one per slot. Every item in a slot shares a name, so it shares a picture. Weapons reuse their sprites.
 
 **64 pixels cannot carry a subtle detail.** A clouded eye, a missing ear, a patch of discoloured fur — each is one or two pixels at this size and the model mostly ignores them. What actually rendered on the first band-one animals was red eyes. Either the wrongness has to be large enough to read at 64px (a whole limb, a silhouette that is off, a colour that dominates) or the sprite has to be bigger. Do not describe a sprite by its prompt; describe it by what came back.
 
@@ -255,7 +259,7 @@ Good ideas that are not v0.1. Written down so they stop taking up room.
 
 **The v0.1 scope is met, and it is not being called done.** Every item on the scope list exists. The owner's verdict: technically there, but a far cry from a point to celebrate — icons and better art come before the word "finished" gets used. Treat the state as _scope met, not shipped_. It is still worth a post, precisely because both halves are true.
 
-**Built and tested — 52 tests:** the combat simulation (attack-speed timeline, Rage and Focus, crit on both sides, block, evasion, lifesteal, initiative, resource retention), two archetypes both reachable in game, six monsters (a teacher, four band-one animals, a gate), eight equipment slots, 19 affix kinds, weighted affix pools and the item roller, run state and saving, the fight view, and eight sprites. Monster definitions can carry armour and evasion; the simulation already supported both, so exposing them was plumbing rather than mechanics. Three harnesses: `npm run fight`, `npm run balance`, `npm run outliers`.
+**Built and tested — 52 tests:** the combat simulation (attack-speed timeline, Rage and Focus, crit on both sides, block, evasion, lifesteal, initiative, resource retention), two archetypes both reachable in game, six monsters (a teacher, four band-one animals, a gate), eight equipment slots, 19 affix kinds, weighted affix pools and the item roller, run state and saving, the fight view, eight sprites, seven slot icons, and two scenes. Monster definitions can carry armour and evasion; the simulation already supported both, so exposing them was plumbing rather than mechanics. Three harnesses: `npm run fight`, `npm run balance`, `npm run outliers`.
 
 **Balance, against the gear the game actually drops.** `npm run balance` rolls real loadouts rather than equipping a fixed set, and reports geared results as a distribution. **Read p90, not the median** — a player keeps good drops and bins bad ones, so they converge on the top of the distribution. The median describes a loadout nobody keeps.
 
@@ -282,13 +286,13 @@ The gate target is p90 near 80%. Both archetypes are in the band, eight to nine 
 
 **Next, in order:**
 
-1. **Item icons and a fight background.** The pack is still text.
+1. **Animate attacks.** The figures now stand in the world; they should move in it. A lunge on the attacker and a flinch on the defender, driven off the attack events the view already reads, before anything more ambitious.
 2. **Band-one sprites that actually read as strange.** At 64px the one-detail wrongness did not render; what came back was normal animals with red eyes. Acceptable for now. When revisited: lead the prompt with a wrongness big enough to survive 64px, or use a larger canvas.
 
 **Known and deliberately unfixed:**
 
 - **Wasted Rage meters.** Against rolled gear, **3,577 of 3,766** geared Berserker losses to the boss — 95% — end holding a full meter. (An earlier 629-of-830 figure was measured against hand-authored gear that no longer exists.) Rage fills from a 38-damage boss swing in two hits, and the greataxe swings every 1.5 seconds, so you almost always die loaded. Now judgeable, since the UI shows the bar: decide whether it reads as a berserker dying mid-fury or as a payoff being stolen. If the latter, the levers are a higher Rage threshold or letting a full meter fire at once. **The owner is playtesting this himself before deciding. Do not propose fixes until he reports back.**
-- **No levels, no abilities, no item icons, no background art.** Items in the pack are still text.
+- **No levels, no abilities, no attack animation.** Figures stand still while numbers fly.
 
 ## Notes
 

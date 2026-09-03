@@ -37,7 +37,7 @@ const iconFor = (slot: Slot): string => `/icons/${slot}.png`;
  * that places exist.
  */
 const sceneFor = (definition: MonsterDefinition): string =>
-  `/scenes/${definition.defeat === 'yields' ? 'bastion-yard' : 'forest-edge'}.png`;
+  `/scenes/${definition.defeat === 'yields' ? 'bastion' : 'forest-edge'}.png`;
 
 /**
  * How often a corrupted kill yields a weapon you do not already have.

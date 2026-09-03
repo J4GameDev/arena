@@ -255,33 +255,55 @@ button.ghost:hover {
   gap: 1rem;
 }
 
-.combatants {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1.25rem;
-  padding: 1.25rem;
+/*
+ * The scene is a 400x224 painting stretched to the panel. Figures stand on
+ * its ground line, which every scene keeps in the lower third; nothing boxes
+ * them in. Pixel art, so it scales without blur.
+ */
+.scene {
+  position: relative;
+  aspect-ratio: 400 / 224;
   border: 1px solid var(--ink-edge);
-  /* The scene sits behind both cards. Pixel art, so it scales without blur. */
   background-color: var(--ink-raised);
-  background-size: cover;
-  background-position: center bottom;
+  background-size: 100% 100%;
   image-rendering: pixelated;
+  overflow: hidden;
 }
 
 .side {
-  position: relative;
-  border: 1px solid var(--ink-edge);
-  /* Translucent so the place shows through, opaque enough that numbers read. */
-  background: rgba(15, 13, 11, 0.78);
-  padding: 1rem;
+  position: absolute;
+  bottom: 9%;
+  width: 34%;
   display: grid;
-  gap: 0.4rem;
-  align-content: start;
-  transition: border-color 200ms ease;
+  justify-items: center;
+  gap: 0.5rem;
 }
 
-.side.charged {
-  border-color: var(--gold);
+.side.hero {
+  left: 8%;
+}
+
+.side.foe {
+  right: 8%;
+}
+
+/* Text sits straight on the painting, so it needs an edge to read against. */
+.plate {
+  width: 100%;
+  max-width: 13rem;
+  display: grid;
+  gap: 0.3rem;
+  text-shadow:
+    0 1px 0 rgba(0, 0, 0, 0.9),
+    0 0 4px rgba(0, 0, 0, 0.8);
+}
+
+.figure {
+  position: relative;
+}
+
+.side.charged .meter-text {
+  color: var(--gold);
 }
 
 .side.hurt .health .fill {
@@ -291,12 +313,13 @@ button.ghost:hover {
 .side-name {
   margin: 0;
   font-size: 1.1rem;
+  text-align: center;
 }
 
 .bar {
   height: 0.55rem;
-  background: #0b0908;
-  border: 1px solid var(--ink-edge);
+  background: rgba(11, 9, 8, 0.85);
+  border: 1px solid rgba(0, 0, 0, 0.7);
   overflow: hidden;
 }
 
@@ -324,8 +347,9 @@ button.ghost:hover {
 .meter-text {
   margin: 0;
   font-size: 0.8rem;
-  color: var(--bone-faint);
+  color: var(--bone-dim);
   font-variant-numeric: tabular-nums;
+  text-align: center;
 }
 
 /* --- Floating numbers --- */
@@ -339,8 +363,8 @@ button.ghost:hover {
 
 .floater {
   position: absolute;
-  top: 1.5rem;
-  right: 1rem;
+  top: 0;
+  right: 0;
   font-size: 1.3rem;
   font-weight: 600;
   color: var(--bone);
@@ -442,8 +466,13 @@ button.ghost:hover {
 }
 
 @media (max-width: 34rem) {
-  .combatants {
-    grid-template-columns: 1fr;
+  .scene .portrait {
+    width: 80px;
+    height: 80px;
+  }
+
+  .side-name {
+    font-size: 0.95rem;
   }
 }
 
@@ -549,6 +578,11 @@ button.ghost:hover {
   justify-self: center;
   /* Grounds the figure so it does not float against a flat panel. */
   filter: drop-shadow(0 3px 0 rgba(0, 0, 0, 0.45));
+}
+
+.scene .portrait {
+  width: 128px;
+  height: 128px;
 }
 
 .portrait.large {

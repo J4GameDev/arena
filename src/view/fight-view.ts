@@ -45,7 +45,7 @@ export function playFight(
 ): Promise<void> {
   mount.innerHTML = `
     <div class="fight">
-      <div class="combatants" style="background-image: url('${escape(art.scene)}')">
+      <div class="scene" style="background-image: url('${escape(art.scene)}')">
         ${sideMarkup('hero', hero, art.hero)}
         ${sideMarkup('foe', monster, art.foe)}
       </div>
@@ -162,14 +162,19 @@ function sideMarkup(kind: 'hero' | 'foe', combatant: Combatant, sprite: string):
       : `<div class="bar meter"><span class="fill"></span></div>
          <p class="meter-text"></p>`;
 
+  // No card. The figure stands in the scene; its name and bars hang above it.
   return `
     <div class="side ${kind}">
-      <img class="portrait" src="${escape(sprite)}" alt="" onerror="this.remove()" />
-      <p class="side-name">${escape(combatant.name)}</p>
-      <div class="bar health"><span class="fill"></span></div>
-      <p class="health-text">${combatant.health}/${combatant.maxHealth}</p>
-      ${meter}
-      <div class="floaters"></div>
+      <div class="plate">
+        <p class="side-name">${escape(combatant.name)}</p>
+        <div class="bar health"><span class="fill"></span></div>
+        <p class="health-text">${combatant.health}/${combatant.maxHealth}</p>
+        ${meter}
+      </div>
+      <div class="figure">
+        <img class="portrait" src="${escape(sprite)}" alt="" onerror="this.remove()" />
+        <div class="floaters"></div>
+      </div>
     </div>
   `;
 }
