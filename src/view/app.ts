@@ -147,10 +147,10 @@ interface Spot {
 }
 
 const SPOTS: readonly Spot[] = [
-  { id: 'tanner', label: 'Tanner', x: 14, y: 62 },
-  { id: 'cookfire', label: 'Cookfire', x: 38, y: 74 },
-  { id: 'oswald', label: 'Oswald', x: 78, y: 66 },
-  { id: 'gate', label: 'Hunt', x: 55, y: 55 },
+  { id: 'tanner', label: 'Tanner', x: 13, y: 52 },
+  { id: 'cookfire', label: 'Cook', x: 40, y: 62 },
+  { id: 'oswald', label: 'Oswald', x: 84, y: 48 },
+  { id: 'gate', label: 'Hunt', x: 52, y: 40 },
 ];
 
 /**
@@ -426,7 +426,7 @@ export function start(mount: HTMLElement): void {
       </header>
 
       <section class="town" style="--scene: url('${sceneFor('town')}')">
-        <img class="townsfolk you" src="${heroSpriteFor(run.weaponId, run.sex)}" alt="" onerror="this.remove()" />
+        <img class="townsfolk oswald" src="${spriteFor('oswald-idle')}" alt="" onerror="this.remove()" />
         ${SPOTS.map(
           (
             spot,

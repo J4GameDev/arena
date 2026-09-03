@@ -1258,14 +1258,20 @@ button.ghost:hover {
   image-rendering: pixelated;
 }
 
-.town .townsfolk.you {
+.town .townsfolk {
   position: absolute;
-  left: 44%;
-  bottom: 6%;
-  width: 22%;
+  width: 18%;
   height: auto;
   image-rendering: pixelated;
   pointer-events: none;
+}
+
+/* Under the oak, by his rack, facing back into the square. */
+.town .townsfolk.oswald {
+  left: 74%;
+  bottom: 18%;
+  width: 15%;
+  transform: scaleX(-1);
 }
 
 .spot {
