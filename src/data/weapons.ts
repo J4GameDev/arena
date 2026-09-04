@@ -71,7 +71,7 @@ export const SWORD_AND_SHIELD: Weapon = {
   archetype: 'Warden',
   baseHealth: 100,
   pitch:
-    'The shield takes a tenth off every blow, no luck to it. Every blow you take fills ' +
+    'The shield takes a share off every blow, no luck to it. Every blow you take fills ' +
     'Resolve, and the fifth spends it on a bash that staggers your enemy for a second.',
   // The sword hits harder than it looks, because the shield is all the
   // defense there is. Measured against the gate: 12 damage gave a geared p90
@@ -89,10 +89,15 @@ export const SWORD_AND_SHIELD: Weapon = {
   // asked for a steady share off every blow instead. Measured, geared p90 at
   // the gate: 25% gave 98, 20% gave 96, 15% gave 91, 10% gave 84 — a steady
   // share moves the boss from three hits to kill to four as soon as gear adds
-  // a little, so bare stays at zero and geared jumps. Ten percent is the one
-  // that fits the band and hunts level with the Berserker.
+  // a little, so bare stays at zero and geared jumps. Ten percent fit the band
+  // and hunted level with the Berserker.
+  //
+  // Twelve since 4 Sep 2026, by the owner, with two rings and the harness
+  // averaging its batches: ten read 76 (70 to 81) against a target of 80,
+  // twelve reads 80 (76 to 83), fifteen 83. A quarter point of damage read 83
+  // and half a point 87, because his gate fight is pass-or-fail per loadout.
   blockChance: 0,
-  damageReduction: 0.1,
+  damageReduction: 0.12,
   initiative: 0,
   // The bash staggers: the target's next swing comes a second late.
   snareSeconds: 1,
@@ -136,8 +141,8 @@ export const STAFF: Weapon = {
   baseHealth: 100,
   pitch:
     'Something wrong is set in the head of it. Every point of health you lose fills the ' +
-    'crystal, and at thirty it gives it back as one burst at nearly four times the damage. ' +
-    'It wants you hurt.',
+    'crystal, and at thirty it gives it back as one burst at three and a half times the ' +
+    'damage. It wants you hurt.',
   // At 10 damage and a x3 burst the Warlock lost to the Mugger bare and had a
   // 2% gate; the burst has to be worth the blood it costs. Measured: 12 and
   // x4 gave 86% at the gate, x3.5 gave 74%, x3.75 gave 78%.
@@ -145,7 +150,13 @@ export const STAFF: Weapon = {
   attack: { damage: 13, attacksPerSecond: 0.9, variance: 0.25 },
   resource: MANA,
   threshold: 60, // thirty health actually lost
-  empowerMultiplier: 3.75,
+  // x3.5 since 4 Sep 2026, by the owner: with two rings x3.75 read 88 at the
+  // gate against a target of 80. Every Warlock lever trades the gate against
+  // hunts, because the same damage beats the boss and keeps him alive against
+  // animals: x3.5 reads 84 and costs seven points of bare survival at three
+  // fights (39 to 32); x3.25 read 81 and cost ten; 12 damage read 81 and cost
+  // thirteen. The owner took the smaller trade.
+  empowerMultiplier: 3.5,
   maxDamageReduction: 0,
   evasion: 0,
   blockChance: 0,
