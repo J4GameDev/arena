@@ -593,6 +593,37 @@ button.ghost:hover {
   border-color: var(--gold);
 }
 
+/* The rack: the figure stands at the left, centered, with the words beside it. */
+.choices.weapons {
+  grid-template-columns: repeat(auto-fit, minmax(22rem, 1fr));
+}
+
+.weapon-choice {
+  grid-template-columns: auto 1fr;
+  grid-template-areas:
+    'figure name'
+    'figure archetype'
+    'figure pitch';
+  column-gap: 1.1rem;
+}
+
+.weapon-choice .portrait {
+  grid-area: figure;
+  align-self: center;
+}
+
+.weapon-choice .choice-name {
+  grid-area: name;
+}
+
+.weapon-choice .choice-archetype {
+  grid-area: archetype;
+}
+
+.weapon-choice .choice-pitch {
+  grid-area: pitch;
+}
+
 .choice-name {
   font-size: 1.2rem;
 }

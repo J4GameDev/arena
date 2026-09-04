@@ -381,12 +381,12 @@ export function start(mount: HTMLElement): void {
     // The rack: the only choice the game makes for you, and nothing else on the screen.
     mount.innerHTML = `
       <section class="rack">
-        <p class="speaker-name">The rack</p>
-        <p class="speech">Five things on it worth taking. Everything else is rope.</p>
-        <div class="choices">
+        <p class="speaker-name">Weapon Rack</p>
+        <div class="choices weapons">
           ${WEAPONS.map(
             (weapon) => `
-            <button class="choice" data-weapon="${weapon.id}" type="button">
+            <button class="choice weapon-choice" data-weapon="${weapon.id}" type="button">
+              <img class="portrait" src="${heroSpriteFor(weapon.id, sex)}" alt="" onerror="this.remove()" />
               <span class="choice-name">${escape(weapon.name)}</span>
               <span class="choice-archetype">${escape(weapon.archetype)}</span>
               <span class="choice-pitch">${escape(weapon.pitch)}</span>
