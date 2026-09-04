@@ -50,6 +50,7 @@ import { clearRun, loadRun, saveRun } from '../state/storage.ts';
 import {
   figureFor,
   handsFor,
+  hasWeaponIcon,
   heroFigureFor,
   heroSpriteFor,
   iconFor,
@@ -58,6 +59,7 @@ import {
   sceneFor,
   slotGlyphFor,
   spriteFor,
+  weaponIconFor,
 } from './art.ts';
 import { playFight } from './fight-view.ts';
 import { formatModifier, isBeneficial } from './format.ts';
@@ -639,11 +641,15 @@ function gearCell(cell: GearCell, run: RunState, open: boolean): string {
 
   if (isHand(cell)) {
     const weapon = WEAPONS.find((candidate) => candidate.id === run.weaponId);
-    const held = cell === 'leftHand' ? handsFor(run.weaponId).left : handsFor(run.weaponId).right;
+    const hands = handsFor(run.weaponId);
+    const held = cell === 'leftHand' ? hands.left : hands.right;
     const name = held === null ? `${title}: empty` : `${title}: ${weapon?.name ?? ''}`;
+    // A two-handed weapon is pictured once, in the right hand; the left keeps its glyph.
+    const pictured =
+      held !== null && hasWeaponIcon(held) && !(cell === 'leftHand' && hands.twoHanded === true);
     return `
       <button class="cell ${held === null ? 'empty' : 'filled'} ${open ? 'open' : ''}" data-cell="${cell}" type="button" style="grid-area: ${cell}" title="${escape(name)}" aria-label="${escape(name)}">
-        ${icon(slotGlyphFor(cell))}
+        ${icon(pictured ? weaponIconFor(held) : slotGlyphFor(cell))}
       </button>
     `;
   }
