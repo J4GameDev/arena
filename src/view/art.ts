@@ -42,12 +42,6 @@ export const handsFor = (weaponId: string): Hands => HANDS[weaponId] ?? { left: 
 export const weaponIconFor = (id: string): string => `/icons/weapons/${id}.png`;
 
 /**
- * The engraved glyph on an empty cell of the gear table: one dark line
- * drawing per slot, traced from a plain silhouette so it reads as a mark on
- * stone rather than as any item we own. Keyed by cell, so the two hands have
- * a sword and a shield.
- */
-/**
  * The gold line that runs around one thing in the town painting when it is
  * hovered (the tanner's frame, the cookfire, the gate): a ring one painting
  * pixel wide, drawn by scripts/cutouts.py from scenes/town.png. Remake them
@@ -55,6 +49,12 @@ export const weaponIconFor = (id: string): string => `/icons/weapons/${id}.png`;
  */
 export const lineFor = (place: string): string => `/scenes/town-${place}-line.png`;
 
+/**
+ * The engraved glyph on an empty cell of the gear table: one dark line
+ * drawing per slot, traced from a plain silhouette so it reads as a mark on
+ * stone rather than as any item we own. Keyed by cell, so the two hands have
+ * a sword and a shield.
+ */
 export const slotGlyphFor = (cell: string): string => `/icons/slots/${cell}.png`;
 
 /** Scenes live in public/scenes. An area names its own; a chosen fight names one too. */
@@ -100,7 +100,7 @@ const FIGURE_HEIGHTS: Readonly<Record<string, FigureHeight>> = {
  * re-measure if one is replaced. The class row above supplies the meters.
  */
 const HERO_FIGURE_PX: Readonly<Record<string, number>> = {
-  'greataxe-male': 61,
+  'greataxe-male': 59,
   'greataxe-female': 60,
   'twin-daggers-male': 57,
   'twin-daggers-female': 60,
