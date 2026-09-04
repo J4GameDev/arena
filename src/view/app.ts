@@ -54,6 +54,7 @@ import {
   heroSpriteFor,
   iconFor,
   portraitFor,
+  lineFor,
   sceneFor,
   slotGlyphFor,
   spriteFor,
@@ -139,17 +140,22 @@ type Place = 'tanner' | 'cookfire' | 'oswald' | 'gate';
 
 interface Spot {
   readonly id: Place;
+  /** Spoken by screen readers and shown as a tooltip; never drawn on the painting. */
   readonly label: string;
-  /** Where on the painting the spot sits, as percentages of its width and height. */
-  readonly x: number;
-  readonly y: number;
+  /**
+   * Where the thing's hover line sits on the painting: left, top, width,
+   * height in the painting's own pixels (400 by 224). The line is a gold
+   * ring one painting pixel wide around the thing, drawn by
+   * scripts/cutouts.py, which also prints these boxes. Later spots win where
+   * boxes overlap, so the things in front come last.
+   */
+  readonly box: readonly [number, number, number, number];
 }
 
 const SPOTS: readonly Spot[] = [
-  { id: 'tanner', label: 'Tanner', x: 13, y: 52 },
-  { id: 'cookfire', label: 'Cook', x: 40, y: 62 },
-  { id: 'oswald', label: 'Oswald', x: 84, y: 48 },
-  { id: 'gate', label: 'Hunt', x: 52, y: 40 },
+  { id: 'tanner', label: 'Tanner', box: [-1, 104, 104, 121] },
+  { id: 'gate', label: 'Hunt', box: [149, 98, 83, 55] },
+  { id: 'cookfire', label: 'Cook', box: [128, 130, 65, 74] },
 ];
 
 /**
@@ -425,13 +431,16 @@ export function start(mount: HTMLElement): void {
       </header>
 
       <section class="town" style="--scene: url('${sceneFor('town')}')">
-        <img class="townsfolk oswald" src="${spriteFor('oswald-idle')}" alt="" onerror="this.remove()" />
-        ${SPOTS.map(
-          (
-            spot,
-          ) => `<button class="spot ${spot.id === place ? 'open' : ''}" data-place="${spot.id}" type="button"
-            style="left: ${spot.x}%; top: ${spot.y}%">${spot.label}</button>`,
-        ).join('')}
+        ${SPOTS.map((spot) => {
+          const [left, top, width, height] = spot.box;
+          return `<button class="spot thing ${spot.id === place ? 'open' : ''}" data-place="${spot.id}" type="button" title="${spot.label}" aria-label="${spot.label}"
+              style="left: ${(left / 400) * 100}%; top: ${(top / 224) * 100}%; width: ${(width / 400) * 100}%; height: ${(height / 224) * 100}%">
+              <img class="line" src="${lineFor(spot.id)}" alt="" />
+            </button>`;
+        }).join('')}
+        <button class="spot oswald-spot ${place === 'oswald' ? 'open' : ''}" data-place="oswald" type="button" title="Oswald" aria-label="Oswald">
+          <img class="townsfolk oswald" src="${spriteFor('oswald-idle')}" alt="" onerror="this.remove()" />
+        </button>
         ${place === null ? '' : `<div class="place-panel">${placePanel(place, run)}</div>`}
       </section>
 
