@@ -12,7 +12,7 @@
  * Everyone carries the Hunter's Pack's six rations unless told otherwise.
  *
  * "Crafted" means what the tanner actually makes: five armor pieces from a
- * random mix of hides, plus three trinkets taken off people. As with the
+ * random mix of hides, plus two trinkets taken off people. As with the
  * balance harness, read p90 — a player keeps the good set.
  */
 import { AREAS } from '../src/data/areas.ts';
@@ -120,7 +120,7 @@ function gearedRates(weapon: Weapon, area: Area, length: number): number[] {
 /** What a player who has hunted for a while is wearing. */
 function craftedSet(rng: Rng): Item[] {
   const armor: Slot[] = ['head', 'torso', 'legs', 'feet', 'hands'];
-  const trinkets: Slot[] = ['ring', 'ring', 'necklace'];
+  const trinkets: Slot[] = ['ring', 'necklace'];
   return [
     ...armor.map((slot) => craftItem(slot, rng.pick(MATERIAL_LIST), rng)),
     ...trinkets.map((slot) => rollItem(slot, rng)),

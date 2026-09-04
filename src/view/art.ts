@@ -42,10 +42,12 @@ export const handsFor = (weaponId: string): Hands => HANDS[weaponId] ?? { left: 
 export const weaponIconFor = (id: string): string => `/icons/weapons/${id}.png`;
 
 /**
- * The same picture as a dim gray silhouette, for an empty slot: "a hood goes
- * here". Derived from the slot icon rather than drawn, so the two always match.
+ * The engraved glyph on an empty cell of the gear table: one dark line
+ * drawing per slot, traced from a plain silhouette so it reads as a mark on
+ * stone rather than as any item we own. Keyed by cell, so the two hands have
+ * a sword and a shield.
  */
-export const emptyIconFor = (slot: string): string => `/icons/${slot}-empty.png`;
+export const slotGlyphFor = (cell: string): string => `/icons/slots/${cell}.png`;
 
 /** Scenes live in public/scenes. An area names its own; a chosen fight names one too. */
 export const sceneFor = (sceneId: string): string => `/scenes/${sceneId}.png`;

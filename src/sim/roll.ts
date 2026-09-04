@@ -73,9 +73,9 @@ export function rollDrop(rng: Rng): Item {
   return rollItem(rng.pick(DROPPABLE_SLOTS), rng);
 }
 
-/** A full set: one of every slot, with two rings. */
+/** A full set: one of every slot. */
 export function rollLoadout(rng: Rng): Item[] {
-  const slots: Slot[] = ['head', 'torso', 'legs', 'feet', 'hands', 'ring', 'ring', 'necklace'];
+  const slots: Slot[] = ['head', 'torso', 'legs', 'feet', 'hands', 'ring', 'necklace'];
   return slots.map((slot) => rollItem(slot, rng));
 }
 

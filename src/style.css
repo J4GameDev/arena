@@ -935,59 +935,70 @@ button.ghost:hover {
 
 /* --- Gear table --- */
 
-/* A body: head on top, weapon in the left hand, trinkets down the right. */
-.doll {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(6.5rem, 8.5rem));
-  grid-template-areas:
-    '.         head  .'
-    'rightHand torso leftHand'
-    'ring1     legs  ring2'
-    'necklace  hands feet';
-  gap: 0.6rem;
-  justify-content: center;
+/*
+ * A body drawn in stone squares and chains, the way the old MMOs did it.
+ * Fixed sizes on purpose: the chains behind the grid are drawn from the
+ * same numbers, so the two cannot drift apart. No text in a cell — the
+ * glyph says what goes there, the picker below says what is there.
+ */
+.doll-frame {
+  position: relative;
+  width: calc(3 * 64px + 2 * 28px);
+  margin: 0.5rem auto 0;
 }
 
-.icon.blank {
-  display: block;
-  width: 48px;
-  height: 48px;
+.doll-frame .chains {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.doll-frame .chains line {
+  stroke: #0b0908;
+  stroke-width: 5;
+}
+
+.doll {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(3, 64px);
+  grid-template-rows: repeat(4, 64px);
+  grid-template-areas:
+    '.         head  necklace'
+    'rightHand torso leftHand'
+    'hands     legs  ring'
+    '.         feet  .';
+  gap: 28px;
 }
 
 .cell {
+  width: 64px;
+  height: 64px;
+  padding: 0;
   display: grid;
-  justify-items: center;
-  gap: 0.3rem;
-  padding: 0.8rem 0.5rem 0.7rem;
-  background: #131010;
-  color: var(--bone);
-  border: 1px solid var(--ink-edge);
-  text-align: center;
+  place-items: center;
+  background: #3a342e;
+  border: 1px solid var(--bone-faint);
+  box-shadow: inset 0 0 0 1px #2b2520;
+  cursor: pointer;
 }
 
 .cell:hover:not(:disabled) {
-  background: #1a1512;
-  border-color: var(--bone-faint);
+  background: #47403a;
+  border-color: var(--bone-dim);
 }
 
 .cell.open {
   border-color: var(--gold);
 }
 
-.cell.empty {
-  color: var(--bone-faint);
+.cell .icon {
+  width: 48px;
+  height: 48px;
 }
 
-.cell-label {
-  font-size: 0.65rem;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--bone-faint);
-}
-
-.cell-name {
-  font-size: 0.85rem;
-  line-height: 1.25;
+.cell.empty .icon {
+  opacity: 0.85;
 }
 
 .picker {

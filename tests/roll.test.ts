@@ -113,23 +113,10 @@ describe('rollItem', () => {
 });
 
 describe('rollLoadout', () => {
-  it('fills all eight positions, with two rings', () => {
+  it('fills all seven positions', () => {
     const loadout = rollLoadout(new Rng(9));
 
-    expect(loadout).toHaveLength(8);
-    expect(loadout.filter((item) => item.slot === 'ring')).toHaveLength(2);
-  });
-
-  it('rolls the two rings independently', () => {
-    // Over many loadouts the two ring slots must sometimes differ, or they are
-    // not being rolled separately.
-    const differ = Array.from({ length: 50 }, (_unused, seed) => rollLoadout(new Rng(seed))).some(
-      (loadout) => {
-        const rings = loadout.filter((item) => item.slot === 'ring');
-        return JSON.stringify(rings[0]?.modifiers) !== JSON.stringify(rings[1]?.modifiers);
-      },
-    );
-
-    expect(differ).toBe(true);
+    expect(loadout).toHaveLength(7);
+    expect(loadout.filter((item) => item.slot === 'ring')).toHaveLength(1);
   });
 });

@@ -48,7 +48,6 @@ import {
 } from '../state/run.ts';
 import { clearRun, loadRun, saveRun } from '../state/storage.ts';
 import {
-  emptyIconFor,
   figureFor,
   handsFor,
   heroFigureFor,
@@ -56,8 +55,8 @@ import {
   iconFor,
   portraitFor,
   sceneFor,
+  slotGlyphFor,
   spriteFor,
-  weaponIconFor,
 } from './art.ts';
 import { playFight } from './fight-view.ts';
 import { formatModifier, isBeneficial } from './format.ts';
@@ -155,23 +154,23 @@ const SPOTS: readonly Spot[] = [
 
 /**
  * The gear table's cells: the two hands, then every wearable position. Laid
- * out in the shape of a body, the way the old MMOs did it: head on top, the
- * hands either side of the torso, trinkets beside the legs, feet at the
- * bottom. The order here is reading order; the stylesheet places each cell
- * by name.
+ * out in the shape of a body, by the owner's design: head, torso, legs and
+ * feet down the middle; the right and left hands either side of the torso;
+ * the hands (gloves) left of the legs and the ring right of them; the
+ * necklace right of the head. The order here is reading order; the
+ * stylesheet places each cell by name.
  */
 type GearCell = 'leftHand' | 'rightHand' | EquipPosition;
 
 const GEAR_CELLS: readonly GearCell[] = [
   'head',
+  'necklace',
   'rightHand',
   'torso',
   'leftHand',
-  'necklace',
-  'ring1',
-  'legs',
-  'ring2',
   'hands',
+  'legs',
+  'ring',
   'feet',
 ];
 
@@ -513,7 +512,7 @@ export function start(mount: HTMLElement): void {
       const position =
         openCell !== null && !isHand(openCell) && slotOf(openCell) === item.slot
           ? openCell
-          : positionFor(item, run);
+          : positionFor(item);
       commit(equipItem(run, item, position));
     });
     bind('[data-discard]', (button) => commit(discardItem(run, button.dataset['discard'] ?? '')));
@@ -527,8 +526,11 @@ export function start(mount: HTMLElement): void {
     return `
       <section class="panel">
         <h2>Worn</h2>
-        <div class="doll">
-          ${GEAR_CELLS.map((cell) => gearCell(cell, run, cell === openCell)).join('')}
+        <div class="doll-frame">
+          ${CHAINS}
+          <div class="doll">
+            ${GEAR_CELLS.map((cell) => gearCell(cell, run, cell === openCell)).join('')}
+          </div>
         </div>
         ${openCell === null ? '<p class="aside">Pick a slot to see what you could put there.</p>' : picker(openCell, run)}
       </section>
@@ -580,10 +582,9 @@ export function start(mount: HTMLElement): void {
   render();
 }
 
-/** Rings take the empty finger first. */
-function positionFor(item: Item, run: RunState): EquipPosition {
-  if (item.slot !== 'ring') return item.slot;
-  return run.equipped.ring1 === undefined ? 'ring1' : 'ring2';
+/** Every slot has exactly one place to go. */
+function positionFor(item: Item): EquipPosition {
+  return item.slot;
 }
 
 // --- Gear ---
@@ -592,45 +593,63 @@ function isHand(cell: GearCell): cell is 'leftHand' | 'rightHand' {
   return cell === 'leftHand' || cell === 'rightHand';
 }
 
+/**
+ * The chains between cells, drawn once behind the grid. The grid is fixed
+ * size (see .doll in the stylesheet), so the centers are known: three
+ * columns and four rows of 64px cells with 28px between.
+ */
+const CHAINS = (() => {
+  const cell = 64;
+  const gap = 28;
+  const at = (col: number, row: number): [number, number] => [
+    col * (cell + gap) + cell / 2,
+    row * (cell + gap) + cell / 2,
+  ];
+  const links: readonly [[number, number], [number, number]][] = [
+    [at(1, 0), at(1, 1)],
+    [at(1, 1), at(1, 2)],
+    [at(1, 2), at(1, 3)],
+    [at(1, 0), at(2, 0)],
+    [at(0, 1), at(1, 1)],
+    [at(1, 1), at(2, 1)],
+    [at(0, 2), at(1, 2)],
+    [at(1, 2), at(2, 2)],
+    [at(0, 1), at(0, 2)],
+    [at(2, 1), at(2, 2)],
+  ];
+  const width = 3 * cell + 2 * gap;
+  const height = 4 * cell + 3 * gap;
+  return `<svg class="chains" viewBox="0 0 ${width} ${height}" width="${width}" height="${height}" aria-hidden="true">
+    ${links.map(([a, b]) => `<line x1="${a[0]}" y1="${a[1]}" x2="${b[0]}" y2="${b[1]}" />`).join('')}
+  </svg>`;
+})();
+
+/** A cell of the gear table: a stone square with an engraved glyph, or the thing worn. */
 function gearCell(cell: GearCell, run: RunState, open: boolean): string {
+  const title = isHand(cell) ? (cell === 'leftHand' ? 'Left hand' : 'Right hand') : label(cell);
+
   if (isHand(cell)) {
     const weapon = WEAPONS.find((candidate) => candidate.id === run.weaponId);
     const held = cell === 'leftHand' ? handsFor(run.weaponId).left : handsFor(run.weaponId).right;
-    const label = cell === 'leftHand' ? 'Left hand' : 'Right hand';
-    if (held === null) {
-      return `
-        <button class="cell empty ${open ? 'open' : ''}" data-cell="${cell}" type="button" style="grid-area: ${cell}">
-          <span class="icon blank"></span>
-          <span class="cell-label">${label}</span>
-          <span class="cell-name">—</span>
-        </button>
-      `;
-    }
+    const name = held === null ? `${title}: empty` : `${title}: ${weapon?.name ?? ''}`;
     return `
-      <button class="cell filled ${open ? 'open' : ''}" data-cell="${cell}" type="button" style="grid-area: ${cell}">
-        ${icon(weaponIconFor(held))}
-        <span class="cell-label">${label}</span>
-        <span class="cell-name">${escape(weapon?.name ?? '')}</span>
+      <button class="cell ${held === null ? 'empty' : 'filled'} ${open ? 'open' : ''}" data-cell="${cell}" type="button" style="grid-area: ${cell}" title="${escape(name)}" aria-label="${escape(name)}">
+        ${icon(slotGlyphFor(cell))}
       </button>
     `;
   }
 
   const item = run.equipped[cell];
-  const slot = slotOf(cell);
   if (item === undefined) {
     return `
-      <button class="cell empty ${open ? 'open' : ''}" data-cell="${cell}" type="button" style="grid-area: ${cell}">
-        ${icon(emptyIconFor(slot))}
-        <span class="cell-label">${label(cell)}</span>
-        <span class="cell-name">—</span>
+      <button class="cell empty ${open ? 'open' : ''}" data-cell="${cell}" type="button" style="grid-area: ${cell}" title="${title}: empty" aria-label="${title}: empty">
+        ${icon(slotGlyphFor(cell))}
       </button>
     `;
   }
   return `
-    <button class="cell filled ${open ? 'open' : ''}" data-cell="${cell}" type="button" style="grid-area: ${cell}">
-      ${icon(iconFor(slot))}
-      <span class="cell-label">${label(cell)}</span>
-      <span class="cell-name">${escape(item.name)}</span>
+    <button class="cell filled ${open ? 'open' : ''}" data-cell="${cell}" type="button" style="grid-area: ${cell}" title="${escape(`${title}: ${item.name}`)}" aria-label="${escape(`${title}: ${item.name}`)}">
+      ${icon(iconFor(item.slot))}
     </button>
   `;
 }
@@ -1015,8 +1034,7 @@ function percent(value: number): string {
 }
 
 function label(position: EquipPosition | Slot): string {
-  const slot = slotOf(position as EquipPosition);
-  return slot.charAt(0).toUpperCase() + slot.slice(1);
+  return position.charAt(0).toUpperCase() + position.slice(1);
 }
 
 function escape(text: string): string {

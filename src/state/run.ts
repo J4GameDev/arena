@@ -5,11 +5,10 @@ import { craftItem } from '../sim/roll.ts';
 import type { Item, MaterialId, Slot } from '../sim/types.ts';
 
 /**
- * Where an item actually sits. Distinct from Slot because there are two ring
- * positions and only one ring *slot* — a ring can go in either.
+ * Where an item actually sits. One position per slot: there was a second
+ * ring until 3 Sep 2026, when the owner cut it to one for the gear layout.
  */
-export type EquipPosition =
-  'head' | 'torso' | 'legs' | 'feet' | 'hands' | 'ring1' | 'ring2' | 'necklace';
+export type EquipPosition = 'head' | 'torso' | 'legs' | 'feet' | 'hands' | 'ring' | 'necklace';
 
 export const EQUIP_POSITIONS: readonly EquipPosition[] = [
   'head',
@@ -17,14 +16,13 @@ export const EQUIP_POSITIONS: readonly EquipPosition[] = [
   'legs',
   'feet',
   'hands',
-  'ring1',
-  'ring2',
+  'ring',
   'necklace',
 ];
 
-/** Which slot's items a position accepts. */
+/** Which slot's items a position accepts. Positions and slots line up one to one now. */
 export function slotOf(position: EquipPosition): Slot {
-  return position === 'ring1' || position === 'ring2' ? 'ring' : position;
+  return position;
 }
 
 /**

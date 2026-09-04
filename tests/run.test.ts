@@ -16,8 +16,7 @@ const torso = () => rollItem('torso', rng);
 
 describe('run state', () => {
   it('maps both ring positions to the ring slot', () => {
-    expect(slotOf('ring1')).toBe('ring');
-    expect(slotOf('ring2')).toBe('ring');
+    expect(slotOf('ring')).toBe('ring');
     expect(slotOf('torso')).toBe('torso');
   });
 
@@ -41,20 +40,20 @@ describe('run state', () => {
     expect(state.backpack).toEqual([first]);
   });
 
-  it('lets a ring go in either position, independently', () => {
-    const left = ring();
-    const right = ring();
+  it('has one ring position, so a second ring displaces the first', () => {
+    const first = ring();
+    const second = ring();
 
-    let state = equipItem(newRun('greataxe'), left, 'ring1');
-    state = equipItem(state, right, 'ring2');
+    let state = equipItem(newRun('greataxe'), first, 'ring');
+    state = equipItem(state, second, 'ring');
 
-    expect(state.equipped.ring1).toBe(left);
-    expect(state.equipped.ring2).toBe(right);
-    expect(equippedItems(state)).toHaveLength(2);
+    expect(state.equipped.ring).toBe(second);
+    expect(state.backpack).toEqual([first]);
+    expect(equippedItems(state)).toHaveLength(1);
   });
 
   it('refuses an item that does not belong in the position', () => {
-    expect(() => equipItem(newRun('greataxe'), torso(), 'ring1')).toThrow();
+    expect(() => equipItem(newRun('greataxe'), torso(), 'ring')).toThrow();
   });
 
   it('unequips back into the backpack', () => {
