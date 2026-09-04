@@ -164,21 +164,22 @@ const SPOTS: readonly Spot[] = [
  * The gear table's cells: the two hands, then every wearable position. Laid
  * out in the shape of a body, by the owner's design: head, torso, legs and
  * feet down the middle; the right and left hands either side of the torso;
- * the hands (gloves) left of the legs and the ring right of them; the
- * necklace right of the head. The order here is reading order; the
- * stylesheet places each cell by name.
+ * the hands (gloves) left of the legs; the necklace left of the head, one
+ * ring right of the head and the other right of the legs. The order here is
+ * reading order; the stylesheet places each cell by name.
  */
 type GearCell = 'leftHand' | 'rightHand' | EquipPosition;
 
 const GEAR_CELLS: readonly GearCell[] = [
-  'head',
   'necklace',
+  'head',
+  'ring1',
   'rightHand',
   'torso',
   'leftHand',
   'hands',
   'legs',
-  'ring',
+  'ring2',
   'feet',
 ];
 
@@ -523,7 +524,7 @@ export function start(mount: HTMLElement): void {
       const position =
         openCell !== null && !isHand(openCell) && slotOf(openCell) === item.slot
           ? openCell
-          : positionFor(item);
+          : positionFor(item, run);
       commit(equipItem(run, item, position));
     });
     bind('[data-discard]', (button) => commit(discardItem(run, button.dataset['discard'] ?? '')));
@@ -594,8 +595,10 @@ export function start(mount: HTMLElement): void {
 }
 
 /** Every slot has exactly one place to go. */
-function positionFor(item: Item): EquipPosition {
-  return item.slot;
+/** Where an item goes when worn from the pack: a ring takes the first free hand. */
+function positionFor(item: Item, run: RunState): EquipPosition {
+  if (item.slot !== 'ring') return item.slot;
+  return run.equipped.ring1 === undefined || run.equipped.ring2 !== undefined ? 'ring1' : 'ring2';
 }
 
 // --- Gear ---
@@ -617,16 +620,17 @@ const CHAINS = (() => {
     row * (cell + gap) + cell / 2,
   ];
   const links: readonly [[number, number], [number, number]][] = [
-    [at(1, 0), at(1, 1)],
-    [at(1, 1), at(1, 2)],
-    [at(1, 2), at(1, 3)],
-    [at(1, 0), at(2, 0)],
-    [at(0, 1), at(1, 1)],
-    [at(1, 1), at(2, 1)],
-    [at(0, 2), at(1, 2)],
-    [at(1, 2), at(2, 2)],
-    [at(0, 1), at(0, 2)],
-    [at(2, 1), at(2, 2)],
+    [at(1, 0), at(1, 1)], // the spine: head to torso
+    [at(1, 1), at(1, 2)], // torso to legs
+    [at(1, 2), at(1, 3)], // legs to feet
+    [at(0, 0), at(1, 0)], // necklace to head
+    [at(1, 0), at(2, 0)], // head to the first ring
+    [at(0, 1), at(1, 1)], // right hand to torso
+    [at(1, 1), at(2, 1)], // torso to left hand
+    [at(0, 2), at(1, 2)], // gloves to legs
+    [at(1, 2), at(2, 2)], // legs to the second ring
+    [at(0, 1), at(0, 2)], // right hand down to the gloves
+    [at(2, 1), at(2, 2)], // left hand down to the second ring
   ];
   const width = 3 * cell + 2 * gap;
   const height = 4 * cell + 3 * gap;
@@ -658,7 +662,7 @@ function gearCell(cell: GearCell, run: RunState, open: boolean): string {
   if (item === undefined) {
     return `
       <button class="cell empty ${open ? 'open' : ''}" data-cell="${cell}" type="button" style="grid-area: ${cell}" title="${title}: empty" aria-label="${title}: empty">
-        ${icon(slotGlyphFor(cell))}
+        ${icon(slotGlyphFor(slotOf(cell)))}
       </button>
     `;
   }
@@ -1049,6 +1053,7 @@ function percent(value: number): string {
 }
 
 function label(position: EquipPosition | Slot): string {
+  if (position === 'ring1' || position === 'ring2') return 'Ring';
   return position.charAt(0).toUpperCase() + position.slice(1);
 }
 

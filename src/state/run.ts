@@ -5,10 +5,15 @@ import { craftItem } from '../sim/roll.ts';
 import type { Item, MaterialId, Slot } from '../sim/types.ts';
 
 /**
- * Where an item actually sits. One position per slot: there was a second
- * ring until 3 Sep 2026, when the owner cut it to one for the gear layout.
+ * Where an item actually sits. Distinct from Slot because there are two ring
+ * positions and only one ring *slot* — a ring can go on either hand.
+ *
+ * The second ring was cut on 3 Sep 2026 to fit the gear layout, which cost
+ * the meter-driven classes twenty points at the gate. It came back on 4 Sep
+ * 2026 when the owner moved the trinkets into small cells beside the body.
  */
-export type EquipPosition = 'head' | 'torso' | 'legs' | 'feet' | 'hands' | 'ring' | 'necklace';
+export type EquipPosition =
+  'head' | 'torso' | 'legs' | 'feet' | 'hands' | 'ring1' | 'ring2' | 'necklace';
 
 export const EQUIP_POSITIONS: readonly EquipPosition[] = [
   'head',
@@ -16,13 +21,14 @@ export const EQUIP_POSITIONS: readonly EquipPosition[] = [
   'legs',
   'feet',
   'hands',
-  'ring',
+  'ring1',
+  'ring2',
   'necklace',
 ];
 
-/** Which slot's items a position accepts. Positions and slots line up one to one now. */
+/** Which slot's items a position accepts. */
 export function slotOf(position: EquipPosition): Slot {
-  return position;
+  return position === 'ring1' || position === 'ring2' ? 'ring' : position;
 }
 
 /**

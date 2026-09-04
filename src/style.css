@@ -964,9 +964,9 @@ button.ghost:hover {
   grid-template-columns: repeat(3, 64px);
   grid-template-rows: repeat(4, 64px);
   grid-template-areas:
-    '.         head  necklace'
+    'necklace  head  ring1'
     'rightHand torso leftHand'
-    'hands     legs  ring'
+    'hands     legs  ring2'
     '.         feet  .';
   gap: 28px;
 }
