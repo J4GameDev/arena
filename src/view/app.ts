@@ -644,9 +644,9 @@ function gearCell(cell: GearCell, run: RunState, open: boolean): string {
     const hands = handsFor(run.weaponId);
     const held = cell === 'leftHand' ? hands.left : hands.right;
     const name = held === null ? `${title}: empty` : `${title}: ${weapon?.name ?? ''}`;
-    // A two-handed weapon is pictured once, in the right hand; the left keeps its glyph.
+    // A two-hander or a matched pair is pictured once, in the right hand; the left keeps its glyph.
     const pictured =
-      held !== null && hasWeaponIcon(held) && !(cell === 'leftHand' && hands.twoHanded === true);
+      held !== null && hasWeaponIcon(held) && !(cell === 'leftHand' && hands.picturedOnce === true);
     return `
       <button class="cell ${held === null ? 'empty' : 'filled'} ${open ? 'open' : ''}" data-cell="${cell}" type="button" style="grid-area: ${cell}" title="${escape(name)}" aria-label="${escape(name)}">
         ${icon(pictured ? weaponIconFor(held) : slotGlyphFor(cell))}

@@ -26,13 +26,16 @@ export const iconFor = (slot: string): string => `/icons/${slot}.png`;
 export interface Hands {
   readonly left: string | null;
   readonly right: string | null;
-  /** One thing held in both hands: its icon shows in the right hand only. */
-  readonly twoHanded?: boolean;
+  /**
+   * Pictured once, in the right hand: a two-handed weapon, or a matched pair
+   * whose icon already shows both. The left hand keeps its glyph.
+   */
+  readonly picturedOnce?: boolean;
 }
 
 const HANDS: Readonly<Record<string, Hands>> = {
-  greataxe: { left: 'greataxe', right: 'greataxe', twoHanded: true },
-  'twin-daggers': { left: 'dagger', right: 'dagger' },
+  greataxe: { left: 'greataxe', right: 'greataxe', picturedOnce: true },
+  'twin-daggers': { left: 'dagger', right: 'dagger', picturedOnce: true },
   'sword-and-shield': { left: 'shield', right: 'sword' },
   'short-bow': { left: 'bow', right: null },
   staff: { left: null, right: 'staff' },
@@ -45,7 +48,14 @@ export const handsFor = (weaponId: string): Hands => HANDS[weaponId] ?? { left: 
  * each chosen by the owner from a sheet of candidates. A hand holding
  * something without an icon yet keeps its engraved glyph.
  */
-const WEAPON_ICONS: ReadonlySet<string> = new Set(['greataxe']);
+const WEAPON_ICONS: ReadonlySet<string> = new Set([
+  'greataxe',
+  'dagger',
+  'sword',
+  'shield',
+  'bow',
+  'staff',
+]);
 export const hasWeaponIcon = (id: string): boolean => WEAPON_ICONS.has(id);
 export const weaponIconFor = (id: string): string => `/icons/weapons/${id}.png`;
 
