@@ -16,6 +16,13 @@
  * number. **Read the p90 column, not the median.** A player keeps good drops
  * and bins bad ones, so they converge on the top of the distribution; the
  * median describes a loadout nobody keeps.
+ *
+ * The p90 is one loadout out of a batch, so one batch makes it jumpy: at 60
+ * loadouts the same unchanged game read three points apart between batches,
+ * and the Warden eleven even at 200, because his gate fight is pass-or-fail
+ * per loadout. So the harness rolls several batches, prints the average, and
+ * prints the range beside it (4 Sep 2026). A difference between two runs
+ * that sits inside the range is not a finding. About a minute and a half a run.
  */
 import { MONSTERS } from '../src/data/monsters.ts';
 import { WEAPONS } from '../src/data/weapons.ts';
@@ -25,17 +32,23 @@ import { Rng } from '../src/sim/rng.ts';
 import { rollLoadout } from '../src/sim/roll.ts';
 import type { Item, MonsterDefinition, Weapon } from '../src/sim/types.ts';
 
-const LOADOUTS = numberArg('--loadouts', 60);
-const FIGHTS = numberArg('--fights', 150);
+const LOADOUTS = numberArg('--loadouts', 200);
+const FIGHTS = numberArg('--fights', 300);
 const BARE_FIGHTS = numberArg('--bare-fights', 2000);
+/** How many batches of loadouts to roll. The geared columns average them. */
+const BATCHES = numberArg('--batches', 3);
+/** The first batch's seed; each batch after it uses the next number. */
+const LOADOUT_SEED = numberArg('--seed', 1);
 
 /** What a geared player should sit at against a band gate. See CLAUDE.md. */
 const GATE_TARGET = 'p90 near 80%';
 
 console.log(
-  `${LOADOUTS} rolled loadouts x ${FIGHTS} fights, plus ${BARE_FIGHTS} bare fights, per matchup`,
+  `${BATCHES} batches of ${LOADOUTS} rolled loadouts x ${FIGHTS} fights, plus ${BARE_FIGHTS} bare fights, per matchup`,
 );
-console.log(`Gate target: ${GATE_TARGET}. Read p90, not the median.\n`);
+console.log(
+  `Gate target: ${GATE_TARGET}. Read p90, not the median. The range is the batch-to-batch wobble.\n`,
+);
 
 console.log(
   pad('Weapon', 12) +
@@ -44,22 +57,30 @@ console.log(
     pad('Bare avg s', 12) +
     pad('Geared p50', 12) +
     pad('Geared p90', 12) +
+    pad('p90 range', 12) +
     'Big hits bare (fewest in any fight)',
 );
-console.log('-'.repeat(104));
+console.log('-'.repeat(116));
 
 for (const weapon of WEAPONS) {
   for (const monster of MONSTERS) {
     const bare = bareSample(weapon, monster);
-    const geared = gearedRates(weapon, monster);
+    const p50s: number[] = [];
+    const p90s: number[] = [];
+    for (let batch = 0; batch < BATCHES; batch += 1) {
+      const geared = gearedRates(weapon, monster, LOADOUT_SEED + batch);
+      p50s.push(percentile(geared, 0.5) ?? 0);
+      p90s.push(percentile(geared, 0.9) ?? 0);
+    }
 
     console.log(
       pad(weapon.archetype, 12) +
         pad(monster.name, 17) +
         pad(fmt(bare.winRate), 9) +
         pad(`${bare.averageSeconds.toFixed(1)}s`, 12) +
-        pad(fmt(percentile(geared, 0.5)), 12) +
-        pad(fmt(percentile(geared, 0.9)), 12) +
+        pad(fmt(average(p50s)), 12) +
+        pad(fmt(average(p90s)), 12) +
+        pad(`${Math.min(...p90s).toFixed(0)}-${Math.max(...p90s).toFixed(0)}`, 12) +
         String(bare.fewestEmpowered),
     );
   }
@@ -99,9 +120,9 @@ function bareSample(weapon: Weapon, monster: MonsterDefinition): BareSample {
   };
 }
 
-/** One win rate per rolled loadout, sorted ascending. */
-function gearedRates(weapon: Weapon, monster: MonsterDefinition): number[] {
-  const loadoutRng = new Rng(1);
+/** One win rate per rolled loadout in a batch, sorted ascending. */
+function gearedRates(weapon: Weapon, monster: MonsterDefinition, batchSeed: number): number[] {
+  const loadoutRng = new Rng(batchSeed);
   const rates: number[] = [];
 
   for (let i = 0; i < LOADOUTS; i += 1) {
@@ -121,6 +142,10 @@ function gearedRates(weapon: Weapon, monster: MonsterDefinition): number[] {
 
 function percentile(sorted: readonly number[], fraction: number): number | undefined {
   return sorted[Math.min(sorted.length - 1, Math.floor(sorted.length * fraction))];
+}
+
+function average(values: readonly number[]): number {
+  return values.reduce((sum, value) => sum + value, 0) / values.length;
 }
 
 function fmt(value: number | undefined): string {
