@@ -6,6 +6,32 @@
 >
 > **Project hub:** https://app.notion.com/p/3cebb4f99a0781978c30c4bcfe3a80f0 — Notion page holding the world summary, current state, and the content-idea backlog.
 
+## Status — shelved on 5 Sep 2026
+
+**This project is not being continued.** The owner's call at the end of the art-direction session, after a day and a half spent failing to get any image model to draw Farther's sprites to specification. **The game itself is finished and works** — five archetypes, hunts, crafting, a tuned gate, 91 tests, live and playable at the link above. What could not be made was the art.
+
+**Why it failed, which is the part worth carrying to the next project.** Every art failure across three tools was the same failure, and it was never about quality. These models draw well and cannot be _directed_:
+
+- PixelLab: nine runs could not keep both hands on a greataxe; "double-bladed greataxe" drew single blades until handed a reference image; a hood as style reference produced sixty-four hoods.
+- Scenes came back top-down whenever a prompt said "yard"; the town came back three centuries too late, with glazing, cobbles and shingle.
+- 64 pixels would not carry a creature's wrongness — what rendered was ordinary animals with red eyes.
+- ComfyUI with SDXL and Pixel-Art-XL: judged abysmal, deleted the same night.
+- Retro Diffusion locally: **eight generations out of eight refused to draw a figure in right-facing profile**, which every sprite in this game requires. Prompting for it, changing the modifier and pinning a seed all failed.
+
+**The pattern: these models are good at _look_ and bad at _specification_.** Farther's art is specification-heavy — every sprite faces right, stands at a measured height, holds its weapon a set way, and has to match nine siblings across three bands. That is the worst possible fit for what this generation of image models actually does, and discovering it cost a day and a half of attributes failing one at a time. **Do not start another project whose art requirements sit on that axis without testing the hard attribute first, on day one.**
+
+**What the local Retro Diffusion install actually is**, since it was bought for this project and the facts should not be lost:
+
+- The $65 Aseprite extension runs a local Stable-Diffusion-based pixel model on the owner's RTX 3060, free per image, sizes 64–4096 in steps of 8. Its "styles" are **24 LoRA modifiers** (`Game Characters`, `Flat Shading`, `Front-facing`, `Top-down`, the console-era ones), two blendable at a time with strength sliders.
+- The same extension can also call the paid cloud styles (`rd_pro__*`) with an API key. **Local and cloud are different models and different hands.**
+- **Two traps that cost whole runs.** The `Preset` dropdown's "Default" is a hardcoded raven prompt that _discards what you typed_, and a preset only takes effect on `Apply` — a fresh install silently used it. And **`Remove background` (ISNET) destroys a 96px sprite**: four modifier comparisons were wrecked by it before anyone noticed, and the runs looked like model failure. Generate on a background; strip it afterwards.
+- Quality and Adherence are 1–7 and 1–5 and were already at maximum, so neither is a lever.
+- ControlNet (`Pose`, `Sketch`, `Depth`, `Composition`, `Tile`) ships installed and is the tool built for the view problem. It was never tested — the owner judged a guide image per subject too high a price, and pivoted instead.
+
+**What replaced it.** Godot 4.7.2 and Blender 5.2.1, installed and verified headless the same session, for a new concept. In 3D the things that could not be specified are simply numbers: facing is a rotation, height is a height, a grip is geometry. A throwaway three.js scene built to check that took twenty minutes and demonstrated all three.
+
+**The repository stays.** It is committed, pushed and live, and that link is still what the owner's X bio and pinned post point at. Nothing here needs deleting, and the sim is the strongest thing this project produced.
+
 ## What this is
 
 A **grounded fantasy auto-battler** for the web. You hunt out of one of the last clean bastions, assemble a build from what you bring back, and combat resolves automatically. The interesting decisions happen between fights, not during them.
@@ -326,6 +352,8 @@ Good ideas that are not v0.1. Written down so they stop taking up room.
 
 **The 5 Sep 2026 session.** The north star was brought up to date with everything the previous evening decided and had left in Notion: Retro Diffusion as the pipeline, PixelLab left behind with its tool-agnostic lessons kept, ComfyUI recorded as tried and deleted, the stance rule, the full redraw, and the rule that the design is written before it is drawn. Then the design doc itself, in two files under `design/`. The owner scoped it wider than was recommended — every band and every creature out to the source, and a redraw of all the existing art rather than matching the new to the old — and both are written that way. One error was introduced and caught the same session: the PixelLab paragraph went in without the old one coming out, so the north star stated the same lessons twice. The audit found two more of its own: "nine monsters" where there are eight, and "seven armor icons" where the seven are five armor slots and two trinket.
 
+**The art-direction session, and the last one — 5 Sep 2026.** It began as the pass that would settle resolution, palette, outline and where the style reference lives, before a single sprite was redrawn. It never got to any of those. The measurements that were taken are still worth having: the installed sprites carry **11 to 22 colors on the animals and 41 to 52 on the people**, which is two hands and not one; the Strange Wolf occupies **32 of its 64 pixels**, so the animals whose wrongness failed to render were never drawn at 64 pixels at all, they were drawn at 32; a Retro Diffusion Pro still is **$0.18 at any size from 12 to 256**, so a bigger canvas costs nothing; and the sprite pixel is currently about **1.4x the size of a scene pixel**, meaning the figures were chunkier than the painting behind them, which is backwards and is what the outlines and shadow pads had been compensating for. The session then went into the local pixel model and did not come out. Everything learned there is in the Status block at the top of this file.
+
 **Hunts, measured.** `npm run hunts` — 400 hunts per cell bare, 30 crafted sets of five tanner pieces plus three trinkets (two rings, one necklace), everyone carrying six rations. "Home" is the share of hunts that get back to the walls. Read p90 for crafted, as ever. Measured 4 Sep 2026 after the tuning.
 
 | Weapon    | Length | Bare home | Crafted p50 | Crafted p90 | Where bare falls        |
@@ -407,7 +435,7 @@ The Warden's Resolve never fires against the gate or the Elk — one blow every 
 
 **The gate, after the daggers change (3 Sep 2026).** Seven damage sent the Assassin to p90 93% and bare 10% against a target of 80% and near zero. Measured levers on the Strayed Hunter, Berserker / Assassin at p90: armor 1 / 2 / 3 gave 71 / 87, 55 / 62, 38 / 42; health 210 / 220 gave 63 / 84, 43 / 82 — both punish the greataxe's swing breakpoints far harder than the daggers. Making every swing unavoidable gave 79 / 87 and was rejected on principle (above). A heavy blow every 2 / 3 / 4 swings gave 84 / 91, 83 / 91, 83 / 92 — a puzzle, not a lever, because evasion was never most of what kept the Assassin alive. Swing rate 0.4 gave 29 / 67. Damage 40 / 42 gave 73 / 73, 61 / 45. **Chosen: 39 damage and a heavy blow every third swing.** One point of boss damage moved the Assassin eight points and the Berserker three, so this number is not to be nudged casually.
 
-**Next, in order:**
+**What was next, and is not happening.** Left below exactly as it was written, as the record of what the project was reaching for when it stopped. It got as far as item 2 and no further: the art direction pass is what established that the art could not be made, and the project was shelved from inside it. Nothing here is queued.
 
 1. **The design doc — written on 5 Sep 2026, awaiting the owner's ruling.** `design/characters.md` is every figure that gets drawn, each entry ending with the prompt to draw it; `design/world.md` is the gradient, the bands out to the source, the town, and the fourteen rules that never bend collected in one place. **Twenty-six things in the two files are marked `[proposed]`** — gaps filled with a suggestion, and the owner's to keep or strike. Nothing is drawn or built from the doc until he has been through it. Two questions it deliberately did not answer: whether the tanner and the cook become people or stay places on the painting, and what deeper bands yield once their creatures are no longer animals a tanner can work.
 2. **The art direction, before any sprite is redrawn.** The owner's call on 5 Sep 2026: settle what the game looks like as a style, so the redraw is not the thing that decides it by accident. What has to come out of that pass — **the resolution** (64x64 already failed once to carry a creature's wrongness, and the redraw is the only moment it can change), **the palette** and whether the whole game runs on one, **outline and shading** and whatever else Retro Diffusion can pin across every generation, and **where the style reference lives** so every later prompt points at the same thing.
